@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="common">
+      <UniqueIdentifier>{EB8C931D-8ECC-4499-B49E-068CBF5A8DEA}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\win32">
+      <UniqueIdentifier>{5fcca98c-d42e-4db3-98cc-feefd4f61b85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="clogger">
+      <UniqueIdentifier>{c19498af-7a57-451e-a20f-b5e5af14855f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="prepare.bat" />
+    <None Include="update.bat" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\common\readconf.c">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\common\rtclock.c">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\common\smallregex.c">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\common\threadpool.c">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\common\win32\syslog-client.c">
+      <Filter>common\win32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\clogger\clogger.c">
+      <Filter>clogger</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\clogger\loggerconf.c">
+      <Filter>clogger</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\clogger\loggermgr.c">
+      <Filter>clogger</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\clogger\rollingfile.c">
+      <Filter>clogger</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\clogger\shmmaplog.c">
+      <Filter>clogger</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\clogger\clogger.h">
+      <Filter>clogger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\clogger\logger_api.h">
+      <Filter>clogger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\clogger\loggerconf.h">
+      <Filter>clogger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\clogger\loggermgr_i.h">
+      <Filter>clogger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\clogger\rollingfile.h">
+      <Filter>clogger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\clogger\shmmaplog.h">
+      <Filter>clogger</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,45 @@
+# Folders
+.git/
+
+libclogger-*/
+libclogger.*
+
+/libs
+/win32-libs
+
+# Windows and MSVC
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+.vs/
+
+*.VC.db
+*.VC.opendb
+
+
+# Python
+*.py[cod]
+*.so
+*.egg
+*.egg-info
+
+# Build intermediate files
+*.exe
+*.a
+*.o
+*.log
+
+logs/
+temp/
+
+build/
+target/
+
+dist-apps/
+
+# doxygen generated
+docs/api/
+
+Debug/
+Release/
