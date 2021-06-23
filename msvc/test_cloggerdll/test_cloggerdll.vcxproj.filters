@@ -4,11 +4,7 @@
     <Filter Include="src">
       <UniqueIdentifier>{088F1473-4E17-4EA7-A17D-FC28A5C38D4A}</UniqueIdentifier>
     </Filter>
-    <Filter Include="resources">
-      <UniqueIdentifier>{BAF0470C-146E-4DD1-B12F-622D4194B7A8}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-	<Filter Include="common">
+    <Filter Include="common">
       <UniqueIdentifier>{0980FC53-63B9-439F-B960-723E6A24BED6}</UniqueIdentifier>
     </Filter>
     <Filter Include="common\win32">

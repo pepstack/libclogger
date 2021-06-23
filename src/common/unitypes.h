@@ -92,6 +92,7 @@ extern "C"
 
     # undef  PATH_SEPARATOR_CHAR
     # define PATH_SEPARATOR_CHAR       ((char) 47)
+
 #elif defined(__APPLE__)
     # include "TargetConditionals.h"
 

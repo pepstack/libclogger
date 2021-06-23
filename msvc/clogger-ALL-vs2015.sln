@@ -7,6 +7,16 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libclogger", "libclogger\li
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libclogger_dll", "libclogger_dll\libclogger_dll.vcxproj", "{6E47CFF1-49E1-4A83-A290-CD651B233888}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_clogger", "test_clogger\test_clogger.vcxproj", "{912DFE4B-2F3B-4CF0-8527-0BA56FA24FBD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{697A8324-B61D-41E1-B68F-55F7FD2DF6E7} = {697A8324-B61D-41E1-B68F-55F7FD2DF6E7}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_cloggerdll", "test_cloggerdll\test_cloggerdll.vcxproj", "{B09FC122-87AD-4845-B4C0-E8EC8E05F03D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6E47CFF1-49E1-4A83-A290-CD651B233888} = {6E47CFF1-49E1-4A83-A290-CD651B233888}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -31,6 +41,22 @@ Global
 		{6E47CFF1-49E1-4A83-A290-CD651B233888}.Release|x64.Build.0 = Release|x64
 		{6E47CFF1-49E1-4A83-A290-CD651B233888}.Release|x86.ActiveCfg = Release|Win32
 		{6E47CFF1-49E1-4A83-A290-CD651B233888}.Release|x86.Build.0 = Release|Win32
+		{912DFE4B-2F3B-4CF0-8527-0BA56FA24FBD}.Debug|x64.ActiveCfg = Debug|x64
+		{912DFE4B-2F3B-4CF0-8527-0BA56FA24FBD}.Debug|x64.Build.0 = Debug|x64
+		{912DFE4B-2F3B-4CF0-8527-0BA56FA24FBD}.Debug|x86.ActiveCfg = Debug|Win32
+		{912DFE4B-2F3B-4CF0-8527-0BA56FA24FBD}.Debug|x86.Build.0 = Debug|Win32
+		{912DFE4B-2F3B-4CF0-8527-0BA56FA24FBD}.Release|x64.ActiveCfg = Release|x64
+		{912DFE4B-2F3B-4CF0-8527-0BA56FA24FBD}.Release|x64.Build.0 = Release|x64
+		{912DFE4B-2F3B-4CF0-8527-0BA56FA24FBD}.Release|x86.ActiveCfg = Release|Win32
+		{912DFE4B-2F3B-4CF0-8527-0BA56FA24FBD}.Release|x86.Build.0 = Release|Win32
+		{B09FC122-87AD-4845-B4C0-E8EC8E05F03D}.Debug|x64.ActiveCfg = Debug|x64
+		{B09FC122-87AD-4845-B4C0-E8EC8E05F03D}.Debug|x64.Build.0 = Debug|x64
+		{B09FC122-87AD-4845-B4C0-E8EC8E05F03D}.Debug|x86.ActiveCfg = Debug|Win32
+		{B09FC122-87AD-4845-B4C0-E8EC8E05F03D}.Debug|x86.Build.0 = Debug|Win32
+		{B09FC122-87AD-4845-B4C0-E8EC8E05F03D}.Release|x64.ActiveCfg = Release|x64
+		{B09FC122-87AD-4845-B4C0-E8EC8E05F03D}.Release|x64.Build.0 = Release|x64
+		{B09FC122-87AD-4845-B4C0-E8EC8E05F03D}.Release|x86.ActiveCfg = Release|Win32
+		{B09FC122-87AD-4845-B4C0-E8EC8E05F03D}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -11,27 +11,29 @@ for /f %%a in (%~dp0..\..\src\clogger\VERSION) do (
 :libver
 echo prepare for: %LIBPROJECT%-%LIBVER%
 
+set DISTLIBDIR="%~dp0..\..\dist\%LIBPROJECT%-%LIBVER%"
+
 ::include
 
-set includeDir="%~dp0..\..\%LIBPROJECT%-%LIBVER%\include\clogger"
-set commonDir="%~dp0..\..\%LIBPROJECT%-%LIBVER%\include\common"
+set includeDir="%DISTLIBDIR%\include\clogger"
+set commonDir="%DISTLIBDIR%\include\common"
 
 ::x64
 
-set x64binDir="%~dp0..\..\%LIBPROJECT%-%LIBVER%\bin\win64"
+set x64binDir="%DISTLIBDIR%\bin\win64"
 
-set x64dbgDir="%~dp0..\..\%LIBPROJECT%-%LIBVER%\lib\win64\Debug"
+set x64dbgDir="%DISTLIBDIR%\lib\win64\Debug"
 
-set x64relsDir="%~dp0..\..\%LIBPROJECT%-%LIBVER%\lib\win64\Release"
+set x64relsDir="%DISTLIBDIR%\lib\win64\Release"
 
 
 ::x86
 
-set x86binDir="%~dp0..\..\%LIBPROJECT%-%LIBVER%\bin\win86"
+set x86binDir="%DISTLIBDIR%\bin\win86"
 
-set x86dbgDir="%~dp0..\..\%LIBPROJECT%-%LIBVER%\lib\win86\Debug"
+set x86dbgDir="%DISTLIBDIR%\lib\win86\Debug"
 
-set x86relsDir="%~dp0..\..\%LIBPROJECT%-%LIBVER%\lib\win86\Release"
+set x86relsDir="%DISTLIBDIR%\lib\win86\Release"
 
 
 ::create %LIBPROJECT%-%LIBVER% Dirs

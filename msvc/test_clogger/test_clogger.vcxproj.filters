@@ -4,10 +4,6 @@
     <Filter Include="src">
       <UniqueIdentifier>{D659D706-B83C-477A-AD90-2705F4571C4E}</UniqueIdentifier>
     </Filter>
-    <Filter Include="resources">
-      <UniqueIdentifier>{17DE0009-20FD-47F0-83DE-42E694499E1A}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="common">
       <UniqueIdentifier>{CE6A42FD-6388-4A19-9EEC-08EA37E611DC}</UniqueIdentifier>
     </Filter>
@@ -35,5 +31,6 @@
   <ItemGroup>
     <None Include="prepare.bat" />
     <None Include="update.bat" />
+    <None Include="clogger.cfg" />
   </ItemGroup>
 </Project>

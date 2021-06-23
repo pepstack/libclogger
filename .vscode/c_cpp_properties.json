@@ -5,12 +5,26 @@
       "windowsSdkVersion": "10.0.18362.0",
       "compilerPath": "${env:MSYS64_HOME}/mingw64/bin/gcc",
       "includePath": [
-        "${env:MSYS64_HOME}/mingw64/include"
+        "${env:MSYS64_HOME}/mingw64/include",
+        "${workspaceFolder}/libclogger/include",
+        "${workspaceFolder}/src/common"
       ],
       "defines": [
-        "_DEBUG",
-        "UNICODE",
-        "_UNICODE"
+        "_WIN32"
+      ],
+      "intelliSenseMode": "gcc-x64"
+    },
+    {
+      "name": "Linux",
+      "compilerPath": "/usr/bin/gcc",
+      "includePath": [
+        "/usr/include",
+        "/usr/local/include",
+        "${workspaceFolder}/libclogger/include",
+        "${workspaceFolder}/src/common"
+      ],
+      "defines": [
+        "_LINUX"
       ],
       "intelliSenseMode": "gcc-x64"
     }

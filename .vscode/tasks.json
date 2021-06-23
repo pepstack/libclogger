@@ -1,19 +1,35 @@
 {
-  // See https://go.microsoft.com/fwlink/?LinkId=733558
-  // for the documentation about the tasks.json format
-  "version": "2.0.0",
-  "tasks": [
-	{
-	  "label": "make",
-	  "type": "shell",
-	  "command": "/mingw64-make.sh",
-	  "problemMatcher": [
-		  "$gcc"
-	  ],
-	  "group": {
-		"kind": "build",
-		"isDefault": true
-	  }
-	}
-  ]
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "mingw-build-debug",
+            "type": "shell",
+            "command": "cd /C/Users/cheungmine/Workspace/github.com/clogger/ && make OSARCH=mingw64 BUILDCFG=debug app",
+            "args": [
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "linux-build-debug",
+            "type": "shell",
+            "command": "cd ${workspaceFolder}/ && make OSARCH=linux64 BUILDCFG=debug app",
+            "args": [
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
 }

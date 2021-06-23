@@ -19,13 +19,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-	<ClCompile Include="..\..\src\apps\test_clogger\app_incl.h" />
+    <ClCompile Include="..\..\src\apps\test_clogger\app_incl.h" />
     <ClCompile Include="..\..\src\apps\test_clogger\app_main.c" />
     <ClCompile Include="..\..\src\common\win32\getoptw.c" />
     <ClCompile Include="..\..\src\common\win32\getopt_longw.c" />
     <ClCompile Include="..\..\src\common\win32\syslog-client.c" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="clogger.cfg" />
     <None Include="prepare.bat" />
     <None Include="update.bat" />
   </ItemGroup>
@@ -85,28 +86,28 @@
     <IncludePath>..\..\src;..\..\libclogger-0.0.1\include;..\..\deps\pthreads-w32\Pre-built.2\include;..\..\deps\libclogger\include;$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)target\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</IntDir>
-    <LibraryPath>..\..\libclogger-0.0.1\lib\win86\$(Configuration);..\..\deps\pthreads-w32\Pre-built.2\lib\x86;..\..\deps\libclogger\lib\win86\Debug;$(LibraryPath)</LibraryPath>
+    <LibraryPath>..\..\dist\libclogger-2.0.0\lib\win86\$(Configuration);..\..\deps\pthreads-w32\Pre-built.2\lib\x86;..\..\deps\libclogger\lib\win86\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>..\..\src;..\..\libclogger-0.0.1\include;..\..\deps\pthreads-w32\Pre-built.2\include;..\..\deps\libclogger\include;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\src;..\..\dist\libclogger-2.0.0\include;..\..\deps\pthreads-w32\Pre-built.2\include;..\..\deps\libclogger\include;$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)target\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</IntDir>
-    <LibraryPath>..\..\libclogger-0.0.1\lib\win64\$(Configuration);..\..\deps\pthreads-w32\Pre-built.2\lib\x64;..\..\deps\libclogger\lib\win64\Debug;$(LibraryPath)</LibraryPath>
+    <LibraryPath>..\..\dist\libclogger-2.0.0\lib\win64\$(Configuration);..\..\deps\pthreads-w32\Pre-built.2\lib\x64;..\..\deps\libclogger\lib\win64\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>..\..\src;..\..\libclogger-0.0.1\include;..\..\deps\pthreads-w32\Pre-built.2\include;..\..\deps\libclogger\include;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\src;..\..\dist\libclogger-2.0.0\include;..\..\deps\pthreads-w32\Pre-built.2\include;..\..\deps\libclogger\include;$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)target\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</IntDir>
-    <LibraryPath>..\..\libclogger-0.0.1\lib\win86\$(Configuration);..\..\deps\pthreads-w32\Pre-built.2\lib\x86;..\..\deps\libclogger\lib\win86\Release;$(LibraryPath)</LibraryPath>
+    <LibraryPath>..\..\dist\libclogger-2.0.0\lib\win86\$(Configuration);..\..\deps\pthreads-w32\Pre-built.2\lib\x86;..\..\deps\libclogger\lib\win86\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>..\..\src;..\..\libclogger-0.0.1\include;..\..\deps\pthreads-w32\Pre-built.2\include;..\..\deps\libclogger\include;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\src;..\..\dist\libclogger-2.0.0\include;..\..\deps\pthreads-w32\Pre-built.2\include;..\..\deps\libclogger\include;$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)target\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</IntDir>
-    <LibraryPath>..\..\libclogger-0.0.1\lib\win64\$(Configuration);..\..\deps\pthreads-w32\Pre-built.2\lib\x64;..\..\deps\libclogger\lib\win64\Release;$(LibraryPath)</LibraryPath>
+    <LibraryPath>..\..\dist\libclogger-2.0.0\lib\win64\$(Configuration);..\..\deps\pthreads-w32\Pre-built.2\lib\x64;..\..\deps\libclogger\lib\win64\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

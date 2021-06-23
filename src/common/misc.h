@@ -30,7 +30,7 @@
  * @author     Liang Zhang <350137278@qq.com>
  * @version    0.0.10
  * @create     2017-08-28 11:12:10
- * @update     2021-03-13 22:55:37
+ * @update     2021-06-23 13:55:37
  */
 #ifndef _MISC_H_
 #define _MISC_H_
@@ -418,13 +418,13 @@ NOWARNING_UNUSED(static)
 cstrbuf get_proc_pathfile(void)
 {
     int r, bufsize = 128;
-    char *pathbuf = alloca(bufsize);
+    char *pathbuf = (char*) alloca(bufsize);
 
 #if defined(__WINDOWS__)
 
     while ((r = (int)GetModuleFileNameA(0, pathbuf, (DWORD)bufsize)) >= bufsize) {
         bufsize += 128;
-        pathbuf = alloca(bufsize);
+        pathbuf = (char*) alloca(bufsize);
     }
 
     if (r <= 0) {

@@ -352,7 +352,7 @@ void logger_manager_init(const char *logger_cfg, ...)
     #endif
 
         if (! mgr->cfgfile) {
-    #if defined(__WINDOWS__)
+    #if defined(__WINDOWS__) || defined(__MINGW__)
             mgr->cfgfile = find_config_pathfile(logger_cfg, "clogger.cfg", "CLOGGER_CONF", 0);
     #elif defined(__CYGWIN__)
             emerglog_exit("libclogger", "TODO: cygwin not support");

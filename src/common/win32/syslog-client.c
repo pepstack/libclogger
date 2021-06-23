@@ -17,7 +17,7 @@
 
 /* define SYSLOG_CONF_DIR where syslog.host should be
  */
-#if !defined (__MINGW32__) || !defined (__MINGW64__)
+#if !defined (__MINGW32__) && !defined (__MINGW64__)
 /* make CFLAGS=-D__MINGW64__ */
 # pragma comment(lib, "ws2_32.lib")
 # pragma warning(push)
@@ -224,7 +224,7 @@ void openlog( const char* ident, int option, int facility )
     /* FIXME: should we reset logmask? */
 
     if ( option & LOG_PID ) {
-        itoa((int)GetCurrentProcessId(), str_pid, 10);
+        sprintf(str_pid, "%d", (int) GetCurrentProcessId());
     } else {
         str_pid[0] = 0;
     }
@@ -378,8 +378,8 @@ void vsyslog( int pri, char* fmt, va_list ap )
     sprintf(timestamp, "%04d-%02d-%02dT%02d:%02d:%02d.%dZ", stm.wYear, stm.wMonth, stm.wDay, stm.wHour,
         stm.wMinute, stm.wSecond, stm.wMilliseconds);
 
-    len = sprintf( datagramm, "<%d>%d %s %s %s %s %ld %s %s%s ",
-            pri, version, timestamp, local_hostname, app_name, str_pid, current_mid, "", UTF8_BOM, syslog_ident);
+    len = sprintf(datagramm, "<%d>%d %s %s %s %s %d %s %s%s ",
+            pri, version, timestamp, local_hostname, app_name, str_pid, (int) current_mid, "", UTF8_BOM, syslog_ident);
 
     vsnprintf( datagramm + len, datagramm_size - len, fmt, ap );
 
@@ -557,6 +557,6 @@ done:
 
 #endif /* TEST */
 
-#if !defined (__MINGW32__) || !defined (__MINGW64__)
+#if !defined (__MINGW32__) && !defined (__MINGW64__)
 # pragma warning(pop)
 #endif
