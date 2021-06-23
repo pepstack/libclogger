@@ -232,7 +232,9 @@ test_clogger.exe.$(OSARCH): $(APPS_DIR)/test_clogger/app_main.c
 
 test_cloggerdll.exe.$(OSARCH): $(APPS_DIR)/test_clogger/app_main.c
 	@echo Building test_cloggerdll.exe.$(OSARCH)
-	$(CC) $(CFLAGS) $< $(INCDIRS) -o $@ \
+	$(CC) $(CFLAGS) $< $(INCDIRS) \
+	-Wl,--rpath='$(PREFIX):$(PREFIX)/lib:$(PREFIX)/../lib:$(PREFIX)/../libs/lib' \
+	-o $@ \
 	$(CLOGGER_DYNAMIC_LIB) \
 	$(LDFLAGS) \
 	$(MINGW_LINKS) \
