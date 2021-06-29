@@ -30,7 +30,7 @@
  * @author     Liang Zhang <350137278@qq.com>
  * @version    0.0.14
  * @create     2019-09-30 12:37:44
- * @update     2021-06-18 17:26:44
+ * @update     2021-06-29 18:26:44
  */
 #ifndef UNITYPES_H_INCLUDED
 #define UNITYPES_H_INCLUDED
@@ -92,7 +92,6 @@ extern "C"
 
     # undef  PATH_SEPARATOR_CHAR
     # define PATH_SEPARATOR_CHAR       ((char) 47)
-
 #elif defined(__APPLE__)
     # include "TargetConditionals.h"
 
@@ -198,7 +197,7 @@ extern "C"
 #endif
 
 
-#if defined(__WINDOWS__)
+#if defined(_MSC_VER)
     # define _TIMESPEC_DEFINED
 
     /* Type definitions for the basic sized types. */
@@ -222,7 +221,7 @@ extern "C"
         # define DEBUG_PRINT_MSG(message, ...)
     # endif
 
-#else /* non __WINDOWS__ */
+#else /* non MSVC */
     # ifndef WINDOWS_CRTDBG_ON
     #   define WINDOWS_CRTDBG_ON
     # endif
