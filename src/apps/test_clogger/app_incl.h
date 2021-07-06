@@ -6,7 +6,7 @@
  * @create     2019-12-24 10:34:05
  * @update     2020-12-02 14:19:05
  */
-#include <clogger/logger_api.h>
+#include <clogger/logger_helper.h>
 
 #include <common/timeut.h>
 #include <common/misc.h>
@@ -32,7 +32,7 @@
 #endif
 
 
-#define  APPNAME     "logapp"
+#define  APPNAME     "test_clogger"
 #define  APPVER      "1.0.0"
 
 

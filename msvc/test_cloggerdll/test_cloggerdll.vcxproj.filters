@@ -2,13 +2,17 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="src">
-      <UniqueIdentifier>{088F1473-4E17-4EA7-A17D-FC28A5C38D4A}</UniqueIdentifier>
+      <UniqueIdentifier>{E3473928-824A-4797-9296-1E45BBE0C924}</UniqueIdentifier>
     </Filter>
-    <Filter Include="common">
-      <UniqueIdentifier>{0980FC53-63B9-439F-B960-723E6A24BED6}</UniqueIdentifier>
+    <Filter Include="resources">
+      <UniqueIdentifier>{18EF9AF8-7C78-4170-BCAC-27206322678E}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+	<Filter Include="common">
+      <UniqueIdentifier>{E04FB37D-CD24-4853-9201-963145071C8C}</UniqueIdentifier>
     </Filter>
     <Filter Include="common\win32">
-      <UniqueIdentifier>{46764EDD-BADF-49E7-ACE1-E23120D0B8C1}</UniqueIdentifier>
+      <UniqueIdentifier>{6CCC7408-7A46-4D84-B91D-7CA89E495342}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

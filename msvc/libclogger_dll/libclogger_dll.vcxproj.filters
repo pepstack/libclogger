@@ -2,35 +2,53 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="common">
-      <UniqueIdentifier>{EB8C931D-8ECC-4499-B49E-068CBF5A8DEA}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="common\win32">
-      <UniqueIdentifier>{5fcca98c-d42e-4db3-98cc-feefd4f61b85}</UniqueIdentifier>
+      <UniqueIdentifier>{10D106C6-A24F-41E4-9E98-111497D18AE8}</UniqueIdentifier>
     </Filter>
     <Filter Include="clogger">
-      <UniqueIdentifier>{c19498af-7a57-451e-a20f-b5e5af14855f}</UniqueIdentifier>
+      <UniqueIdentifier>{DC7816B4-520E-4568-AC2D-6619D41782E6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="resources">
+      <UniqueIdentifier>{23659B24-F78C-4E58-A659-95B73304990C}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="common\win32">
+      <UniqueIdentifier>{47bbdd8e-69fb-48ee-ad9d-64f3b5c82b4f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\common\unitypes.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\clogger\clogger_api.h">
+      <Filter>clogger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\clogger\clogger_def.h">
+      <Filter>clogger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\clogger\clogger_i.h">
+      <Filter>clogger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\clogger\loggerconf.h">
+      <Filter>clogger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\clogger\loggermgr_i.h">
+      <Filter>clogger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\clogger\rollingfile.h">
+      <Filter>clogger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\clogger\shmmaplog.h">
+      <Filter>clogger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\clogger\logger_helper.h">
+      <Filter>clogger</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="prepare.bat" />
     <None Include="update.bat" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\common\readconf.c">
-      <Filter>common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\common\rtclock.c">
-      <Filter>common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\common\smallregex.c">
-      <Filter>common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\common\threadpool.c">
-      <Filter>common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\common\win32\syslog-client.c">
-      <Filter>common\win32</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\clogger\clogger.c">
       <Filter>clogger</Filter>
     </ClCompile>
@@ -46,25 +64,20 @@
     <ClCompile Include="..\..\src\clogger\shmmaplog.c">
       <Filter>clogger</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\src\clogger\clogger.h">
-      <Filter>clogger</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\clogger\logger_api.h">
-      <Filter>clogger</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\clogger\loggerconf.h">
-      <Filter>clogger</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\clogger\loggermgr_i.h">
-      <Filter>clogger</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\clogger\rollingfile.h">
-      <Filter>clogger</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\clogger\shmmaplog.h">
-      <Filter>clogger</Filter>
-    </ClInclude>
+    <ClCompile Include="..\..\src\common\win32\syslog-client.c">
+      <Filter>common\win32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\common\readconf.c">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\common\rtclock.c">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\common\smallregex.c">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\common\threadpool.c">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

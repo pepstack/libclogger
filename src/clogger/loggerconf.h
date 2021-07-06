@@ -41,7 +41,7 @@ extern "C"
 
 #include "common/readconf.h"
 
-#include "clogger.h"
+#include "clogger_api.h"
 #include "rollingfile.h"
 #include "shmmaplog.h"
 

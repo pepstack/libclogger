@@ -1,0 +1,29 @@
+{
+    "editor.suggestSelection": "first",
+    "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+    "window.zoomLevel": 1,
+    "git.ignoreLegacyWarning": true,
+    "editor.formatOnSave": false,
+    "terminal.integrated.profiles.windows": {
+        "msys64-bash": {
+            "path": [
+                "${env:MSYS64_HOME}\\usr\\bin\\bash.exe"
+            ],
+            "icon": "terminal-bash",
+            "args": [
+                "--login",
+                "-i"
+            ],
+            "env": {
+                "MSYSTEM": "MINGW64",
+                "CONTITLE": "MinGW x64",
+                "C_INCLUDE_PATH": "/mingw64/include",
+                "CPLUS_INCLUDE_PATH": "/mingw64/include"
+            }
+        }
+    },
+    "terminal.integrated.defaultProfile.windows": "msys64-bash",
+    "files.associations": {
+        "app_incl.h": "c"
+    }
+}

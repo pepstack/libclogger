@@ -58,6 +58,15 @@ const char * logger_manager_version()
 }
 
 
+const char * clogger_lib_version(const char **_libname)
+{
+    if (_libname) {
+        *_libname = LIBCLOGGER_NAME;
+    }
+    return LIBCLOGGER_VER;
+}
+
+
 static void init_once_routine(void)
 {
     shmkey_t shmkey;

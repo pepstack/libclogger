@@ -12,7 +12,7 @@ Desktop.ini
 .vs/
 *.VC.db
 *.VC.opendb
-
+*.sdf
 
 # Python
 *.py[cod]
@@ -25,6 +25,7 @@ Desktop.ini
 *.a
 *.o
 *.log
+
 ~*
 
 logs/

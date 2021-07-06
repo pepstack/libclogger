@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{6E47CFF1-49E1-4A83-A290-CD651B233888}</ProjectGuid>
+    <ProjectGuid>{58191E5A-62B6-44AA-83EF-47AA938E2DB9}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>libclogger_dll</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
@@ -103,7 +103,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;LIBCLOGGER_DLL;LIBCLOGGER_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;CLOGGER_DLL;CLOGGER_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/utf-8</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -127,7 +127,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_DEBUG;_WINDOWS;LIBCLOGGER_DLL;LIBCLOGGER_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;CLOGGER_DLL;CLOGGER_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/utf-8</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -155,7 +155,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;LIBCLOGGER_DLL;LIBCLOGGER_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;CLOGGER_DLL;CLOGGER_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/utf-8</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -185,7 +185,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>NDEBUG;_WINDOWS;LIBCLOGGER_DLL;LIBCLOGGER_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;CLOGGER_DLL;CLOGGER_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/utf-8</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -208,6 +208,17 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\clogger\clogger_api.h" />
+    <ClInclude Include="..\..\src\clogger\clogger_def.h" />
+    <ClInclude Include="..\..\src\clogger\clogger_i.h" />
+    <ClInclude Include="..\..\src\clogger\loggerconf.h" />
+    <ClInclude Include="..\..\src\clogger\loggermgr_i.h" />
+    <ClInclude Include="..\..\src\clogger\logger_helper.h" />
+    <ClInclude Include="..\..\src\clogger\rollingfile.h" />
+    <ClInclude Include="..\..\src\clogger\shmmaplog.h" />
+    <ClInclude Include="..\..\src\common\unitypes.h" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="prepare.bat" />
     <None Include="update.bat" />
   </ItemGroup>
@@ -222,14 +233,6 @@
     <ClCompile Include="..\..\src\common\smallregex.c" />
     <ClCompile Include="..\..\src\common\threadpool.c" />
     <ClCompile Include="..\..\src\common\win32\syslog-client.c" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\src\clogger\clogger.h" />
-    <ClInclude Include="..\..\src\clogger\loggerconf.h" />
-    <ClInclude Include="..\..\src\clogger\loggermgr_i.h" />
-    <ClInclude Include="..\..\src\clogger\logger_api.h" />
-    <ClInclude Include="..\..\src\clogger\rollingfile.h" />
-    <ClInclude Include="..\..\src\clogger\shmmaplog.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -104,16 +104,21 @@ endif
 # Project Specific Configuration
 PREFIX = .
 DISTROOT = $(PREFIX)/dist
+APPS_DISTROOT = $(DISTROOT)/apps
+
+LIBCLOGGER_DIR = $(PREFIX)/deps/libclogger
+
 
 # Given dirs for all source (*.c) files
 SRC_DIR = $(PREFIX)/src
 COMMON_DIR = $(SRC_DIR)/common
 APPS_DIR = $(SRC_DIR)/apps
 
+
+#----------------------------------------------------------
+# clogger
+
 CLOGGER_DIR = $(SRC_DIR)/clogger
-
-APPS_DISTROOT = $(DISTROOT)/apps
-
 CLOGGER_VERSION_FILE = $(CLOGGER_DIR)/VERSION
 CLOGGER_VERSION = $(shell cat $(CLOGGER_VERSION_FILE))
 
@@ -122,12 +127,19 @@ CLOGGER_DYNAMIC_LIB = libclogger.so.$(CLOGGER_VERSION)
 
 CLOGGER_DISTROOT = $(DISTROOT)/libclogger-$(CLOGGER_VERSION)
 CLOGGER_DIST_LIBDIR=$(CLOGGER_DISTROOT)/lib/$(OSARCH)/$(BITS)/$(BUILDCFG)
+#----------------------------------------------------------
 
-#......
+
+# add other projects here:
+#...
 
 
 # Set all dirs for C source: './src/a ./src/b'
-ALLCDIRS += $(SRCDIR) $(COMMON_DIR) $(CLOGGER_DIR)
+ALLCDIRS += $(SRCDIR) \
+	$(COMMON_DIR) \
+	$(CLOGGER_DIR)
+#...
+
 
 # Get pathfiles for C source files: './src/a/1.c ./src/b/2.c'
 CSRCS := $(foreach cdir, $(ALLCDIRS), $(wildcard $(cdir)/*.c))
@@ -140,8 +152,9 @@ COBJS = $(patsubst %.c, %.o, $(notdir $(CSRCS)))
 INCDIRS += -I$(PREFIX) \
 	-I$(SRC_DIR) \
 	-I$(COMMON_DIR) \
-	-I$(CLOGGER_DIR)
-#......
+	-I$(LIBCLOGGER_DIR)/include \
+	-I$(CLOGGER_DIR) \
+#...
 
 
 ifeq ($(MINGW_FLAG), 1)
@@ -149,7 +162,7 @@ ifeq ($(MINGW_FLAG), 1)
 	MINGW_LINKS = -lws2_32
 else
 	MINGW_CSRCS =
-	MINGW_LINKS =
+	MINGW_LINKS = -lrt
 endif
 
 MINGW_COBJS = $(patsubst %.c, %.o, $(notdir $(MINGW_CSRCS)))
@@ -161,6 +174,7 @@ MINGW_COBJS = $(patsubst %.c, %.o, $(notdir $(MINGW_CSRCS)))
 
 all: $(CLOGGER_DYNAMIC_LIB).$(OSARCH) $(CLOGGER_STATIC_LIB).$(OSARCH)
 
+#...
 
 
 #----------------------------------------------------------
@@ -180,30 +194,33 @@ $(foreach src,$(MINGW_CSRCS),$(eval $(call COBJS_template,$(src))))
 
 help:
 	@echo
-	@echo Build libclogger-$(shell cat $(CLOGGER_VERSION_FILE)) for:
+	@echo "Build all libs and apps as the following"
 	@echo
-	@echo "1) 64 bits release (default)"
-	@echo "    $$ make"
+	@echo "Build 64 bits release (default):"
+	@echo "    $$ make clean && make"
 	@echo
-	@echo "2) 32 bits debug"
-	@echo "    $$ make RELEASE=0 BITS=32"
+	@echo "Build 32 bits debug:"
+	@echo "    $$ make clean && make RELEASE=0 BITS=32"
 	@echo
-	@echo Dist target into default path: $(CLOGGER_DISTROOT)"
-	@echo "    $$ make dist"
+	@echo "Dist target into default path:"
+	@echo "    $$ make clean && make dist"
 	@echo
-	@echo Dist target into given path:
+	@echo "Dist target into given path:"
 	@echo "    $$ make CLOGGER_DISTROOT=/path/to/YourInstallDir dist"
+	@echo
+	@echo "Build apps with all libs:"
+	@echo "    $$ make clean && make apps"
 	@echo
 	@echo "Show make options:"
 	@echo "    $$ make help"
 
 
+#----------------------------------------------------------
 $(CLOGGER_STATIC_LIB).$(OSARCH): $(COBJS) $(MINGW_COBJS)
 	rm -f $@
 	rm -f $(CLOGGER_STATIC_LIB)
 	ar cr $@ $^
 	ln -s $@ $(CLOGGER_STATIC_LIB)
-
 
 $(CLOGGER_DYNAMIC_LIB).$(OSARCH): $(COBJS) $(MINGW_COBJS)
 	$(CC) $(CFLAGS) -shared \
@@ -214,20 +231,21 @@ $(CLOGGER_DYNAMIC_LIB).$(OSARCH): $(COBJS) $(MINGW_COBJS)
 		$(LDFLAGS) \
 		$(MINGW_LINKS)
 	ln -s $@ $(CLOGGER_DYNAMIC_LIB)
+#----------------------------------------------------------
 
 
 apps: dist test_clogger.exe.$(OSARCH) test_cloggerdll.exe.$(OSARCH)
 
 
 # -lrt for Linux
-
 test_clogger.exe.$(OSARCH): $(APPS_DIR)/test_clogger/app_main.c
 	@echo Building test_clogger.exe.$(OSARCH)
-	$(CC) $(CFLAGS) $< $(INCDIRS) -o $@ \
+	$(CC) $(CFLAGS) $< $(INCDIRS) \
+	-o $@ \
 	$(CLOGGER_STATIC_LIB) \
 	$(LDFLAGS) \
-	$(MINGW_LINKS) \
-	-lrt
+	$(MINGW_LINKS)
+	ln -sf $@ test_clogger
 
 
 test_cloggerdll.exe.$(OSARCH): $(APPS_DIR)/test_clogger/app_main.c
@@ -237,16 +255,17 @@ test_cloggerdll.exe.$(OSARCH): $(APPS_DIR)/test_clogger/app_main.c
 	-o $@ \
 	$(CLOGGER_DYNAMIC_LIB) \
 	$(LDFLAGS) \
-	$(MINGW_LINKS) \
-	-lrt
+	$(MINGW_LINKS)
+	ln -sf $@ test_cloggerdll
 
 
 dist: all
-	@mkdir -p $(CLOGGER_DISTROOT)/include/clogger
 	@mkdir -p $(CLOGGER_DISTROOT)/include/common
+	@mkdir -p $(CLOGGER_DISTROOT)/include/clogger
 	@mkdir -p $(CLOGGER_DIST_LIBDIR)
-	@cp $(CLOGGER_DIR)/logger_api.h $(CLOGGER_DISTROOT)/include/clogger/
-	@cp $(CLOGGER_DIR)/clogger.h $(CLOGGER_DISTROOT)/include/clogger/
+	@cp $(COMMON_DIR)/unitypes.h $(CLOGGER_DISTROOT)/include/common/
+	@cp $(CLOGGER_DIR)/clogger_api.h $(CLOGGER_DISTROOT)/include/clogger/
+	@cp $(CLOGGER_DIR)/clogger_def.h $(CLOGGER_DISTROOT)/include/clogger/
 	@cp $(PREFIX)/$(CLOGGER_STATIC_LIB).$(OSARCH) $(CLOGGER_DIST_LIBDIR)/
 	@cp $(PREFIX)/$(CLOGGER_DYNAMIC_LIB).$(OSARCH) $(CLOGGER_DIST_LIBDIR)/
 	@cd $(CLOGGER_DIST_LIBDIR)/ && ln -sf $(PREFIX)/$(CLOGGER_STATIC_LIB).$(OSARCH) $(CLOGGER_STATIC_LIB)
@@ -255,14 +274,12 @@ dist: all
 
 
 clean:
-	-rm -f ./*.stackdump
+	-rm -f *.stackdump
 	-rm -f $(COBJS) $(MINGW_COBJS)
-	-rm -f test_clogger.exe.$(OSARCH) test_cloggerdll.exe.$(OSARCH)
 	-rm -f $(CLOGGER_STATIC_LIB)
 	-rm -f $(CLOGGER_DYNAMIC_LIB)
 	-rm -f $(CLOGGER_STATIC_LIB).$(OSARCH)
 	-rm -f $(CLOGGER_DYNAMIC_LIB).$(OSARCH)
-	-rm -f ./msvc/*.VC.db
 	-rm -rf ./msvc/libclogger/build
 	-rm -rf ./msvc/libclogger/target
 	-rm -rf ./msvc/libclogger_dll/build
@@ -271,6 +288,11 @@ clean:
 	-rm -rf ./msvc/test_clogger/target
 	-rm -rf ./msvc/test_cloggerdll/build
 	-rm -rf ./msvc/test_cloggerdll/target
+	-rm -f test_clogger.exe.$(OSARCH)
+	-rm -f test_cloggerdll.exe.$(OSARCH)
+	-rm -f test_clogger
+	-rm -f test_cloggerdll
+	-rm -f ./msvc/*.VC.db
 
 
 cleanall: clean

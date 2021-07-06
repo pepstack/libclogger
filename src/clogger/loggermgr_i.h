@@ -77,6 +77,9 @@ extern "C" {
 
 #define CLOG_LOGGERID_MAX        255
 
+static const char LIBCLOGGER_NAME[] = "libclogger";
+static const char LIBCLOGGER_VER[] = "2.0.0";
+
 
 struct clogger_version_mgr_t
 {

@@ -13,6 +13,7 @@ echo prepare for: %LIBPROJECT%-%LIBVER%
 
 set DISTLIBDIR="%~dp0..\..\dist\%LIBPROJECT%-%LIBVER%"
 
+
 ::include
 
 set includeDir="%DISTLIBDIR%\include\clogger"

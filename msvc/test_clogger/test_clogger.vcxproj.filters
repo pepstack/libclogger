@@ -2,13 +2,17 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="src">
-      <UniqueIdentifier>{D659D706-B83C-477A-AD90-2705F4571C4E}</UniqueIdentifier>
+      <UniqueIdentifier>{3C01FB47-1A3E-4F6C-B508-BEAD95B43E80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources">
+      <UniqueIdentifier>{DC4691E7-B8AC-49D4-BEEF-BC5DB4035F0F}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
     <Filter Include="common">
-      <UniqueIdentifier>{CE6A42FD-6388-4A19-9EEC-08EA37E611DC}</UniqueIdentifier>
+      <UniqueIdentifier>{BD4D72EE-20E8-4CFF-87CF-1D8CC3AFF77D}</UniqueIdentifier>
     </Filter>
     <Filter Include="common\win32">
-      <UniqueIdentifier>{586DA2F8-20D8-4A0D-90A0-20ABC15625C9}</UniqueIdentifier>
+      <UniqueIdentifier>{A8F0F671-2BCC-48D5-923A-D4771CDA6885}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -31,6 +35,5 @@
   <ItemGroup>
     <None Include="prepare.bat" />
     <None Include="update.bat" />
-    <None Include="clogger.cfg" />
   </ItemGroup>
 </Project>

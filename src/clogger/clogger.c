@@ -31,7 +31,7 @@
  * @create     2019-12-11 10:34:05
  * @update     2020-12-08 18:53:05
  */
-#include <clogger.h>
+#include <clogger_api.h>
 #include <loggermgr_i.h>
 
 static const char THIS_FILE[] = "clogger.c";

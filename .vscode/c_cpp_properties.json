@@ -1,33 +1,37 @@
 {
-  "configurations": [
-    {
-      "name": "Win32",
-      "windowsSdkVersion": "10.0.18362.0",
-      "compilerPath": "${env:MSYS64_HOME}/mingw64/bin/gcc",
-      "includePath": [
-        "${env:MSYS64_HOME}/mingw64/include",
-        "${workspaceFolder}/libclogger/include",
-        "${workspaceFolder}/src/common"
-      ],
-      "defines": [
-        "_WIN32"
-      ],
-      "intelliSenseMode": "gcc-x64"
-    },
-    {
-      "name": "Linux",
-      "compilerPath": "/usr/bin/gcc",
-      "includePath": [
-        "/usr/include",
-        "/usr/local/include",
-        "${workspaceFolder}/libclogger/include",
-        "${workspaceFolder}/src/common"
-      ],
-      "defines": [
-        "_LINUX"
-      ],
-      "intelliSenseMode": "gcc-x64"
-    }
-  ],
-  "version": 4
+    "configurations": [
+        {
+            "name": "mingw64 build config",
+            "windowsSdkVersion": "10.0.18362.0",
+            "compilerPath": "${env:MSYS64_ROOT_BASH}/mingw64/bin/gcc.exe",
+            "includePath": [
+                "${env:MSYS64_ROOT_BASH}/mingw64/include",
+                "${env:WORKSPACE_ROOT_BASH}/${workspaceFolderBasename}/src",
+                "${env:WORKSPACE_ROOT_BASH}/${workspaceFolderBasename}/deps/libclogger/include",
+                "${env:WORKSPACE_ROOT_BASH}/${workspaceFolderBasename}/deps/pthreads-w32/Pre-built.2/include"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE",
+                "__MINGW64__"
+            ],
+            "intelliSenseMode": "gcc-x64"
+        },
+        {
+            "name": "linux64 build config",
+            "compilerPath": "/usr/bin/gcc",
+            "includePath": [
+				"/usr/include",
+				"/usr/local/include",
+		        "${workspaceFolder}/src",
+                "${workspaceFolder}/deps/libclogger"
+            ],
+            "defines": [
+                "_DEBUG"
+            ],
+            "intelliSenseMode": "gcc-x64"
+        }
+    ],
+    "version": 4
 }

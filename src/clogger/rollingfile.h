@@ -41,7 +41,7 @@ extern "C"
 {
 #endif
 
-#include "clogger.h"
+#include "clogger_api.h"
 
 #include <common/misc.h>
 
