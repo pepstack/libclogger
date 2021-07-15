@@ -4,10 +4,6 @@
     <Filter Include="src">
       <UniqueIdentifier>{23A19E58-3E42-496C-8078-B0273BBA68D7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="resources">
-      <UniqueIdentifier>{99D0DB6C-6FCF-4E98-8D1A-8FE48883B018}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="common">
       <UniqueIdentifier>{77F4D694-BAEE-4E84-83AD-96950A1AD2D3}</UniqueIdentifier>
     </Filter>

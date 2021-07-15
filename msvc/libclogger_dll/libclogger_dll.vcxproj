@@ -210,7 +210,6 @@
   <ItemGroup>
     <ClInclude Include="..\..\src\clogger\clogger_api.h" />
     <ClInclude Include="..\..\src\clogger\clogger_def.h" />
-    <ClInclude Include="..\..\src\clogger\clogger_i.h" />
     <ClInclude Include="..\..\src\clogger\loggerconf.h" />
     <ClInclude Include="..\..\src\clogger\loggermgr_i.h" />
     <ClInclude Include="..\..\src\clogger\logger_helper.h" />

@@ -7,10 +7,6 @@
     <Filter Include="clogger">
       <UniqueIdentifier>{DC7816B4-520E-4568-AC2D-6619D41782E6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="resources">
-      <UniqueIdentifier>{23659B24-F78C-4E58-A659-95B73304990C}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="common\win32">
       <UniqueIdentifier>{47bbdd8e-69fb-48ee-ad9d-64f3b5c82b4f}</UniqueIdentifier>
     </Filter>
@@ -23,9 +19,6 @@
       <Filter>clogger</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\clogger\clogger_def.h">
-      <Filter>clogger</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\clogger\clogger_i.h">
       <Filter>clogger</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\clogger\loggerconf.h">
