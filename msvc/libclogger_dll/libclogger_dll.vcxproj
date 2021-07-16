@@ -73,29 +73,29 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(ProjectDir)target\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>../../src;../../src/clogger;../../deps/pthreads-w32/Pre-built.2/include;$(IncludePath)</IncludePath>
-    <LibraryPath>../../deps/pthreads-w32/Pre-built.2/lib/x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\..\src;..\..\src\clogger;..\..\deps\pthreads-w32\Pre-built.2\include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\deps\pthreads-w32\Pre-built.2\lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(ProjectDir)target\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>../../src;../../src/clogger;../../deps/pthreads-w32/Pre-built.2/include;$(IncludePath)</IncludePath>
-    <LibraryPath>../../deps/pthreads-w32/Pre-built.2/lib/x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\..\src;..\..\src\clogger;..\..\deps\pthreads-w32\Pre-built.2\include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\deps\pthreads-w32\Pre-built.2\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(ProjectDir)target\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>../../src;../../src/clogger;../../deps/pthreads-w32/Pre-built.2/include;$(IncludePath)</IncludePath>
-    <LibraryPath>../../deps/pthreads-w32/Pre-built.2/lib/x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\..\src;..\..\src\clogger;..\..\deps\pthreads-w32\Pre-built.2\include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\deps\pthreads-w32\Pre-built.2\lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(ProjectDir)target\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>../../src;../../src/clogger;../../deps/pthreads-w32/Pre-built.2/include;$(IncludePath)</IncludePath>
-    <LibraryPath>../../deps/pthreads-w32/Pre-built.2/lib/x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\..\src;..\..\src\clogger;..\..\deps\pthreads-w32\Pre-built.2\include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\deps\pthreads-w32\Pre-built.2\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -105,6 +105,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;CLOGGER_DLL;CLOGGER_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/utf-8</AdditionalOptions>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -129,6 +130,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;CLOGGER_DLL;CLOGGER_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/utf-8</AdditionalOptions>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

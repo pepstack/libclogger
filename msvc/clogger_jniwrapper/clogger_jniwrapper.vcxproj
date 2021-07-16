@@ -73,28 +73,28 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(ProjectDir)target\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>$(JAVA_HOME)/include;$(JAVA_HOME)/include/win32;../../jni/src/main/java;../../dist/libclogger-2.0.0/include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
-    <LibraryPath>../../dist/libclogger-2.0.0/lib/win86/$(Configuration);..\..\deps\pthreads-w32\Pre-built.2\lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(JAVA_HOME)\include;$(JAVA_HOME)\include\win32;..\..\jni\src\main\java;..\..\dist\libclogger-2.0.0\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>..\..\dist\libclogger-2.0.0\lib\win86\$(Configuration);..\..\deps\pthreads-w32\Pre-built.2\lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(ProjectDir)target\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>$(JAVA_HOME)/include;$(JAVA_HOME)/include/win32;../../jni/src/main/java;../../dist/libclogger-2.0.0/include;$(IncludePath)</IncludePath>
+    <IncludePath>$(JAVA_HOME)\include;$(JAVA_HOME)\include\win32;..\..\jni\src\main\java;..\..\dist\libclogger-2.0.0\include;$(IncludePath)</IncludePath>
     <ReferencePath>$(ReferencePath)</ReferencePath>
-    <LibraryPath>../../dist/libclogger-2.0.0/lib/win64/$(Configuration);..\..\deps\pthreads-w32\Pre-built.2\lib\x64;$(LibraryPath)</LibraryPath>
+    <LibraryPath>..\..\dist\libclogger-2.0.0\lib\win64\$(Configuration);..\..\deps\pthreads-w32\Pre-built.2\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(ProjectDir)target\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>$(JAVA_HOME)/include;$(JAVA_HOME)/include/win32;../../jni/src/main/java;../../dist/libclogger-2.0.0/include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
-    <LibraryPath>../../dist/libclogger-2.0.0/lib/win86/$(Configuration);..\..\deps\pthreads-w32\Pre-built.2\lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(JAVA_HOME)\include;$(JAVA_HOME)\include\win32;..\..\jni\src\main\java;..\..\dist\libclogger-2.0.0\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>..\..\dist\libclogger-2.0.0\lib\win86\$(Configuration);..\..\deps\pthreads-w32\Pre-built.2\lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(JAVA_HOME)/include;$(JAVA_HOME)/include/win32;../../jni/src/main/java;../../dist/libclogger-2.0.0/include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
-    <LibraryPath>../../dist/libclogger-2.0.0/lib/win64/$(Configuration);..\..\deps\pthreads-w32\Pre-built.2\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(JAVA_HOME)\include;$(JAVA_HOME)\include\win32;..\..\jni\src\main\java;..\..\dist\libclogger-2.0.0\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>..\..\dist\libclogger-2.0.0\lib\win64\$(Configuration);..\..\deps\pthreads-w32\Pre-built.2\lib\x64;$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)target\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
@@ -105,6 +105,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;CLIB_JNIWRAPPER_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -127,6 +128,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

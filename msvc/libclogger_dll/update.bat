@@ -23,6 +23,8 @@ if "%1" == "x64_debug" (
 	copy "%~dp0target\x64\Debug\%LIBPROJECT%_dll.lib" "%DISTLIBDIR%\lib\win64\Debug\"
 	copy "%~dp0target\x64\Debug\%LIBPROJECT%_dll.pdb" "%DISTLIBDIR%\lib\win64\Debug\"
 	copy "%~dp0target\x64\Debug\%LIBPROJECT%_dll.dll" "%DISTLIBDIR%\bin\win64\Debug\"
+
+	copy "%~dp0..\..\deps\pthreads-w32\Pre-built.2\dll\x64\pthreadVC2.dll" "%DISTLIBDIR%\bin\win64\Debug\"
 )
 
 
@@ -35,6 +37,8 @@ if "%1" == "x64_release" (
 	echo update lib files to: %DISTLIBDIR%\lib\win64\Release\
 	copy "%~dp0target\x64\Release\%LIBPROJECT%_dll.lib" "%DISTLIBDIR%\lib\win64\Release\"
 	copy "%~dp0target\x64\Release\%LIBPROJECT%_dll.dll" "%DISTLIBDIR%\bin\win64\Release\"
+
+	copy "%~dp0..\..\deps\pthreads-w32\Pre-built.2\dll\x64\pthreadVC2.dll" "%DISTLIBDIR%\bin\win64\Release\"
 )
 
 
@@ -48,6 +52,8 @@ if "%1" == "x86_debug" (
 	copy "%~dp0target\Win32\Debug\%LIBPROJECT%_dll.lib" "%DISTLIBDIR%\lib\win86\Debug\"
 	copy "%~dp0target\Win32\Debug\%LIBPROJECT%_dll.pdb" "%DISTLIBDIR%\lib\win86\Debug\"
 	copy "%~dp0target\Win32\Debug\%LIBPROJECT%_dll.dll" "%DISTLIBDIR%\bin\win86\Debug\"
+
+	copy "%~dp0..\..\deps\pthreads-w32\Pre-built.2\dll\x86\pthreadVC2.dll" "%DISTLIBDIR%\bin\win86\Debug\"
 )
 
 
@@ -60,4 +66,6 @@ if "%1" == "x86_release" (
 	echo update lib files to: %DISTLIBDIR%\lib\win86\Release\
 	copy "%~dp0target\Win32\Release\%LIBPROJECT%_dll.lib" "%DISTLIBDIR%\lib\win86\Release\"
 	copy "%~dp0target\Win32\Release\%LIBPROJECT%_dll.dll" "%DISTLIBDIR%\bin\win86\Release\"
+
+	copy "%~dp0..\..\deps\pthreads-w32\Pre-built.2\dll\x86\pthreadVC2.dll" "%DISTLIBDIR%\bin\win86\Release\"
 )
