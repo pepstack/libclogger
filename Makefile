@@ -4,7 +4,7 @@
 #
 # Author: 350137278@qq.com
 #
-# Update: 2021-06-22
+# Update: 2021-07-17
 #
 # Show all predefinitions of gcc:
 #
@@ -260,12 +260,11 @@ test_cloggerdll.exe.$(OSARCH): $(APPS_DIR)/test_clogger/app_main.c
 
 
 dist: all
-	@mkdir -p $(CLOGGER_DISTROOT)/include/common
 	@mkdir -p $(CLOGGER_DISTROOT)/include/clogger
 	@mkdir -p $(CLOGGER_DIST_LIBDIR)
-	@cp $(COMMON_DIR)/unitypes.h $(CLOGGER_DISTROOT)/include/common/
 	@cp $(CLOGGER_DIR)/clogger_api.h $(CLOGGER_DISTROOT)/include/clogger/
 	@cp $(CLOGGER_DIR)/clogger_def.h $(CLOGGER_DISTROOT)/include/clogger/
+	@cp $(CLOGGER_DIR)/logger_helper.h $(CLOGGER_DISTROOT)/include/clogger/
 	@cp $(PREFIX)/$(CLOGGER_STATIC_LIB).$(OSARCH) $(CLOGGER_DIST_LIBDIR)/
 	@cp $(PREFIX)/$(CLOGGER_DYNAMIC_LIB).$(OSARCH) $(CLOGGER_DIST_LIBDIR)/
 	@cd $(CLOGGER_DIST_LIBDIR)/ && ln -sf $(PREFIX)/$(CLOGGER_STATIC_LIB).$(OSARCH) $(CLOGGER_STATIC_LIB)
