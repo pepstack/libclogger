@@ -71,22 +71,21 @@ extern "C"
 
 
 #ifndef NOWARNING_UNUSED
-# if defined(__GNUC__) || defined(__CYGWIN__)
-#   define NOWARNING_UNUSED(x) __attribute__((unused)) x
-# else
-#   define NOWARNING_UNUSED(x) x
-# endif
+    # if defined(__GNUC__) || defined(__CYGWIN__)
+        # define NOWARNING_UNUSED(x) __attribute__((unused)) x
+    # else
+        # define NOWARNING_UNUSED(x) x
+    # endif
 #endif
 
-
 #ifndef STATIC_INLINE
-# if defined(_MSC_VER)
-#   define STATIC_INLINE  NOWARNING_UNUSED(static) __forceinline
-# elif defined(__GNUC__) || defined(__CYGWIN__)
-#   define STATIC_INLINE  NOWARNING_UNUSED(static) __attribute__((always_inline)) inline
-# else
-#   define STATIC_INLINE  NOWARNING_UNUSED(static)
-# endif
+    # if defined(_MSC_VER)
+        # define STATIC_INLINE  NOWARNING_UNUSED(static) __forceinline
+    # elif defined(__GNUC__) || defined(__CYGWIN__)
+        # define STATIC_INLINE  NOWARNING_UNUSED(static) __attribute__((always_inline)) inline
+    # else
+        # define STATIC_INLINE  NOWARNING_UNUSED(static)
+    # endif
 #endif
 
 

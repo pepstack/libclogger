@@ -19,7 +19,7 @@
  * @author     Cameron Desrochers
  * @version    1.0.0
  * @create     2020-12-08 10:46:50
- * @update     2020-12-08 15:12:10
+ * @update     2021-07-20 13:12:10
  */
 #ifndef _MEMORY_ORDER_H_
 #define _MEMORY_ORDER_H_
@@ -52,18 +52,22 @@ extern "C"
 # define AE_ARCH_UNKNOWN
 #endif
 
-/* AE_UNUSED */
-#define AE_UNUSED(x) ((void)x)
+#ifndef NOWARNING_UNUSED
+    # if defined(__GNUC__) || defined(__CYGWIN__)
+        # define NOWARNING_UNUSED(x) __attribute__((unused)) x
+    # else
+        # define NOWARNING_UNUSED(x) x
+    # endif
+#endif
 
-
-/* AE_FORCEINLINE */
-#if defined(AE_VCPP) || defined(AE_ICC)
-# define AE_FORCEINLINE __forceinline
-#elif defined(AE_GCC)
-# define AE_FORCEINLINE __attribute__((always_inline))
-/* # define AE_FORCEINLINE inline */
-#else
-# define AE_FORCEINLINE inline
+#ifndef STATIC_INLINE
+    # if defined(_MSC_VER)
+        # define STATIC_INLINE  NOWARNING_UNUSED(static) __forceinline
+    # elif defined(__GNUC__) || defined(__CYGWIN__)
+        # define STATIC_INLINE  NOWARNING_UNUSED(static) __attribute__((always_inline)) inline
+    # else
+        # define STATIC_INLINE  NOWARNING_UNUSED(static)
+    # endif
 #endif
 
 /* AE_ALIGN */
@@ -123,7 +127,7 @@ typedef enum {
 #endif
 
 
-AE_FORCEINLINE void __mo_compiler_fence(memory_order order)
+STATIC_INLINE void __mo_compiler_fence(memory_order order)
 {
     switch (order) {
         case memory_order_relaxed:
@@ -151,7 +155,7 @@ AE_FORCEINLINE void __mo_compiler_fence(memory_order order)
  */
 #if defined(AE_ARCH_X86) || defined(AE_ARCH_X64)
 
-AE_FORCEINLINE void __mo_fence(memory_order order)
+STATIC_INLINE void __mo_fence(memory_order order)
 {
     switch (order) {
     case memory_order_relaxed:
@@ -178,7 +182,7 @@ AE_FORCEINLINE void __mo_fence(memory_order order)
 
 #else
 
-AE_FORCEINLINE void __mo_fence(memory_order order)
+STATIC_INLINE void __mo_fence(memory_order order)
 {
     // Non-specialized arch, use heavier memory barriers everywhere just in case :-(
     switch (order) {
@@ -215,7 +219,7 @@ AE_FORCEINLINE void __mo_fence(memory_order order)
 // Use standard library of atomics for cpp
 # include <atomic>
 
-AE_FORCEINLINE void __mo_compiler_fence(memory_order order)
+STATIC_INLINE void __mo_compiler_fence(memory_order order)
 {
     switch (order) {
     case memory_order_relaxed: break;
@@ -227,7 +231,7 @@ AE_FORCEINLINE void __mo_compiler_fence(memory_order order)
     }
 }
 
-AE_FORCEINLINE void __mo_fence(memory_order order)
+STATIC_INLINE void __mo_fence(memory_order order)
 {
     switch (order) {
         case memory_order_relaxed: break;

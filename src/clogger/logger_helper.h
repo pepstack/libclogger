@@ -1,3 +1,13 @@
+/**
+ * @file logger_helper.h
+ * @brief libclogger helper functions.
+ *
+ * @author cheungmine@qq.com
+ * @version 1.0.0
+ * @date 2021-07-17 17:20:05
+ * @note  This file is NOT a part of libclogger. You can change it as your want !
+ * @since 2019-12-17 21:53:05
+ */
 /***********************************************************************
  * Copyright (c) 2008-2080 pepstack.com, 350137278@qq.com
  *
@@ -22,24 +32,8 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  **********************************************************************/
-/**
- * @filename   logger_api.h
- *
- *      clogger api helper functions.
- *
- *  This file is NOT a part of libclogger.
- *  You can change it as your will !
- *
- * NOTES:
- *   VERSION 1.0 OFFICAL RELEASED ON 2019-12-27.
- *
- * @author     Liang Zhang <350137278@qq.com>
- * @version    0.0.1
- * @create     2019-12-17 21:53:05
- * @update     2021-07-17 17:20:05
- */
-#ifndef LOGGER_HELPER_API_H_
-#define LOGGER_HELPER_API_H_
+#ifndef LOGGER_HELPER_H_
+#define LOGGER_HELPER_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -186,4 +180,4 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-#endif /* LOGGER_HELPER_API_H_ */
+#endif /* LOGGER_HELPER_H_ */

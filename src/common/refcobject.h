@@ -30,7 +30,7 @@
  * @author     Liang Zhang <350137278@qq.com>
  * @version    0.0.2
  * @create     2020-12-09 21:12:10
- * @update     2020-12-09 23:12:10
+ * @update     2021-07-20 12:23:00
  */
 #ifndef _REFC_OBJECT_H_
 #define _REFC_OBJECT_H_
@@ -40,9 +40,12 @@ extern "C"
 {
 #endif
 
-#include "memord.h"
 #include "uatomic.h"
 #include "thread_rwlock.h"
+
+#define REFCOBJ_ALIGN_SIZE(sz)   ((((size_t)(sz) + sizeof(void*) - sizeof(char))/sizeof(void*)) * sizeof(void*))
+
+#define REFCOBJ_CAST_OBJ(pv)  refc_object obj = (refc_object) pv; --obj
 
 
 typedef struct
@@ -55,9 +58,9 @@ typedef struct
 } refc_object_t, *refc_object;
 
 
-AE_FORCEINLINE void * refc_object_new (int type, size_t elem, void (*finalize)(void *))
+STATIC_INLINE void * refc_object_new (int type, size_t elemsz, void (*finalize)(void *))
 {
-    refc_object p = (refc_object) mem_alloc_zero(1, sizeof(*p) + elem);
+    refc_object p = (refc_object) mem_alloc_zero(1, REFCOBJ_ALIGN_SIZE(sizeof(*p) + elemsz));
     p->__refc = 1;
     p->__final = finalize;
     p->type = type;
@@ -66,7 +69,7 @@ AE_FORCEINLINE void * refc_object_new (int type, size_t elem, void (*finalize)(v
 }
 
 
-AE_FORCEINLINE void* refc_object_inc (void **ppv)
+STATIC_INLINE void* refc_object_inc (void **ppv)
 {
     refc_object p = (refc_object)(*ppv);
     if (p--) {
@@ -78,11 +81,11 @@ AE_FORCEINLINE void* refc_object_inc (void **ppv)
 }
 
 
-AE_FORCEINLINE void refc_object_dec (void **ppv)
+STATIC_INLINE void refc_object_dec (void **ppv)
 {
     refc_object p = (refc_object)(*ppv);
     if (p--) {
-        if (! uatomic_int_sub(&p->__refc) > 0) {
+        if (uatomic_int_sub(&p->__refc) <= 0) {
             *ppv = NULL;
             p->__final(p->addr);
             RWLockUninit(&p->__rwlock);
@@ -92,37 +95,42 @@ AE_FORCEINLINE void refc_object_dec (void **ppv)
 }
 
 
-AE_FORCEINLINE int refc_object_type (void *pv)
+STATIC_INLINE int refc_object_type (void *pv)
 {
-    return (--((refc_object) pv))->type;
+    REFCOBJ_CAST_OBJ(pv);
+    return obj->type;
 }
 
 
 /* lock for read only */
-AE_FORCEINLINE int refc_object_lock_rd (void *pv, int istry)
+STATIC_INLINE int refc_object_lock_rd (void *pv, int istry)
 {
-    return RWLockAcquire(&(--((refc_object) pv))->__rwlock, RWLOCK_STATE_READ, istry);
+    REFCOBJ_CAST_OBJ(pv);
+    return RWLockAcquire(&obj->__rwlock, RWLOCK_STATE_READ, istry);
 }
 
 
 /* unlock for read only */
-AE_FORCEINLINE int refc_object_unlock_rd (void *pv)
+STATIC_INLINE int refc_object_unlock_rd (void *pv)
 {
-    return RWLockRelease(&(--((refc_object) pv))->__rwlock, RWLOCK_STATE_READ);
+    REFCOBJ_CAST_OBJ(pv);
+    return RWLockRelease(&obj->__rwlock, RWLOCK_STATE_READ);
 }
 
 
 /* lock for write and read */
-AE_FORCEINLINE int refc_object_lock (void *pv, int istry)
+STATIC_INLINE int refc_object_lock (void *pv, int istry)
 {
-    return RWLockAcquire(&(--((refc_object) pv))->__rwlock, RWLOCK_STATE_WRITE, istry);
+    REFCOBJ_CAST_OBJ(pv);
+    return RWLockAcquire(&obj->__rwlock, RWLOCK_STATE_WRITE, istry);
 }
 
 
 /* unlock for write and read */
-AE_FORCEINLINE int refc_object_unlock (void *pv)
+STATIC_INLINE int refc_object_unlock (void *pv)
 {
-    return RWLockRelease(&(--((refc_object) pv))->__rwlock, RWLOCK_STATE_WRITE);
+    REFCOBJ_CAST_OBJ(pv);
+    return RWLockRelease(&obj->__rwlock, RWLOCK_STATE_WRITE);
 }
 
 #ifdef __cplusplus

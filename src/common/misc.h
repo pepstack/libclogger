@@ -30,7 +30,7 @@
  * @author     Liang Zhang <350137278@qq.com>
  * @version    0.0.10
  * @create     2017-08-28 11:12:10
- * @update     2021-06-23 13:55:37
+ * @update     2021-07-20 11:55:37
  */
 #ifndef _MISC_H_
 #define _MISC_H_
@@ -413,6 +413,27 @@ int pathfile_move(const char *pathnameOld, const char *pathnameNew)
 }
 
 #endif
+
+
+NOWARNING_UNUSED(static)
+int getenv_with_prefix(const char *varName, const char *prefix, char *valBuf, size_t valBufSize)
+{
+    const char *env = getenv(varName);
+    if (env) {
+        int prelen = cstr_length(prefix, valBufSize);
+        int envlen = cstr_length(env, valBufSize);
+        if (prelen + envlen < (int)valBufSize) {
+            return snprintf_chkd_V1(valBuf, valBufSize, "%.*s%.*s", prelen, prefix, envlen, env);
+        } else {
+            /* buffer is not enough */
+            return -1;
+        }
+    }
+
+    /* env not found */
+    return 0;
+}
+
 
 NOWARNING_UNUSED(static)
 cstrbuf get_proc_pathfile(void)

@@ -30,7 +30,7 @@
  * @author     Liang Zhang <350137278@qq.com>
  * @version    0.0.14
  * @create     2019-09-30 12:37:44
- * @update     2021-06-29 18:26:44
+ * @update     2021-07-20 13:26:44
  */
 #ifndef UNITYPES_H_INCLUDED
 #define UNITYPES_H_INCLUDED
@@ -197,6 +197,25 @@ extern "C"
 #endif
 
 
+#ifndef NOWARNING_UNUSED
+    # if defined(__GNUC__) || defined(__CYGWIN__)
+        # define NOWARNING_UNUSED(x) __attribute__((unused)) x
+    # else
+        # define NOWARNING_UNUSED(x) x
+    # endif
+#endif
+
+#ifndef STATIC_INLINE
+    # if defined(_MSC_VER)
+        # define STATIC_INLINE  NOWARNING_UNUSED(static) __forceinline
+    # elif defined(__GNUC__) || defined(__CYGWIN__)
+        # define STATIC_INLINE  NOWARNING_UNUSED(static) __attribute__((always_inline)) inline
+    # else
+        # define STATIC_INLINE  NOWARNING_UNUSED(static)
+    # endif
+#endif
+
+
 #if defined(_MSC_VER)
     # define _TIMESPEC_DEFINED
 
@@ -306,26 +325,6 @@ typedef unsigned char ub1;
 /* signed 1-byte quantities */
 typedef signed char sb1;
 #define SB1MAXVAL 0x7f
-
-
-#ifndef NOWARNING_UNUSED
-    # if defined(__GNUC__) || defined(__CYGWIN__)
-        # define NOWARNING_UNUSED(x) __attribute__((unused)) x
-    # else
-        # define NOWARNING_UNUSED(x) x
-    # endif
-#endif
-
-
-#ifndef STATIC_INLINE
-    # if defined(_MSC_VER)
-        # define STATIC_INLINE  NOWARNING_UNUSED(static) __forceinline
-    # elif defined(__GNUC__) || defined(__CYGWIN__)
-        # define STATIC_INLINE  NOWARNING_UNUSED(static) __attribute__((always_inline)) inline
-    # else
-        # define STATIC_INLINE  NOWARNING_UNUSED(static)
-    # endif
-#endif
 
 
 /**
