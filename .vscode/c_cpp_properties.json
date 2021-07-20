@@ -25,7 +25,8 @@
 				"/usr/include",
 				"/usr/local/include",
 		        "${workspaceFolder}/src",
-                "${workspaceFolder}/deps/libclogger"
+                "${workspaceFolder}/src/common",
+                "${workspaceFolder}/src/clogger"
             ],
             "defines": [
                 "_DEBUG"
