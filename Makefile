@@ -225,7 +225,7 @@ $(CLOGGER_STATIC_LIB).$(OSARCH): $(COBJS) $(MINGW_COBJS)
 $(CLOGGER_DYNAMIC_LIB).$(OSARCH): $(COBJS) $(MINGW_COBJS)
 	$(CC) $(CFLAGS) -shared \
 		-Wl,--soname=$(CLOGGER_DYNAMIC_LIB) \
-		-Wl,--rpath='$(PREFIX):$(PREFIX)/lib:$(PREFIX)/../lib:$(PREFIX)/../libs/lib' \
+		-Wl,--rpath='$(PREFIX):$(PREFIX)/lib:$(PREFIX)/libs:$(PREFIX)/libs/lib' \
 		-o $@ \
 		$^ \
 		$(LDFLAGS) \
@@ -251,7 +251,7 @@ test_clogger.exe.$(OSARCH): $(APPS_DIR)/test_clogger/app_main.c
 test_cloggerdll.exe.$(OSARCH): $(APPS_DIR)/test_clogger/app_main.c
 	@echo Building test_cloggerdll.exe.$(OSARCH)
 	$(CC) $(CFLAGS) $< $(INCDIRS) \
-	-Wl,--rpath='$(PREFIX):$(PREFIX)/lib:$(PREFIX)/../lib:$(PREFIX)/../libs/lib' \
+	-Wl,--rpath='$(PREFIX):$(PREFIX)/lib:$(PREFIX)/libs:$(PREFIX)/libs/lib' \
 	-o $@ \
 	$(CLOGGER_DYNAMIC_LIB) \
 	$(LDFLAGS) \
