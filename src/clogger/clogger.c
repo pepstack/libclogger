@@ -456,7 +456,7 @@ static int read_message_cb (const ringbuf_entry_st *entry, void *arg)
 {
     clog_logger logger = (clog_logger) arg;
 
-    int wok;
+    int wok, err;
 
     clog_message_hdr *msghdr = (clog_message_hdr *) entry->chunk;
     size_t messagelen = msghdr->offsetcb - sizeof(*msghdr);
@@ -506,7 +506,13 @@ static int read_message_cb (const ringbuf_entry_st *entry, void *arg)
     }
 
     if (!wok && logger->bf.appenderrofile) {
-        rollingfile_write(&logger->logfile, msghdr->dateminfmt, (int)msghdr->dateminfmtlen, msghdr->message, messagelen);
+        err = rollingfile_write(&logger->logfile, msghdr->dateminfmt, (int)msghdr->dateminfmtlen, msghdr->message, messagelen);
+        if (err == -1) {
+            emerg_syslog_message(err, "clogger", __FILE__, __LINE__,
+                "rollingfile_write() error due to the path for logfile not existed: %.*s\n",
+                cstrbufGetLen(logger->logfile.loggingfile),
+                cstrbufGetStr(logger->logfile.loggingfile));
+        }
     }
 
     if (uatomic_int64_add(&logger->logmessages) == SB8MAXVAL) {
