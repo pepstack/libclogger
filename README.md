@@ -1,6 +1,8 @@
 # libclogger
 
-![libclogger](https://github.com/pepstack/libclogger/blob/master/libclogger-logo.png)
+350137278@qq.com
+
+![libclogger](https://github.com/pepstack/libclogger/blob/master/clogger-logo.png)
 
 A high-performance, reliable, threads safety, easy to use, pure C logging library.
 
@@ -12,7 +14,7 @@ libclogger is now using ringbufst.h.
 
 ringbufst.h uses static memory allocation other than dynamic memory allocation that ringbuf.h does.
 
-350137278@qq.com
+see also: [HowToUse.md](https://github.com/pepstack/libclogger/blob/master/HowToUse.md)
 
 
 ## Features
