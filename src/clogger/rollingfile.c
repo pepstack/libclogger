@@ -255,8 +255,6 @@ int rollingfile_write (rollingfile_t *rof, const char *dateminfmt, int dateminle
 
     rollingfile_apply(rof, dateminfmt, dateminlen);
 
-    printf("=========%d\n", rof->fhlogging);
-
     err = file_writebytes(rof->fhlogging, (const char *) message, (ub4)msglen);
 
     if (!err) {
