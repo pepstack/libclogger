@@ -2,7 +2,8 @@
 .git/
 
 libclogger-*/
-libclogger.*
+libclogger.a.*
+libclogger.so.*
 
 # Windows and MSVC
 Thumbs.db
