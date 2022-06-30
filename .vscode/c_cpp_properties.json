@@ -22,11 +22,12 @@
             "name": "linux64 build config",
             "compilerPath": "/usr/bin/gcc",
             "includePath": [
-				"/usr/include",
-				"/usr/local/include",
-		        "${workspaceFolder}/src",
+                "/usr/include",
+                "/usr/local/include",
+                "${workspaceFolder}/src",
                 "${workspaceFolder}/src/common",
-                "${workspaceFolder}/src/clogger"
+                "${workspaceFolder}/src/clogger",
+                "${workspaceFolder}/deps/pthreads-w32/Pre-built.2/include"
             ],
             "defines": [
                 "_DEBUG"
