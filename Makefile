@@ -135,7 +135,7 @@ CLOGGER_DIST_LIBDIR=$(CLOGGER_DISTROOT)/lib/$(OSARCH)/$(BITS)/$(BUILDCFG)
 
 
 # Set all dirs for C source: './src/a ./src/b'
-ALLCDIRS += $(SRCDIR) \
+ALLCDIRS += $(SRC_DIR) \
 	$(COMMON_DIR) \
 	$(CLOGGER_DIR)
 #...
