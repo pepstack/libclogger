@@ -30,7 +30,7 @@
  * @author     Liang Zhang <350137278@qq.com>
  * @version    0.0.10
  * @create     2017-08-28 11:12:10
- * @update     2021-07-12 21:59:46
+ * @update     2024-09-23 22:44:46
  */
 #ifndef _CSTRBUF_H_
 #define _CSTRBUF_H_
@@ -326,6 +326,10 @@ char * cstr_replace_chr (char * str, char ch, char rpl)
 }
 
 
+/**
+ * 分割字符串为数组
+ * 此方法含有内存分配, 应该用 cstr_slpit_chr_nodup 代替
+ */
 NOWARNING_UNUSED(static)
 int cstr_slpit_chr (const char * str, int len, char delim, char **outstrs, int outstrslen[], int maxoutnum)
 {
@@ -389,6 +393,37 @@ int cstr_slpit_chr (const char * str, int len, char delim, char **outstrs, int o
     }
 
     return i;
+}
+
+/**
+ * to be tested!!
+ * 2024-09-23
+ */
+NOWARNING_UNUSED(static)
+int cstr_slpit_chr_nodup (char * str, int len, char delim, char **outstrs, int outstrslen[], int maxoutnum)
+{
+    int num;
+    char *start, *end;
+
+    num = 0;
+    start = str;
+    end = start;
+    while (num < maxoutnum && end - str < len) {
+        if (*end == delim) {
+            outstrs[num] = start;
+            outstrslen[num] = end++ - start;
+            start = end;
+            num++;
+        } else {
+            end++;
+        }
+    }
+    if (*start) {
+        outstrs[num] = start;
+        outstrslen[num] = end - start;
+        num++;
+    }
+    return num;
 }
 
 

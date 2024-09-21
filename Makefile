@@ -169,7 +169,7 @@ MINGW_COBJS = $(patsubst %.c, %.o, $(notdir $(MINGW_CSRCS)))
 
 ###########################################################
 # Build Target Configuration
-.PHONY: all apps clean cleanall dist
+.PHONY: all apps clean cleanall dist help
 
 
 all: $(CLOGGER_DYNAMIC_LIB).$(OSARCH) $(CLOGGER_STATIC_LIB).$(OSARCH)
@@ -213,7 +213,7 @@ help:
 	@echo
 	@echo "Show make options:"
 	@echo "    $$ make help"
-
+	@echo "$(CSRCS)"
 
 #----------------------------------------------------------
 $(CLOGGER_STATIC_LIB).$(OSARCH): $(COBJS) $(MINGW_COBJS)
