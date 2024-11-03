@@ -118,7 +118,7 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 # Configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT                  = src/clogger/
+INPUT                  = source/clogger/
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.h *.c
 

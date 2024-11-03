@@ -5,10 +5,10 @@
             "windowsSdkVersion": "10.0.18362.0",
             "compilerPath": "${env:MSYS64_ROOT_BASH}/mingw64/bin/gcc.exe",
             "includePath": [
-                "${env:MSYS64_ROOT_BASH}/mingw64/include",
-                "${env:WORKSPACE_ROOT_BASH}/${workspaceFolderBasename}/src",
-                "${env:WORKSPACE_ROOT_BASH}/${workspaceFolderBasename}/deps/libclogger/include",
-                "${env:WORKSPACE_ROOT_BASH}/${workspaceFolderBasename}/deps/pthreads-w32/Pre-built.2/include"
+                "${env:MSYS2_HOME}/mingw64/include",
+                "${workspaceFolder}/source/**",
+                "${workspaceFolder}/deps/libclogger/include/**",
+                "${workspaceFolder}/deps/pthreads-w32/Pre-built.2/include/**"
             ],
             "defines": [
                 "_DEBUG",
@@ -24,10 +24,7 @@
             "includePath": [
                 "/usr/include",
                 "/usr/local/include",
-                "${workspaceFolder}/src",
-                "${workspaceFolder}/src/common",
-                "${workspaceFolder}/src/clogger",
-                "${workspaceFolder}/deps/pthreads-w32/Pre-built.2/include"
+                "${workspaceFolder}/source/**"
             ],
             "defines": [
                 "_DEBUG"

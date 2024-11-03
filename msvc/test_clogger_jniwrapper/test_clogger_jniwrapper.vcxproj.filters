@@ -12,13 +12,13 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\common\win32\getopt_longw.c">
+    <ClCompile Include="..\..\source\common\win32\getopt_longw.c">
       <Filter>common\win32</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\common\win32\getoptw.c">
+    <ClCompile Include="..\..\source\common\win32\getoptw.c">
       <Filter>common\win32</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\common\win32\syslog-client.c">
+    <ClCompile Include="..\..\source\common\win32\syslog-client.c">
       <Filter>common\win32</Filter>
     </ClCompile>
     <ClCompile Include="test_clogger_jniwrapper.c">

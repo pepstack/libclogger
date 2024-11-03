@@ -3,7 +3,7 @@ set LIBPROJECT=libclogger
 ::output %LIBPROJECT%
 
 setlocal enabledelayedexpansion
-for /f %%a in (%~dp0..\..\src\clogger\VERSION) do (
+for /f %%a in (%~dp0..\..\source\clogger\VERSION) do (
     echo VERSION: %%a
     set LIBVER=%%a
     goto :libver

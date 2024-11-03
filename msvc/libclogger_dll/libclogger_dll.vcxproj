@@ -22,32 +22,32 @@
     <ProjectGuid>{58191E5A-62B6-44AA-83EF-47AA938E2DB9}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>libclogger_dll</RootNamespace>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -73,28 +73,28 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(ProjectDir)target\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>..\..\src;..\..\src\clogger;..\..\deps\pthreads-w32\Pre-built.2\include;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\src;..\..\source\clogger;..\..\deps\pthreads-w32\Pre-built.2\include;$(IncludePath)</IncludePath>
     <LibraryPath>..\..\deps\pthreads-w32\Pre-built.2\lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(ProjectDir)target\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>..\..\src;..\..\src\clogger;..\..\deps\pthreads-w32\Pre-built.2\include;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\src;..\..\source\clogger;..\..\deps\pthreads-w32\Pre-built.2\include;$(IncludePath)</IncludePath>
     <LibraryPath>..\..\deps\pthreads-w32\Pre-built.2\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(ProjectDir)target\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>..\..\src;..\..\src\clogger;..\..\deps\pthreads-w32\Pre-built.2\include;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\src;..\..\source\clogger;..\..\deps\pthreads-w32\Pre-built.2\include;$(IncludePath)</IncludePath>
     <LibraryPath>..\..\deps\pthreads-w32\Pre-built.2\lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(ProjectDir)target\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>..\..\src;..\..\src\clogger;..\..\deps\pthreads-w32\Pre-built.2\include;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\src;..\..\source\clogger;..\..\deps\pthreads-w32\Pre-built.2\include;$(IncludePath)</IncludePath>
     <LibraryPath>..\..\deps\pthreads-w32\Pre-built.2\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -210,30 +210,30 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\clogger\clogger_api.h" />
-    <ClInclude Include="..\..\src\clogger\clogger_def.h" />
-    <ClInclude Include="..\..\src\clogger\loggerconf.h" />
-    <ClInclude Include="..\..\src\clogger\loggermgr_i.h" />
-    <ClInclude Include="..\..\src\clogger\logger_helper.h" />
-    <ClInclude Include="..\..\src\clogger\rollingfile.h" />
-    <ClInclude Include="..\..\src\clogger\shmmaplog.h" />
-    <ClInclude Include="..\..\src\common\unitypes.h" />
+    <ClInclude Include="..\..\source\clogger\clogger_api.h" />
+    <ClInclude Include="..\..\source\clogger\clogger_def.h" />
+    <ClInclude Include="..\..\source\clogger\loggerconf.h" />
+    <ClInclude Include="..\..\source\clogger\loggermgr_i.h" />
+    <ClInclude Include="..\..\source\clogger\logger_helper.h" />
+    <ClInclude Include="..\..\source\clogger\rollingfile.h" />
+    <ClInclude Include="..\..\source\clogger\shmmaplog.h" />
+    <ClInclude Include="..\..\source\common\basetype.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="prepare.bat" />
     <None Include="update.bat" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\clogger\clogger.c" />
-    <ClCompile Include="..\..\src\clogger\loggerconf.c" />
-    <ClCompile Include="..\..\src\clogger\loggermgr.c" />
-    <ClCompile Include="..\..\src\clogger\rollingfile.c" />
-    <ClCompile Include="..\..\src\clogger\shmmaplog.c" />
-    <ClCompile Include="..\..\src\common\readconf.c" />
-    <ClCompile Include="..\..\src\common\rtclock.c" />
-    <ClCompile Include="..\..\src\common\smallregex.c" />
-    <ClCompile Include="..\..\src\common\threadpool.c" />
-    <ClCompile Include="..\..\src\common\win32\syslog-client.c" />
+    <ClCompile Include="..\..\source\clogger\clogger.c" />
+    <ClCompile Include="..\..\source\clogger\loggerconf.c" />
+    <ClCompile Include="..\..\source\clogger\loggermgr.c" />
+    <ClCompile Include="..\..\source\clogger\rollingfile.c" />
+    <ClCompile Include="..\..\source\clogger\shmmaplog.c" />
+    <ClCompile Include="..\..\source\common\readconf.c" />
+    <ClCompile Include="..\..\source\common\rtclock.c" />
+    <ClCompile Include="..\..\source\common\smallregex.c" />
+    <ClCompile Include="..\..\source\common\threadpool.c" />
+    <ClCompile Include="..\..\source\common\win32\syslog-client.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

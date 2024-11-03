@@ -2,7 +2,7 @@
 set LIBPROJECT=libclogger
 set APPPROJECT=test_cloggerdll
 
-for /f %%a in (%~dp0..\..\src\clogger\VERSION) do (
+for /f %%a in (%~dp0..\..\source\clogger\VERSION) do (
     echo VERSION: %%a
     set LIBVER=%%a
     goto :libver
@@ -12,7 +12,7 @@ echo depends: %LIBPROJECT%-%LIBVER%
 
 
 setlocal enabledelayedexpansion
-for /f %%a in (%~dp0..\..\src\apps\test_clogger\VERSION) do (
+for /f %%a in (%~dp0..\..\source\apps\test_clogger\VERSION) do (
     echo VERSION: %%a
     set APPVER=%%a
     goto :appver

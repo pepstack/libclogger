@@ -2,7 +2,7 @@
 set LIBPROJECT=libclogger
 
 setlocal enabledelayedexpansion
-for /f %%a in (%~dp0..\..\src\clogger\VERSION) do (
+for /f %%a in (%~dp0..\..\source\clogger\VERSION) do (
     echo VERSION: %%a
     set LIBVER=%%a
     goto :libver
@@ -15,9 +15,9 @@ set DISTLIBDIR="%~dp0..\..\dist\%LIBPROJECT%-%LIBVER%"
 
 if "%1" == "x64_debug" (
 	echo update public head files to: %DISTLIBDIR%\include\clogger\
-	copy "%~dp0..\..\src\clogger\clogger_api.h" "%DISTLIBDIR%\include\clogger\"
-	copy "%~dp0..\..\src\clogger\clogger_def.h" "%DISTLIBDIR%\include\clogger\"
-	copy "%~dp0..\..\src\clogger\logger_helper.h" "%DISTLIBDIR%\include\clogger\"
+	copy "%~dp0..\..\source\clogger\clogger_api.h" "%DISTLIBDIR%\include\clogger\"
+	copy "%~dp0..\..\source\clogger\clogger_def.h" "%DISTLIBDIR%\include\clogger\"
+	copy "%~dp0..\..\source\clogger\logger_helper.h" "%DISTLIBDIR%\include\clogger\"
 
 	echo update lib files to: %DISTLIBDIR%\lib\win64\Debug\
 	copy "%~dp0target\x64\Debug\%LIBPROJECT%_dll.lib" "%DISTLIBDIR%\lib\win64\Debug\"
@@ -30,9 +30,9 @@ if "%1" == "x64_debug" (
 
 if "%1" == "x64_release" (
 	echo update public head files to: %DISTLIBDIR%\include\clogger\
-	copy "%~dp0..\..\src\clogger\clogger_api.h" "%DISTLIBDIR%\include\clogger\"
-	copy "%~dp0..\..\src\clogger\clogger_def.h" "%DISTLIBDIR%\include\clogger\"
-	copy "%~dp0..\..\src\clogger\logger_helper.h" "%DISTLIBDIR%\include\clogger\"
+	copy "%~dp0..\..\source\clogger\clogger_api.h" "%DISTLIBDIR%\include\clogger\"
+	copy "%~dp0..\..\source\clogger\clogger_def.h" "%DISTLIBDIR%\include\clogger\"
+	copy "%~dp0..\..\source\clogger\logger_helper.h" "%DISTLIBDIR%\include\clogger\"
 
 	echo update lib files to: %DISTLIBDIR%\lib\win64\Release\
 	copy "%~dp0target\x64\Release\%LIBPROJECT%_dll.lib" "%DISTLIBDIR%\lib\win64\Release\"
@@ -44,9 +44,9 @@ if "%1" == "x64_release" (
 
 if "%1" == "x86_debug" (
 	echo update public head files to: %DISTLIBDIR%\include\clogger\
-	copy "%~dp0..\..\src\clogger\clogger_api.h" "%DISTLIBDIR%\include\clogger\"
-	copy "%~dp0..\..\src\clogger\clogger_def.h" "%DISTLIBDIR%\include\clogger\"
-	copy "%~dp0..\..\src\clogger\logger_helper.h" "%DISTLIBDIR%\include\clogger\"
+	copy "%~dp0..\..\source\clogger\clogger_api.h" "%DISTLIBDIR%\include\clogger\"
+	copy "%~dp0..\..\source\clogger\clogger_def.h" "%DISTLIBDIR%\include\clogger\"
+	copy "%~dp0..\..\source\clogger\logger_helper.h" "%DISTLIBDIR%\include\clogger\"
 
 	echo update lib files to: %DISTLIBDIR%\lib\win86\Debug\
 	copy "%~dp0target\Win32\Debug\%LIBPROJECT%_dll.lib" "%DISTLIBDIR%\lib\win86\Debug\"
@@ -59,9 +59,9 @@ if "%1" == "x86_debug" (
 
 if "%1" == "x86_release" (
 	echo update public head files to: %DISTLIBDIR%\include\clogger\
-	copy "%~dp0..\..\src\clogger\clogger_api.h" "%DISTLIBDIR%\include\clogger\"
-	copy "%~dp0..\..\src\clogger\clogger_def.h" "%DISTLIBDIR%\include\clogger\"
-	copy "%~dp0..\..\src\clogger\logger_helper.h" "%DISTLIBDIR%\include\clogger\"
+	copy "%~dp0..\..\source\clogger\clogger_api.h" "%DISTLIBDIR%\include\clogger\"
+	copy "%~dp0..\..\source\clogger\clogger_def.h" "%DISTLIBDIR%\include\clogger\"
+	copy "%~dp0..\..\source\clogger\logger_helper.h" "%DISTLIBDIR%\include\clogger\"
 
 	echo update lib files to: %DISTLIBDIR%\lib\win86\Release\
 	copy "%~dp0target\Win32\Release\%LIBPROJECT%_dll.lib" "%DISTLIBDIR%\lib\win86\Release\"

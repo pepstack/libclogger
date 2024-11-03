@@ -19,9 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\common\win32\getoptw.c" />
-    <ClCompile Include="..\..\src\common\win32\getopt_longw.c" />
-    <ClCompile Include="..\..\src\common\win32\syslog-client.c" />
+    <ClCompile Include="..\..\source\common\win32\getoptw.c" />
+    <ClCompile Include="..\..\source\common\win32\getopt_longw.c" />
+    <ClCompile Include="..\..\source\common\win32\syslog-client.c" />
     <ClCompile Include="test_clogger_jniwrapper.c" />
   </ItemGroup>
   <ItemGroup>
@@ -31,32 +31,32 @@
     <ProjectGuid>{84F8C6B4-32B1-42EE-9DDF-7281D5B57EDF}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>test_clogger_jniwrapper</RootNamespace>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -80,28 +80,28 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>..\..\src;$(JAVA_HOME)\include;$(JAVA_HOME)\include\win32;..\..\jni\src\main\java;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\src;$(JAVA_HOME)\include;$(JAVA_HOME)\include\win32;..\..\jni\source\main\java;$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)target\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</IntDir>
     <LibraryPath>..\..\msvc\clogger_jniwrapper\target\$(Platform)\$(Configuration);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>..\..\src;$(JAVA_HOME)\include;$(JAVA_HOME)\include\win32;..\..\jni\src\main\java;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\src;C:\DEVPACK\JavaSE\jdk-11.0.12\include;C:\DEVPACK\JavaSE\jdk-11.0.12\include\win32;..\..\jni\source\main\java;$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)target\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</IntDir>
     <LibraryPath>..\..\msvc\clogger_jniwrapper\target\$(Platform)\$(Configuration);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>..\..\src;$(JAVA_HOME)\include;$(JAVA_HOME)\include\win32;..\..\jni\src\main\java;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\src;$(JAVA_HOME)\include;$(JAVA_HOME)\include\win32;..\..\jni\source\main\java;$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)target\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</IntDir>
     <LibraryPath>..\..\msvc\clogger_jniwrapper\target\$(Platform)\$(Configuration);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>..\..\src;$(JAVA_HOME)\include;$(JAVA_HOME)\include\win32;..\..\jni\src\main\java;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\src;$(JAVA_HOME)\include;$(JAVA_HOME)\include\win32;..\..\jni\source\main\java;$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)target\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</IntDir>
     <LibraryPath>..\..\msvc\clogger_jniwrapper\target\$(Platform)\$(Configuration);$(LibraryPath)</LibraryPath>

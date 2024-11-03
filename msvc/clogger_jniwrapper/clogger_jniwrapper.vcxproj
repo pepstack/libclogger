@@ -22,32 +22,32 @@
     <ProjectGuid>{BBFD8F4C-6A54-4754-944F-F2D42A8C6992}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>clogger_jniwrapper</RootNamespace>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -73,14 +73,14 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(ProjectDir)target\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>$(JAVA_HOME)\include;$(JAVA_HOME)\include\win32;..\..\jni\src\main\java;..\..\dist\libclogger-2.0.0\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>$(JAVA_HOME)\include;$(JAVA_HOME)\include\win32;..\..\jni\source\main\java;..\..\dist\libclogger-2.0.0\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <LibraryPath>..\..\dist\libclogger-2.0.0\lib\win86\$(Configuration);..\..\deps\pthreads-w32\Pre-built.2\lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(ProjectDir)target\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>$(JAVA_HOME)\include;$(JAVA_HOME)\include\win32;..\..\jni\src\main\java;..\..\dist\libclogger-2.0.0\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\DEVPACK\JavaSE\jdk-11.0.12\include;C:\DEVPACK\JavaSE\jdk-11.0.12\include\win32;..\..\jni\source\main\java;..\..\dist\libclogger-2.0.0\include;$(IncludePath)</IncludePath>
     <ReferencePath>$(ReferencePath)</ReferencePath>
     <LibraryPath>..\..\dist\libclogger-2.0.0\lib\win64\$(Configuration);..\..\deps\pthreads-w32\Pre-built.2\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
@@ -88,12 +88,12 @@
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(ProjectDir)target\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>$(JAVA_HOME)\include;$(JAVA_HOME)\include\win32;..\..\jni\src\main\java;..\..\dist\libclogger-2.0.0\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>$(JAVA_HOME)\include;$(JAVA_HOME)\include\win32;..\..\jni\source\main\java;..\..\dist\libclogger-2.0.0\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <LibraryPath>..\..\dist\libclogger-2.0.0\lib\win86\$(Configuration);..\..\deps\pthreads-w32\Pre-built.2\lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(JAVA_HOME)\include;$(JAVA_HOME)\include\win32;..\..\jni\src\main\java;..\..\dist\libclogger-2.0.0\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>$(JAVA_HOME)\include;$(JAVA_HOME)\include\win32;..\..\jni\source\main\java;..\..\dist\libclogger-2.0.0\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <LibraryPath>..\..\dist\libclogger-2.0.0\lib\win64\$(Configuration);..\..\deps\pthreads-w32\Pre-built.2\lib\x64;$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)target\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</IntDir>
@@ -197,7 +197,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\jni\src\main\java\com_github_jni_JNIWrapper.h" />
+    <ClInclude Include="..\..\jni\source\main\java\com_github_jni_JNIWrapper.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="clogger_jniwrapper.c" />

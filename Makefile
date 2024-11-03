@@ -4,7 +4,7 @@
 #
 # Author: 350137278@qq.com
 #
-# Update: 2021-07-17
+# Update: 2021-07-17, 2024-11-04
 #
 # Show all predefinitions of gcc:
 #
@@ -110,15 +110,15 @@ LIBCLOGGER_DIR = $(PREFIX)/deps/libclogger
 
 
 # Given dirs for all source (*.c) files
-SRC_DIR = $(PREFIX)/src
-COMMON_DIR = $(SRC_DIR)/common
-APPS_DIR = $(SRC_DIR)/apps
+SRC_PREFIX = $(PREFIX)/source
+COMMON_DIR = $(SRC_PREFIX)/common
+APPS_DIR = $(SRC_PREFIX)/apps
 
 
 #----------------------------------------------------------
 # clogger
 
-CLOGGER_DIR = $(SRC_DIR)/clogger
+CLOGGER_DIR = $(SRC_PREFIX)/clogger
 CLOGGER_VERSION_FILE = $(CLOGGER_DIR)/VERSION
 CLOGGER_VERSION = $(shell cat $(CLOGGER_VERSION_FILE))
 
@@ -135,7 +135,7 @@ CLOGGER_DIST_LIBDIR=$(CLOGGER_DISTROOT)/lib/$(OSARCH)/$(BITS)/$(BUILDCFG)
 
 
 # Set all dirs for C source: './src/a ./src/b'
-ALLCDIRS += $(SRC_DIR) \
+ALLCDIRS += $(SRC_PREFIX) \
 	$(COMMON_DIR) \
 	$(CLOGGER_DIR)
 #...
@@ -150,7 +150,7 @@ COBJS = $(patsubst %.c, %.o, $(notdir $(CSRCS)))
 
 # Given dirs for all header (*.h) files
 INCDIRS += -I$(PREFIX) \
-	-I$(SRC_DIR) \
+	-I$(SRC_PREFIX) \
 	-I$(COMMON_DIR) \
 	-I$(LIBCLOGGER_DIR)/include \
 	-I$(CLOGGER_DIR) \
@@ -169,8 +169,7 @@ MINGW_COBJS = $(patsubst %.c, %.o, $(notdir $(MINGW_CSRCS)))
 
 ###########################################################
 # Build Target Configuration
-.PHONY: all apps clean cleanall dist help
-
+.PHONY: all apps clean cleanall dist help revise
 
 all: $(CLOGGER_DYNAMIC_LIB).$(OSARCH) $(CLOGGER_STATIC_LIB).$(OSARCH)
 
@@ -292,7 +291,16 @@ clean:
 	-rm -f test_clogger
 	-rm -f test_cloggerdll
 	-rm -f ./msvc/*.VC.db
+	-rm -rf ./msvc/.vs
 
 
 cleanall: clean
 	-rm -rf $(DISTROOT)
+
+revise:
+	@/usr/bin/find $(SRC_PREFIX) -type f -mtime -30 \( -name '*.h' -o -name '*.c' \) | xargs -I {} sh -c "sh revise-source.sh {}"
+	@/usr/bin/find $(SRC_PREFIX) -type f -mtime -30 \( -name '*.hxx' -o -name '*.cxx' \) | xargs -I {} sh -c "sh revise-source.sh {}"
+	@/usr/bin/find $(SRC_PREFIX) -type f -mtime -30 \( -name '*.hpp' -o -name '*.cpp' \) | xargs -I {} sh -c "sh revise-source.sh {}"
+	@/usr/bin/find $(CURDIR) \( -path ./deps -o -path ./.vscode \) -prune -o -type f -mtime -30 -name '*.sh' | xargs -I {} sh -c "sh revise-source.sh {}"
+	@/usr/bin/find $(CURDIR) \( -path ./deps -o -path ./.vscode \) -prune -o -type f -mtime -30 -name 'Makefile' | xargs -I {} sh -c "sh revise-source.sh {}"
+	@echo "(Ok) revise all sources done."

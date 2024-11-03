@@ -7,7 +7,7 @@
     "terminal.integrated.profiles.windows": {
         "msys64-bash": {
             "path": [
-                "${env:MSYS64_HOME}\\usr\\bin\\bash.exe"
+                "${env:MINGW64_ROOT}\\usr\\bin\\bash.exe"
             ],
             "icon": "terminal-bash",
             "args": [
@@ -16,14 +16,19 @@
             ],
             "env": {
                 "MSYSTEM": "MINGW64",
+                "CHERE_INVOKING": "1",
                 "CONTITLE": "MinGW x64",
                 "C_INCLUDE_PATH": "/mingw64/include",
-                "CPLUS_INCLUDE_PATH": "/mingw64/include"
+                "CPLUS_INCLUDE_PATH": "/mingw64/include",
+
+                // THE FOLLOWING IS A HACK TO PLACE THE MSYS PATHS BEFORE THE WINDOWS ONES
+                "PATH": "/usr/bin;/mingw64/bin;${env:PATH}"
             }
         }
     },
     "terminal.integrated.defaultProfile.windows": "msys64-bash",
     "files.associations": {
-        "app_incl.h": "c"
+        "*.h": "c",
+        "*.c": "c"
     }
 }

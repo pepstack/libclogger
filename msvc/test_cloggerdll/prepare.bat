@@ -3,7 +3,7 @@ set APPPROJECT=test_cloggerdll
 ::output %APPPROJECT%
 
 setlocal enabledelayedexpansion
-for /f %%a in (%~dp0..\..\src\apps\test_clogger\VERSION) do (
+for /f %%a in (%~dp0..\..\source\apps\test_clogger\VERSION) do (
     echo VERSION: %%a
     set APPVER=%%a
     goto :APPVER

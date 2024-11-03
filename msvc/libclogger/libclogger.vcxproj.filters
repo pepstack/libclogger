@@ -18,60 +18,60 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\common\readconf.c">
+    <ClCompile Include="..\..\source\common\readconf.c">
       <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\common\rtclock.c">
+    <ClCompile Include="..\..\source\common\rtclock.c">
       <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\common\smallregex.c">
+    <ClCompile Include="..\..\source\common\smallregex.c">
       <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\common\threadpool.c">
+    <ClCompile Include="..\..\source\common\threadpool.c">
       <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\common\win32\syslog-client.c">
+    <ClCompile Include="..\..\source\common\win32\syslog-client.c">
       <Filter>common\win32</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\clogger\clogger.c">
+    <ClCompile Include="..\..\source\clogger\clogger.c">
       <Filter>clogger</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\clogger\loggerconf.c">
+    <ClCompile Include="..\..\source\clogger\loggerconf.c">
       <Filter>clogger</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\clogger\loggermgr.c">
+    <ClCompile Include="..\..\source\clogger\loggermgr.c">
       <Filter>clogger</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\clogger\rollingfile.c">
+    <ClCompile Include="..\..\source\clogger\rollingfile.c">
       <Filter>clogger</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\clogger\shmmaplog.c">
+    <ClCompile Include="..\..\source\clogger\shmmaplog.c">
       <Filter>clogger</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\common\unitypes.h">
+    <ClInclude Include="..\..\source\common\basetype.h">
       <Filter>common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\clogger\clogger_api.h">
+    <ClInclude Include="..\..\source\clogger\clogger_api.h">
       <Filter>clogger</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\clogger\clogger_def.h">
+    <ClInclude Include="..\..\source\clogger\clogger_def.h">
       <Filter>clogger</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\clogger\logger_helper.h">
+    <ClInclude Include="..\..\source\clogger\logger_helper.h">
       <Filter>clogger</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\clogger\loggerconf.h">
+    <ClInclude Include="..\..\source\clogger\loggerconf.h">
       <Filter>clogger</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\clogger\rollingfile.h">
+    <ClInclude Include="..\..\source\clogger\rollingfile.h">
       <Filter>clogger</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\clogger\shmmaplog.h">
+    <ClInclude Include="..\..\source\clogger\shmmaplog.h">
       <Filter>clogger</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\clogger\loggermgr_i.h">
+    <ClInclude Include="..\..\source\clogger\loggermgr_i.h">
       <Filter>clogger</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,7 +1,7 @@
 # This makefile is compatible with MS nmake and can be used as a
 # replacement for buildlib.bat. I've changed the target from an ordinary dll
 # (/LD) to a debugging dll (/LDd).
-# 
+#
 # The variables $DLLDEST and $LIBDEST hold the destination directories for the
 # dll and the lib, respectively. Probably all that needs to change is $DEVROOT.
 
@@ -243,7 +243,7 @@ CANCEL_SRCS	= \
 		pthread_setcancelstate.c \
 		pthread_setcanceltype.c \
 		pthread_testcancel.c \
-		pthread_cancel.c 
+		pthread_cancel.c
 
 CONDVAR_SRCS	= \
 		ptw32_cond_check_need_init.c \
@@ -299,7 +299,7 @@ NONPORTABLE_SRCS = \
 		pthread_delay_np.c \
 		pthread_num_processors_np.c \
 		pthread_win32_attach_detach_np.c \
-		pthread_timechange_handler_np.c 
+		pthread_timechange_handler_np.c
 
 PRIVATE_SRCS	= \
 		ptw32_is_attr.c \

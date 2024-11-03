@@ -10,7 +10,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\jni\src\main\java\com_github_jni_JNIWrapper.h">
+    <ClInclude Include="..\..\jni\source\main\java\com_github_jni_JNIWrapper.h">
       <Filter>jni</Filter>
     </ClInclude>
   </ItemGroup>
