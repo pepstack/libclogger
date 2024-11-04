@@ -23,7 +23,7 @@
 * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***********************************************************************/
 /*
-** @file bo.h
+** @file      bo.h
 **  Byte Converter for 2, 4, 8 bytes numeric types.
 **
 ** Big Endian: XDR (big endian) encoding of numeric types
@@ -53,7 +53,7 @@
 ** @author Liang Zhang <350137278@qq.com>
 ** @version 0.0.24
 ** @since 2013-06-19 12:09:10
-** @date 2024-11-03 22:48:50
+** @date      2024-11-03 22:48:50
 */
 #ifndef BYTE_ORDER_H_INCLUDED
 #define BYTE_ORDER_H_INCLUDED

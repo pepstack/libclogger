@@ -23,14 +23,14 @@
 * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***********************************************************************/
 /*
-** @file rtclock_i.h
+** @file      rtclock_i.h
 **   real time clock up to year 2484.
 **   internal type definition
-**
+** @copyright © 2024-2030 mapaware.top All Rights Reserved.
 ** @author     Liang Zhang <350137278@qq.com>
-** @version 0.0.5
-** @create     2020-12-14 10:44:05
-** @update     2024-11-04 01:44:05
+** @version   0.0.5
+** @since     2020-12-14 10:44:05
+** @date     2024-11-04 01:44:05
 */
 #ifndef _RTCLOCK_I_H__
 #define _RTCLOCK_I_H__

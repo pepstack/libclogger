@@ -32,7 +32,7 @@
 *   http://man7.org/linux/man-pages/man3/pthread_setaffinity_np.3.html
 **********************************************************************/
 /*
-** @file threadpool.c
+** @file      threadpool.c
 ** @brief thread pool C file
 **
 ** @author mapaware@hotmail.com
@@ -40,7 +40,7 @@
 ** @version 2.0.2
 **
 ** @since 2018-06-22 01:47:01
-** @date 2024-11-04 02:56:17
+** @date      2024-11-04 02:56:17
 */
 #include <errno.h>
 #include <stdio.h>

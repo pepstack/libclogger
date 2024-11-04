@@ -23,13 +23,13 @@
 * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***********************************************************************/
 /*
-** @file shmmap.h
+** @file      shmmap.h
 **   MP and MT-safe shared memory IO for Linux (POSIX.1-2008, glibc 2.12+).
 **
 ** @author     Liang Zhang <350137278@qq.com>
-** @version 1.0.2
+** @version 1.0.1
 ** @since     2020-05-01 12:46:50
-** @date 2024-11-04 04:08:03
+** @date      2024-11-04 02:45:28
 **
 ** @note
 **   Prior to include this file, define as following to enable
@@ -549,7 +549,7 @@ int shmmap_semaphore_wait (shmmap_semaphore_t * semap, size_t timeout_us)
 /**
  * shared memory mmap file with a layout of ring buffer.
  * See also:
- *   https://github.com/pepstack/clogger/blob/master/source/ringbuf.h
+ *   https://github.com/pepstack/clogger/blob/master/src/ringbuf.h
  */
 typedef struct _shmmap_buffer_t
 {

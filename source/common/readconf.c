@@ -21,7 +21,7 @@
 * SOFTWARE.
 ******************************************************************************/
 /*
-** @file readconf.c
+** @file      readconf.c
 ** @brief read ini file api for Linux and Windows.
 **
 ** @author mapaware@hotmail.com
@@ -29,7 +29,7 @@
 ** @version 1.0.5
 **
 ** @since 2012-05-21 12:37:44
-** @date 2024-11-03 23:50:25
+** @date      2024-11-03 23:50:25
 **
 ** @note
 **   The first file you should included.

@@ -23,15 +23,15 @@
 * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***********************************************************************/
 /*
-** @file ringbuf.h
+** @file      ringbuf.h
 **  Multi-threads Safety Ring Buffer.
 **
 **  This code has been tested OK on 20 threads!
-**
-** @author     Liang Zhang <350137278@qq.com>
-** @version 1.0.1
+** @copyright © 2024-2030 mapaware.top All Rights Reserved.
+** @author    Liang Zhang <350137278@qq.com>
+** @version   1.0.1
 ** @since     2019-12-14 12:46:50
-** @date 2024-11-04 02:36:05
+** @date      2024-11-04 02:36:05
 **
 ** @note
 *

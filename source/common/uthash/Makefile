@@ -2,8 +2,8 @@
 #   Makefile both for mingw on windows
 #
 # @copyright Copyright(c) 2024, mapaware.top
-# @since 2024-10-29 13:01:13
-# @date      2024-10-29 16:29:02
+# @since 2024-10-29 13:01:18
+# @date      2024-10-29 16:29:40
 ########################################################################
 
 .PHONY: all clean

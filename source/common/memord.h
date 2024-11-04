@@ -14,7 +14,7 @@
 *  "moodycamel" namespace for symbols.
 ***********************************************************************/
 /*
-** @file memord.h
+** @file      memord.h
 **  Memory Order operations both for Windows and Linux.
 **    https://git.project-hobbit.eu/dj16/ricec/raw/c9d3dceb1c3b1c03a42077e0461e3ce5a2615a51/data/atomicops.h
 **    https://github.com/preshing/cpp11-on-multicore/blob/master/common/sema.h
@@ -22,7 +22,7 @@
 ** @author Cameron Desrochers
 ** @version 1.0.1
 ** @since 2020-12-08 10:46:50
-** @date 2024-11-04 00:10:08
+** @date      2024-11-04 00:10:08
 */
 #ifndef _MEMORY_ORDER_H_
 #define _MEMORY_ORDER_H_

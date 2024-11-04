@@ -21,7 +21,7 @@
 * SOFTWARE.
 ******************************************************************************/
 /*
-** @file fileut.h
+** @file      fileut.h
 ** @brief file utility api.
 **
 ** @author mapaware@hotmail.com
@@ -29,7 +29,7 @@
 ** @version 0.0.31
 **
 ** @since 2019-09-30 12:37:44
-** @date 2024-11-03 23:43:27
+** @date      2024-11-03 23:43:27
 **
 ** @note
 */

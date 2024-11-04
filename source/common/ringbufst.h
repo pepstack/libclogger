@@ -23,17 +23,17 @@
 * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***********************************************************************/
 /*
-** @file ringbufst.h
+** @file     ringbufst.h
 **   ring buffer with static memory allocation.
 **
-** see also:
-**   ringbuf.h (a ring buffer with dynamic memory allocation)
-**
-** @author     Liang Zhang <350137278@qq.com>
-** @version 1.0.4
+** @copyright © 2024-2030 mapaware.top All Rights Reserved.
+** @author   Liang Zhang <350137278@qq.com>
+** @version    1.0.4
 ** @create     2020-06-24 12:46:50
 ** @update     2020-06-24 14:25:08
 **
+** @note
+**   see also: ringbuf.h (a ring buffer with dynamic memory allocation)
 */
 #ifndef RINGBUFST_H__
 #define RINGBUFST_H__

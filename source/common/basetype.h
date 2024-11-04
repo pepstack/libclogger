@@ -21,7 +21,7 @@
 * SOFTWARE.
 ******************************************************************************/
 /*
-** @file basetype.h
+** @file      basetype.h
 ** @brief Base Definitions and Types, Bob Jenkins, Liang Zhang
 **
 ** @author mapaware@hotmail.com
@@ -29,7 +29,7 @@
 ** @version 0.0.33
 **
 ** @since 2019-09-30 12:37:44
-** @date 2024-11-04 02:15:16
+** @date      2024-11-04 02:15:16
 **
 ** @note
 */

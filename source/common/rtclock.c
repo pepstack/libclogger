@@ -23,13 +23,13 @@
 * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***********************************************************************/
 /*
-** @file rtclock.c
+** @file      rtclock.c
 **   real time clock
-**
+** @copyright © 2024-2030 mapaware.top All Rights Reserved.
 ** @author     Liang Zhang <350137278@qq.com>
 ** @version 0.0.2
 ** @since     2019-12-20 11:15:05
-** @date 2024-11-04 02:23:16
+** @date      2024-11-04 02:23:16
 */
 #include "rtclock_i.h"
 

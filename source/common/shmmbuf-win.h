@@ -23,13 +23,13 @@
 * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***********************************************************************/
 /*
-** @file shmmbuf-win.h
+** @file      shmmbuf-win.h
 **   MP and MT-safe shared memory IO for Windows and Cygwin
 **
 ** @author     Liang Zhang <350137278@qq.com>
-** @version 1.0.2
+** @version 1.0.1
 ** @since     2020-06-01 12:46:50
-** @date 2024-11-04 04:08:09
+** @date      2024-11-04 03:34:05
 **
 ** @note
 **   Prior to include this file, define as following to enable
@@ -412,7 +412,7 @@ int shmmbuf_semaphore_wait (shmmbuf_semaphore_t * semap, size_t timeout_us)
 /**
  * shared memory mmap file with a layout of ring buffer.
  * See also:
- *   https://github.com/pepstack/clogger/blob/master/source/ringbuf.h
+ *   https://github.com/pepstack/clogger/blob/master/src/ringbuf.h
  */
 typedef struct _shmmap_buffer_t
 {

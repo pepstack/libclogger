@@ -21,15 +21,15 @@
 * SOFTWARE.
 ******************************************************************************/
 /*
-** @file cstrbuf.h
+** @file      cstrbuf.h
 ** @brief C String Buffer Functions.
 **
 ** @author mapaware@hotmail.com
 ** @copyright © 2024-2030 mapaware.top All Rights Reserved.
-** @version 0.0.35
+** @version 0.0.37
 **
 ** @since 2017-08-28 11:12:10
-** @date 2024-11-03 22:50:37
+** @date      2024-11-04 12:57:32
 **
 ** @note
 */
@@ -326,75 +326,6 @@ char * cstr_replace_chr (char * str, char ch, char rpl)
     return str;
 }
 
-
-/**
- * 分割字符串为数组
- * 此方法含有内存分配, 应该用 cstr_slpit_chr_nodup 代替
- */
-NOWARNING_UNUSED(static)
-int cstr_slpit_chr (const char * str, int len, char delim, char **outstrs, int outstrslen[], int maxoutnum)
-{
-    char *p;
-    const char *s = str;
-
-    int outlen;
-    int i = 0;
-
-    int n = 1;
-    while (s && (p = (char *)strchr(s, delim)) && (p < str +len)) {
-        s = p+1;
-
-        n++;
-    }
-
-    if (! outstrs) {
-        // only to get count
-        return n;
-    }
-
-    if (n > 0) {
-        char *sb;
-
-        char *s0 = (char*) mem_alloc_unset(len + 1);
-
-        memcpy(s0, str, len);
-
-        s0[len] = 0;
-
-        sb = s0;
-        while (sb && (p = strchr(sb, delim))) {
-            *p++ = 0;
-
-            if (i < maxoutnum) {
-                // remove whitespaces
-                outlen = 0;
-                outstrs[i] = mem_strdup( cstr_LRtrim_chr(sb, 32, &outlen) );
-                if (outstrslen) {
-                    outstrslen[i] = outlen;
-                }
-                i++;
-            } else {
-                // overflow than maxoutnum
-                break;
-            }
-
-            sb = (char *) p;
-        }
-
-        if (i < maxoutnum) {
-            outlen = 0;
-            outstrs[i] = mem_strdup( cstr_LRtrim_chr(sb, 32, &outlen) );
-            if (outstrslen) {
-                outstrslen[i] = outlen;
-            }
-            i++;
-        }
-
-        mem_free(s0);
-    }
-
-    return i;
-}
 
 /**
  * to be tested!!

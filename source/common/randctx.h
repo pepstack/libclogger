@@ -23,7 +23,7 @@
 * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***********************************************************************/
 /*
-** @file randctx.h
+** @file      randctx.h
 ** @brief random api for Linux and Windows.
 **
 ** @author mapaware@hotmail.com
@@ -31,7 +31,7 @@
 ** @version 1.0.4
 **
 ** @since 2015-01-19 12:37:44
-** @date 2024-11-03 23:53:45
+** @date      2024-11-03 23:53:45
 **
 */
 #ifndef RANDCTX_H__

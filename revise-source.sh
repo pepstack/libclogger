@@ -8,7 +8,7 @@
 # @version 1.0.0
 #
 # @since 2024-10-08 19:24:50
-# @date 2024-11-03 22:07:30
+# @date 2024-11-04 13:07:30
 #
 # usage:
 #
@@ -127,41 +127,41 @@ sed -i 's/[[:space:]]*$//' "${PathFile}"
 
 #### shell/python/Makefile
 # @file
-sed -i 's/^# @file.*/# @file '"${FileName}"'/' "${PathFile}"
+sed -i 's/^# @file\s*$/# @file      '"${FileName}"'/' "${PathFile}"
 
 # @author mapaware@hotmail.com
-sed -i 's/^# @author\s*$/# @author '"${AUTHOR}"'/' "${PathFile}"
+sed -i 's/^# @author\s*$/# @author   '"${AUTHOR}"'/' "${PathFile}"
 
 # @copyright © 2024-2030 mapaware.top All Rights Reserved.
 sed -i 's/^# @copyright\s*$/# @copyright '"${COPYRIGHT}"'/' "${PathFile}"
 
 # @since 文件创建时间
-sed -i 's/^# @since\s*$/# @since '"${createTimeFmt}"'/' "${PathFile}"
+sed -i 's/^# @since\s*$/# @since     '"${createTimeFmt}"'/' "${PathFile}"
 
 # @date 2024-10-08 23:54:30
-sed -i 's/^# @date.*/# @date '"${modifyTimeFmt}"'/' "${PathFile}"
+sed -i 's/^# @date\s*$/# @date      '"${modifyTimeFmt}"'/' "${PathFile}"
 
 # @version 版本
-sed -i 's/^# @version\s*$/# @version '"${VERSION}"'/' "${PathFile}"
+sed -i 's/^# @version\s*$/# @version   '"${VERSION}"'/' "${PathFile}"
 
 #### c/cpp/java/css
 # @file
-sed -i 's/^\*\* @file.*/\*\* @file '"${FileName}"'/' "${PathFile}"
+sed -i 's/^\*\* @file\s*$/\*\* @file       '"${FileName}"'/' "${PathFile}"
 
 # @author mapaware@hotmail.com
-sed -i 's/^\*\* @author\s*$/\*\* @author '"${AUTHOR}"'/' "${PathFile}"
+sed -i 's/^\*\* @author\s*$/\*\* @author    '"${AUTHOR}"'/' "${PathFile}"
 
 # @copyright © 2024-2030 mapaware.top All Rights Reserved.
 sed -i 's/^\*\* @copyright\s*$/\*\* @copyright '"${COPYRIGHT}"'/' "${PathFile}"
 
 # @since 文件创建时间
-sed -i 's/^\*\* @since\s*$/\*\* @since '"${createTimeFmt}"'/' "${PathFile}"
+sed -i 's/^\*\* @since\s*$/\*\* @since     '"${createTimeFmt}"'/' "${PathFile}"
 
 # @date 2024-10-08 23:54:30
-sed -i 's/^\*\* @date.*/\*\* @date '"${modifyTimeFmt}"'/' "${PathFile}"
+sed -i 's/^\*\* @date\s*$/\*\* @date      '"${modifyTimeFmt}"'/' "${PathFile}"
 
 # @version 版本
-sed -i 's/^\*\* @version\s*$/\*\* @version '"${VERSION}"'/' "${PathFile}"
+sed -i 's/^\*\* @version\s*$/\*\* @version    '"${VERSION}"'/' "${PathFile}"
 
 #### 自动升级文件版本号
 if [ ! -z "$fileLastVersion" ]; then
@@ -173,7 +173,7 @@ if [ ! -z "$fileLastVersion" ]; then
         fi
         if [ ! -z "$fileCurrVersion" ]; then
             if [[ "$fileCurrVersion" > "$fileLastVersion" ]]; then
-                echo "  File version updated: $fileLastVersion => $fileCurrVersion"
+                echo "    + version revised: $fileLastVersion => $fileCurrVersion"
             else
                 reviseNum=$(echo "$fileCurrVersion" | awk -F[.] '{print $3}')
                 minorNum=$(echo "$fileCurrVersion" | awk -F[.] '{print $2}')
@@ -192,10 +192,10 @@ if [ ! -z "$fileLastVersion" ]; then
                 fi
 
                 fileNewVersion="$majorNum"."$minorNum"."$reviseNum"
-                echo "  File version upgraded: $fileCurrVersion => $fileNewVersion"
+                echo "    + version revised: $fileCurrVersion => $fileNewVersion"
 
-                sed -i 's/^# @version.*/# @version '"${fileNewVersion}"'/' "${PathFile}"
-                sed -i 's/^\*\* @version.*/\*\* @version '"${fileNewVersion}"'/' "${PathFile}"
+                sed -i 's/^# @version\s*$/# @version   '"${fileNewVersion}"'/' "${PathFile}"
+                sed -i 's/^\*\* @version\s*$/\*\* @version   '"${fileNewVersion}"'/' "${PathFile}"
             fi
         fi
     fi

@@ -23,7 +23,7 @@
 * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***********************************************************************/
 /*
-** @file emerglog.h
+** @file      emerglog.h
 **  syslog for EMERG event message.
 **
 **  see syslog as below:
@@ -32,7 +32,7 @@
 ** @author Liang Zhang <350137278@qq.com>
 ** @version 0.0.11
 ** @since 2017-05-02 12:02:50
-** @date 2024-11-03 23:44:51
+** @date      2024-11-03 23:44:51
 */
 #ifndef EMERG_LOG_H__
 #define EMERG_LOG_H__

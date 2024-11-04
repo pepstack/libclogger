@@ -23,7 +23,7 @@
 * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***********************************************************************/
 /*
-** @file md5sum.h
+** @file      md5sum.h
 **  MD5 implementation.
 **
 **   md5sum("hello") == echo -n "hello" | md5sum
@@ -40,7 +40,7 @@
 **   md5sum_updt(&ctx, msg, strlen(msg));
 **   md5sum_done(&ctx, ctx.digest);
 **
-**   md5print(ctx.digest, hash);
+**   md5_format_lower(ctx.digest, hash);
 **
 **   printf(">>>> {%s}\n", hash);
 **
@@ -48,13 +48,13 @@
 **   char bbuf[MD5_CHUNK_SIZE];
 **   md5file("/root/Downloads/ebooks1.tar.gz", 0, ctx.digest, bbuf, sizeof(bbuf));
 **
-**   md5print(ctx.digest, hash);
+**   md5_format_upper(ctx.digest, hash);
 **   printf("%s\n", hash);
 **
 ** @author Liang Zhang <350137278@qq.com>
-** @version 1.0.1
+** @version 1.0.2
 ** @since 2017-08-28 10:21:09
-** @date 2024-11-03 23:16:19
+** @date      2024-11-04 12:38:27
 */
 #ifndef MD5_SUM_H__
 #define MD5_SUM_H__
@@ -316,17 +316,44 @@ static void md5sum_done (md5sum_t *ctx, uint8_t digest[16])
 }
 
 
-static const char * md5print (const uint8_t digest[16], char outbuf[MD5_SUM_LEN + 1])
+static const char * md5_format_lower (const uint8_t digest[16], char outbuf[MD5_SUM_LEN + 1])
 {
     int i;
     char *out = outbuf;
     const uint8_t *pch =  digest;
 
     for (i = 0; i < 16; i++) {
-        sprintf(out + i*2, "%2.2x", *pch++);
+        itoa(*pch++, out, 16);
+
+        out += 2;
     }
 
-    out[i*2] = 0;
+    *out = 0;
+    return outbuf;
+}
+
+
+static const char* md5_format_upper(const uint8_t digest[16], char outbuf[MD5_SUM_LEN + 1])
+{
+    int i;
+    char* out = outbuf;
+    const uint8_t* pch = digest;
+
+    for (i = 0; i < 16; i++) {
+        itoa(*pch++, out, 16);
+
+        if (*out >= 'a') {
+            *out -= 32;
+        }
+        out++;
+
+        if (*out >= 'a') {
+            *out -= 32;
+        }
+        out++;
+    }
+
+    *out = 0;
     return outbuf;
 }
 

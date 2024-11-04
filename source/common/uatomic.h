@@ -23,7 +23,7 @@
 * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***********************************************************************/
 /*
-** @file uatomic.h
+** @file      uatomic.h
 **  user CAS atomic api both for Windows and Linux
 **
 ** Usage:
@@ -34,7 +34,7 @@
 ** @author Liang Zhang <350137278@qq.com>
 ** @version 0.0.4
 ** @since 2019-12-15 12:46:50
-** @date 2024-11-04 02:14:49
+** @date      2024-11-04 02:14:49
 */
 #ifndef _U_ATOMIC_H__
 #define _U_ATOMIC_H__

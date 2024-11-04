@@ -23,13 +23,13 @@
 * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***********************************************************************/
 /*
-** @file thread_rwlock.h
+** @file    thread_rwlock.h
 **  thread safe lock for both Windows and Linux.
-**
+** @copyright © 2024-2030 mapaware.top All Rights Reserved.
 ** @author     Liang Zhang <350137278@qq.com>
 ** @version 0.0.7
-** @create     2019-11-14 16:35:07
-** @update     2019-11-22 12:36:34
+** @since 2019-11-14 16:35:07
+** @date 2019-11-22 12:36:34
 */
 #ifndef THREAD_RWLOCK_H_INCLUDED
 #define THREAD_RWLOCK_H_INCLUDED

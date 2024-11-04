@@ -23,13 +23,13 @@
 * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***********************************************************************/
 /*
-** @file timeut.h
+** @file      timeut.h
 **    date time utility api.
 **
 ** @author mapaware@hotmail.com
 ** @version 0.0.2
 ** @since 2017-08-28 11:12:10
-** @date 2024-11-04 00:36:13
+** @date      2024-11-04 00:36:13
 */
 #ifndef _TIMEUT_H__
 #define _TIMEUT_H__
