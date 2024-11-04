@@ -23,13 +23,13 @@
 * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***********************************************************************/
 /*
-** @file loggermgr_i.h
+** @file      loggermgr_i.h
 **  clogger manager methods.
 **
 ** @author     Liang Zhang <350137278@qq.com>
 ** @version 1.0.2
 ** @since      2019-12-17 21:53:05
-** @date 2024-11-04 02:19:01
+** @date      2024-11-04 02:19:01
 */
 #ifndef _LOGGERMGR_I_H_
 #define _LOGGERMGR_I_H_

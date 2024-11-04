@@ -23,13 +23,13 @@
 * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***********************************************************************/
 /*
-** @file loggerconf.c
+** @file      loggerconf.c
 **  clogger config api.
 **
 ** @author     Liang Zhang <350137278@qq.com>
 ** @version 1.0.2
 ** @since      2019-12-17 21:53:05
-** @date 2024-11-03 23:55:51
+** @date      2024-11-03 23:55:51
 */
 #include "loggerconf.h"
 

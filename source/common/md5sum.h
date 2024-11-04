@@ -31,30 +31,43 @@
 **   md5("hello") = {5d41402abc4b2a76b9719d911017c592}
 **
 ** Usage:
-**
-**   char hash[MD5_SUM_LEN + 1];
-**   char msg[] = "350137278@qq.com";
-**
-**   md5sum_t ctx;
-**   md5sum_init(&ctx, 0);
-**   md5sum_updt(&ctx, msg, strlen(msg));
-**   md5sum_done(&ctx, ctx.digest);
-**
-**   md5_format_lower(ctx.digest, hash);
-**
-**   printf(">>>> {%s}\n", hash);
-**
-**   >>>> {bdc0bb1f6bea9f3b546657614918bc1d}
-**   char bbuf[MD5_CHUNK_SIZE];
-**   md5file("/root/Downloads/ebooks1.tar.gz", 0, ctx.digest, bbuf, sizeof(bbuf));
-**
-**   md5_format_upper(ctx.digest, hash);
-**   printf("%s\n", hash);
-**
+
+$ echo -n "350137278@qq.com" | md5sum
+bdc0bb1f6bea9f3b546657614918bc1d *-
+
+$ md5sum /path/to/somefile
+
+void test()
+{
+    const char pathfile[] = "/path/to/somefile";
+
+    char hash[MD5_SUM_LEN + 1];
+    char msg[] = "350137278@qq.com";
+
+    md5sum_t ctx;
+    md5sum_init(&ctx, 0);
+    md5sum_update(&ctx, (const uint8_t*) msg, (int)strlen(msg));
+    md5sum_done(&ctx);
+
+    md5_format_upper(ctx.digest, hash);
+
+    // MD5={BDC0BB1F6BEA9F3B546657614918BC1D}
+    printf("MD5={%s}\n", hash);
+
+    // md5={bdc0bb1f6bea9f3b546657614918bc1d}
+    printf("md5={%s}\n", md5sum_bytes((const uint8_t*)msg, (int)strlen(msg), 0, hash));
+
+    char md5buf[1024];
+    FILE* fp = fopen(pathfile, "rb");
+    md5sum_file(fp, 0, md5buf, sizeof(md5buf), 0);
+    fclose(fp);
+    printf("{%s} - %s\n", md5buf, pathfile);
+}
+
 ** @author Liang Zhang <350137278@qq.com>
-** @version 1.0.2
+** @version 1.0.3
 ** @since 2017-08-28 10:21:09
-** @date      2024-11-04 12:38:27
+** @date      2024-11-05 00:56:27
 */
 #ifndef MD5_SUM_H__
 #define MD5_SUM_H__
@@ -83,6 +96,7 @@ extern "C"
 #ifndef MD5_CHUNK_SIZE
 #  define MD5_CHUNK_SIZE  4096
 #endif
+
 
 typedef struct {
     uint32_t count[2];
@@ -269,7 +283,7 @@ static void md5sum_init(md5sum_t *ctx, uint32_t seed)
 }
 
 
-static void md5sum_updt (md5sum_t *ctx, const uint8_t *input, uint32_t inputlen)
+static void md5sum_update (md5sum_t *ctx, const uint8_t *input, uint32_t inputlen)
 {
     uint32_t i = 0, index = 0, partlen = 0;
 
@@ -300,7 +314,7 @@ static void md5sum_updt (md5sum_t *ctx, const uint8_t *input, uint32_t inputlen)
 }
 
 
-static void md5sum_done (md5sum_t *ctx, uint8_t digest[16])
+static void md5sum_done (md5sum_t *ctx)
 {
     uint32_t index = 0, padlen = 0;
     uint8_t bits[8];
@@ -309,52 +323,54 @@ static void md5sum_done (md5sum_t *ctx, uint8_t digest[16])
     padlen = (index < 56)?(56-index):(120-index);
     __md5sum_encode__(bits,ctx->count,8);
 
-    md5sum_updt(ctx, __md5sum_padding__, padlen);
-    md5sum_updt(ctx, bits, 8);
+    md5sum_update(ctx, __md5sum_padding__, padlen);
+    md5sum_update(ctx, bits, 8);
 
-    __md5sum_encode__(digest, ctx->state, 16);
+    __md5sum_encode__(ctx->digest, ctx->state, 16);
 }
 
 
 static const char * md5_format_lower (const uint8_t digest[16], char outbuf[MD5_SUM_LEN + 1])
 {
-    int i;
-    char *out = outbuf;
-    const uint8_t *pch =  digest;
+    static char md5_hex_digits_lower[] = "0123456789abcdef";
+
+    int i, ch;
 
     for (i = 0; i < 16; i++) {
-        itoa(*pch++, out, 16);
-
-        out += 2;
+        ch = digest[i];
+        outbuf[i * 2 + 1] = md5_hex_digits_lower[ch % 16];
+        outbuf[i * 2] = md5_hex_digits_lower[(ch / 16) % 16];
     }
 
-    *out = 0;
+    outbuf[MD5_SUM_LEN] = 0;
     return outbuf;
 }
 
 
 static const char* md5_format_upper(const uint8_t digest[16], char outbuf[MD5_SUM_LEN + 1])
 {
-    int i;
-    char* out = outbuf;
-    const uint8_t* pch = digest;
+    static char MD5_HEX_DIGITS_UPPER[] = "0123456789ABCDEF";
+
+    int i, ch;
 
     for (i = 0; i < 16; i++) {
-        itoa(*pch++, out, 16);
-
-        if (*out >= 'a') {
-            *out -= 32;
-        }
-        out++;
-
-        if (*out >= 'a') {
-            *out -= 32;
-        }
-        out++;
+        ch = digest[i];
+        outbuf[i * 2 + 1] = MD5_HEX_DIGITS_UPPER[ch % 16];
+        outbuf[i * 2] = MD5_HEX_DIGITS_UPPER[(ch / 16) % 16];
     }
 
-    *out = 0;
+    outbuf[MD5_SUM_LEN] = 0;
     return outbuf;
+}
+
+
+static const char * md5sum_bytes(const uint8_t * bbuf, uint32_t bsize, uint32_t seed, char md5[MD5_SUM_LEN + 1])
+{
+    md5sum_t ctx;
+    md5sum_init(&ctx, seed);
+    md5sum_update(&ctx, bbuf, bsize);
+    md5sum_done(&ctx);
+    return md5_format_lower(ctx.digest, md5);
 }
 
 
@@ -363,51 +379,54 @@ static const char* md5_format_upper(const uint8_t digest[16], char outbuf[MD5_SU
  *
  *   md5sum $filename
  */
-static int md5file (const char *pathfile, uint32_t seed, uint8_t digest[16], char chunkbuf[], uint32_t chunkbufsize)
+static int md5sum_file(FILE * fp, uint32_t seed, char md5buffer[], int md5bufsize, uint8_t digest[16])
 {
-    FILE * fp;
+    md5buffer[0] = 0;
 
-    fp = fopen(pathfile, "rb");
-
-    if (! fp) {
-        /* read file error */
-        return (-1);
-    } else {
+    if (fp && fseek(fp, 0, SEEK_SET) == 0) {
         size_t rcb = 0;
 
         md5sum_t ctx;
         md5sum_init(&ctx, seed);
 
         for (;;) {
-            rcb = fread(chunkbuf, 1, chunkbufsize, fp);
+            rcb = fread(md5buffer, 1, md5bufsize, fp);
 
-            if (rcb < chunkbufsize) {
+            if (rcb < md5bufsize) {
                 /* If an error occurs, or the end of the file is reached,
                  *   the return value is a short item count (or zero).
                  */
                 if (feof(fp) && ! ferror(fp)) {
                     /* read success to end of file */
                     if (rcb != 0) {
-                        md5sum_updt(&ctx, (const uint8_t *)chunkbuf, (uint32_t) rcb);
+                        md5sum_update(&ctx, (const uint8_t *) md5buffer, (uint32_t) rcb);
                     }
 
                     break;
                 }
 
                 /* read file error */
-                fclose(fp);
+                md5buffer[0] = 0;
                 return (-1);
             }
 
-            md5sum_updt(&ctx, (const uint8_t *)chunkbuf, (uint32_t) rcb);
+            md5sum_update(&ctx, (const uint8_t *)md5buffer, (uint32_t) rcb);
         }
 
-        md5sum_done(&ctx, digest);
+        md5sum_done(&ctx);
 
-        /* success */
-        fclose(fp);
+        if (digest) {
+            memcpy(digest, ctx.digest, sizeof(ctx.digest) / sizeof(ctx.digest[0]));
+        }
+
+        md5_format_lower(ctx.digest, md5buffer);
+
+        // success
         return 0;
     }
+
+    // any error
+    return (-1);
 }
 
 

@@ -23,13 +23,13 @@
 * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***********************************************************************/
 /*
-** @file shmmaplog.h
+** @file      shmmaplog.h
 **  shared memory map log api.
 **
 ** @author     Liang Zhang <350137278@qq.com>
 ** @version 1.0.2
 ** @since      2020-04-30 13:50:10
-** @date 2024-11-04 00:08:01
+** @date      2024-11-04 00:08:01
 */
 #ifndef _SHMMAPLOG_PRIVATE_H_
 #define _SHMMAPLOG_PRIVATE_H_

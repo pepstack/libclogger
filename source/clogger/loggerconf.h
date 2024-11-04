@@ -23,13 +23,13 @@
 * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***********************************************************************/
 /*
-** @file loggerconf.h
+** @file      loggerconf.h
 **  clogger config definitions.
 **
 ** @author     Liang Zhang <350137278@qq.com>
 ** @version 1.0.2
 ** @since      2019-12-17 21:53:05
-** @date 2024-11-04 00:00:42
+** @date      2024-11-04 00:00:42
 */
 #ifndef LOGGERCONF_H_INCLUDED
 #define LOGGERCONF_H_INCLUDED

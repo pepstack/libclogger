@@ -23,16 +23,16 @@
 * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***********************************************************************/
 /*
-** @file clogger.c
+** @file      clogger.c
 **  thread-safe c application logger.
 **
 ** @author     Liang Zhang <350137278@qq.com>
-** @version 1.0.2
+** @version 1.0.3
 ** @since      2019-12-11 10:34:05
-** @date 2024-11-03 23:59:26
+** @date      2024-11-05 01:13:14
 */
-#include <clogger_api.h>
-#include <loggermgr_i.h>
+#include "clogger_api.h"
+#include "loggermgr_i.h"
 
 static const char THIS_FILE[] = "clogger.c";
 
@@ -796,8 +796,8 @@ clog_logger clog_logger_create (clogger_conf conf, logger_manager mgr)
         shmlogfileRep = clog_replace_string(cstrbufGetStr(conf->shmlogfile), 3, "<IDENT>", cstrbufGetStr(logger->ident), "<PID>", logger->pidcstr, "<DATE>", timestr);
 
         md5sum_init(&ctx, conf->magickey);
-        md5sum_updt(&ctx, (const uint8_t *) shmlogfileRep->str, shmlogfileRep->len);
-        md5sum_done(&ctx, ctx.digest);
+        md5sum_update(&ctx, (const uint8_t *) shmlogfileRep->str, shmlogfileRep->len);
+        md5sum_done(&ctx);
 
         err = shmmaplog_init(cstrbufGetStr(pathprefixRep), cstrbufGetStr(shmlogfileRep), (conf->maxmsgsize * conf->queuelength), ctx.digest, &logger->shmlog);
         if (err) {
