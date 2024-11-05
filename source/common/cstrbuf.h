@@ -1529,11 +1529,15 @@ const char * cstr_timestamp_to_datetime (char *stampms, int mslen, char timestr[
 #define cstrbufGetMaxsz(s)      ((s)? (int)(s)->maxsz : 0)
 #define cstrbufGetStr(s)        ((s)? (s)->str : 0)
 
-#define cstrbufPrint(s)         printf("%.*s", cstrbufGetLen(s), cstrbufGetStr(s))
 #define cstrbufCharAt(s, i)     ((char *)(s->str+(i)))
 
 #define CBSTR(s)                cstrbufGetStr(s)
 #define CBSTRLEN(s)             cstrbufGetLen(s)
+
+#define cstrFormat(s)           CBSTRLEN(s), CBSTR(s)
+#define cstrbufPrint(s)         printf("%.*s", cstrFormat(s))
+
+#define CSBFREE(s)              cstrbufFree(&s)
 
 
 typedef struct _cstrbuf_t

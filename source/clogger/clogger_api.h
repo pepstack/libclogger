@@ -57,10 +57,10 @@ extern "C" {
 
 #if defined(_WIN32) || defined(__MINGW__)
     # define CLOG_PATH_SEPARATOR       '\\'
-    # define CLOG_PATHPREFIX_DEFAULT   "C:\\TEMP\\clogger\\win32\\"
+    # define CLOG_PATHPREFIX_DEFAULT   "C:\\var\\log\\clogger\\"
 #elif defined (__CYGWIN__)
     # define CLOG_PATH_SEPARATOR       '/'
-    # define CLOG_PATHPREFIX_DEFAULT   "/cygdrive/c/TEMP/clogger/cygwin/"
+    # define CLOG_PATHPREFIX_DEFAULT   "/cygdrive/c/var/clogger/"
 #else
     # define CLOG_PATH_SEPARATOR       '/'
     # define CLOG_PATHPREFIX_DEFAULT   "/var/log/clogger/"

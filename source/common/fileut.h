@@ -41,6 +41,11 @@ extern "C"
 {
 #endif
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <errno.h>
+
 #include "cstrbuf.h"
 
 #define ERROR_STRING_LEN_MAX   1024
@@ -56,6 +61,9 @@ extern "C"
     # define getprocessid()  ((int)GetCurrentProcessId())
     # define getthreadid()   ((int) GetCurrentThreadId())
 
+    /* Dir API on Win32: https://blog.csdn.net/wangdq_1989/article/details/44985799 */
+    # include <direct.h>    /* _getcwd */
+
 #else /* non-windows: Linux or Cygwin */
 
     /* See feature_test_macros(7) */
@@ -67,7 +75,8 @@ extern "C"
     # include <sys/stat.h>
     # include <sys/time.h>
     # include <fcntl.h>
-    # include <unistd.h>    /* usleep() */
+    # include <limits.h>
+    # include <unistd.h>    /* usleep(), getcwd */
 
     # if defined(__CYGWIN__)
         #   include <Windows.h>
@@ -79,6 +88,9 @@ extern "C"
         }
     # else /* __linux */
         # include <sys/syscall.h> /* syscall(SYS_gettid) */
+
+        /* Dir API on Win32: https://blog.csdn.net/wangdq_1989/article/details/44985799 */
+        # include <dirent.h>
 
         NOWARNING_UNUSED(static) pid_t getthreadid(void)
         {
@@ -294,11 +306,22 @@ int file_close(filehandle_t *phf)
 NOWARNING_UNUSED(static)
 sb8 file_seek(filehandle_t hf, sb8 distance, int fseekpos)
 {
-    #ifdef WIN32
+    #ifdef __CYGWIN__
         /* warning: cygwin */
         return  (sb8) lseek(hf, distance, fseekpos);
     #else
         return (sb8) lseek64(hf, (off64_t)distance, fseekpos);
+    #endif
+}
+
+NOWARNING_UNUSED(static)
+sb8 file_size(filehandle_t hf)
+{
+    #ifdef __CYGWIN__
+        /* warning: cygwin */
+        return  (sb8) lseek(hf, 0, SEEK_END);
+    #else
+        return (sb8) lseek64(hf, 0, SEEK_END);
     #endif
 }
 
@@ -460,6 +483,37 @@ cstrbuf get_proc_abspath(void)
 
     return pathfile;
 }
+
+
+/**
+ * get_curr_work_dir
+ *   get current work directory.
+ */
+NOWARNING_UNUSED(static)
+cstrbuf get_curr_work_dir()
+{
+    cstrbuf newcsb = 0;
+    char* cwd = 0;
+    char cwdbuf[4096];
+
+#if defined(_INC_DIRECT)
+    // direct.h on windows
+    cwd = _getcwd(cwdbuf, sizeof(cwdbuf));
+#elif defined(_DIRENT_H)
+    // dirent.h on linux
+    cwd = getcwd(cwdbuf, sizeof(cwdbuf));
+#else
+  # error "Both direct.h and dirent.h not found"
+#endif
+
+    if (cwd) {
+        newcsb = cstrbufNew(0, cwd, cstrbuf_error_size_len);
+    }
+
+    // if null: path is too long or out of memory
+    return newcsb;
+}
+
 
 NOWARNING_UNUSED(static)
 cstrbuf find_config_pathfile(const char *cfgpath, const char *cfgname, const char *envvarname, const char *etcconfpath)
