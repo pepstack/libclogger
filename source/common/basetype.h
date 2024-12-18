@@ -32,7 +32,7 @@
 ** @version 0.0.33
 **
 ** @since 2019-09-30 12:37:44
-** @date      2024-11-04 02:15:16
+** @date      2024-12-18 02:15:16
 **
 ** @note
 */
@@ -65,7 +65,6 @@ extern "C"
     # include <WS2tcpip.h>
   # endif
 #endif
-
 
 #undef _TIMESPEC_DEFINED
 
@@ -415,7 +414,7 @@ int snprintf_chkd_V2(int exitcode, char *outputbuf, size_t bufsize, const char *
 
 
 /**
- * 新的程序应该使用: snprintf_chk
+ * 新的程序应该使用: snprintf_safe
  */
 NOWARNING_UNUSED(static)
 int snprintf_safe(char *outputbuf, size_t bufsize, const char *format, ...)

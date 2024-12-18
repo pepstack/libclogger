@@ -32,7 +32,7 @@
 ** @version 0.0.37
 **
 ** @since 2017-08-28 11:12:10
-** @date      2024-11-04 12:57:32
+** @date      2024-12-18 12:57:32
 **
 ** @note
 */
@@ -47,6 +47,7 @@ extern "C"
 #include "basetype.h"
 #include "memapi.h"
 
+#define cstr_invalid_size(si)      ((size_t)(si)==((size_t)(-1)))
 
 #ifndef cstr_allocate_blocksize
 # define cstr_allocate_blocksize    16
@@ -475,7 +476,7 @@ int cstr_to_sb8 (int base, const char *str, size_t slen, sb8 *outval)
         /* To distinguish success/failure after call */
         errno = 0;
 
-        if (slen == -1 || str[slen] == '\0') {
+        if (cstr_invalid_size(slen) || str[slen] == '\0') {
             val = strtoll(str, &endptr, base);
 
             if (val == 0 && endptr == str) {
@@ -524,7 +525,7 @@ int cstr_to_ub8 (int base, const char *str, size_t slen, ub8 *outval)
         /* To distinguish success/failure after call */
         errno = 0;
 
-        if (slen == -1 || str[slen] == '\0') {
+        if (cstr_invalid_size(slen) || str[slen] == '\0') {
             val = strtoull(str, &endptr, base);
 
             if (val == 0 && endptr == str) {
@@ -573,7 +574,7 @@ int cstr_to_dbl (const char *str, size_t slen, double *outval)
         /* To distinguish success/failure after call */
         errno = 0;
 
-        if (slen == -1 || str[slen] == '\0') {
+        if (cstr_invalid_size(slen) || str[slen] == '\0') {
             val = strtod(str, &endptr);
 
             if (val == 0 && endptr == str) {
@@ -941,7 +942,7 @@ int cstr_findstr_in (const char *str, int count, const char *dests[], int destsn
         if (dest && str) {
             int len = cstr_length(dest, szcnt + 1);
 
-            if (len == szcnt) {
+            if (len == (int) szcnt) {
                 if (caseignore) {
     #ifdef _MSC_VER
                     if (! strnicmp(str, dest, szcnt)) {
