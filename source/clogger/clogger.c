@@ -29,7 +29,7 @@
 ** @author     Liang Zhang <350137278@qq.com>
 ** @version 1.0.3
 ** @since      2019-12-11 10:34:05
-** @date      2024-11-05 01:13:14
+** @date      2025-02-13 00:37:14
 */
 #include "clogger_api.h"
 #include "loggermgr_i.h"
@@ -206,6 +206,9 @@ typedef struct _clog_logger_t
 
     /* global shared real time clock */
     rtclock_handle rtc;
+
+    /* user attached data */
+    void* data;
 
     /* const string for process id */
     int pidcstrlen;
@@ -529,7 +532,11 @@ static void * clog_threadfunc (void *arg)
 
     while (pthread_mutex_trylock(&logger->shutdownlock) != 0) {
         if (unsema_timedwait(&logger->sema, 1000) == 0) {
-            ringbufst_read_next(logger->ringbuffer, read_message_cb, logger);
+            /* bugfix(2025-02-13):
+             *   old: ringbufst_read_next(logger->ringbuffer, read_message_cb, logger);
+             * read all messages until no message(=0)
+             */
+            while (ringbufst_read_next(logger->ringbuffer, read_message_cb, logger));
         }
     }
 
@@ -873,28 +880,26 @@ clog_logger clog_logger_create (clogger_conf conf, logger_manager mgr)
 void clog_logger_destroy(clog_logger logger)
 {
     pthread_mutex_unlock(&logger->shutdownlock);
-
     unsema_post(&logger->sema);
-
     pthread_join(logger->logthread, NULL);
-
     unsema_uninit(&logger->sema);
-
     cstrbufFree(&logger->ident);
-
     rollingfile_uninit(&logger->logfile);
-
     shmmaplog_uninit(logger->shmlog);
-
     if (logger->bf.appendersyslog) {
         closelog();
     }
-
     ringbufst_uninit(logger->ringbuffer);
-
     ringbuf_uninit(logger->mempool);
-
     mem_free(logger);
+}
+
+
+void* logger_attach_data(clog_logger logger, void* data)
+{
+    void* old = logger->data;
+    logger->data = data;
+    return old;
 }
 
 int clog_logger_get_loggerid(clog_logger logger)

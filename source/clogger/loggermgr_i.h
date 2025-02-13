@@ -119,6 +119,8 @@ struct logger_manager_t
     /* logger by id */
     clog_logger idloggers[CLOG_LOGGERID_MAX + 1];
 
+    cstrbuf workdir;
+
     cstrbuf cfgfile;
     struct clogger_ident_t *loggers;
 };

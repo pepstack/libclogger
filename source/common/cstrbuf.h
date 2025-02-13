@@ -1524,6 +1524,8 @@ const char * cstr_timestamp_to_datetime (char *stampms, int mslen, char timestr[
  *   C String Buffer Api
  *********************************************************************/
 #define cstrbuf_error_size_len  ((ub4)(-1))
+
+#define cstrbuf_len_invalid     cstrbuf_error_size_len
 #define cstrbuf_len_max         134217727   /* max size is 128 MB */
 #define cstrbuf_size_max        (cstrbuf_len_max + 1)
 

@@ -32,7 +32,7 @@
 ** @version 0.0.32
 **
 ** @since 2019-09-30 12:37:44
-** @date      2024-11-09 12:43:27
+** @date      2024-12-18 19:43:27
 **
 ** @note
 */
@@ -517,11 +517,9 @@ cstrbuf get_curr_work_dir()
 #if defined(_INC_DIRECT)
     // direct.h on windows
     cwd = _getcwd(cwdbuf, sizeof(cwdbuf));
-#elif defined(_DIRENT_H)
+#else
     // dirent.h on linux
     cwd = getcwd(cwdbuf, sizeof(cwdbuf));
-#else
-  # error "Both direct.h and dirent.h not found"
 #endif
 
     if (cwd) {

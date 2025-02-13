@@ -272,8 +272,11 @@ CLOGGER_API const char * logger_manager_version ();
  * @param[in] app_ident    optional ident for application logger.
  *     If provided, application logger can be retrieved anywhere by calling:
  *        logger_manager_load(NULL);
+ *
+ * @return
+ *    current work dir
  */
-CLOGGER_API void logger_manager_init (const char *logger_cfg, ...);
+CLOGGER_API const char * logger_manager_init (const char *logger_cfg, ...);
 
 
 /*!
@@ -347,6 +350,8 @@ CLOGGER_API int  logger_conf_load_config (const char *cfgfile, const char *ident
  */
 CLOGGER_API clog_logger clog_logger_create (clogger_conf conf, logger_manager mgr);
 CLOGGER_API void clog_logger_destroy (clog_logger logger);
+
+CLOGGER_API void* logger_attach_data(clog_logger logger, void* data);
 
 CLOGGER_API int clog_logger_get_loggerid (clog_logger logger);
 CLOGGER_API const char * clog_logger_get_ident (clog_logger logger);

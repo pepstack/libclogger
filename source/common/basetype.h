@@ -32,7 +32,7 @@
 ** @version 0.0.33
 **
 ** @since 2019-09-30 12:37:44
-** @date      2024-12-18 02:15:16
+** @date      2024-12-18 17:15:16
 **
 ** @note
 */
@@ -66,7 +66,10 @@ extern "C"
   # endif
 #endif
 
+/*
 #undef _TIMESPEC_DEFINED
+#include <sys/types.h>
+*/
 
 #if defined(__MINGW32__) || defined(__MINGW64__)
     # define __MINGW__   1

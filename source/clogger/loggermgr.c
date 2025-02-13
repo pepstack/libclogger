@@ -316,10 +316,46 @@ logger_manager get_logger_manager()
 }
 
 
+static void loggerCheckErrorExit_1(clog_logger logger, const char* reportdir, const char* ident)
+{
+    if (! logger) {
+        char buf[256];
+        int blen;
+        snprintf_chkd_V2(1, buf, sizeof(buf), "%s/%s.clogger_error_exit.log", reportdir, ident);
+        FILE* fp = fopen(buf, "w");
+        if (fp) {
+            struct timespec nowtime;
+            getnowtimeofday(&nowtime);
+
+            long tz = timezone_compute(nowtime.tv_sec, &buf[200]);
+            struct tm loc;
+            getlocaltime_safe(&loc, nowtime.tv_sec, tz, 0);
+
+            blen = snprintf_chkd_V1(buf, 200, "******** (%04d-%02d-%02d %02d:%02d:%02d %s) libclogger Error Report ********\n",
+                loc.tm_year + 1900, loc.tm_mon + 1, loc.tm_mday, loc.tm_hour, loc.tm_min, loc.tm_sec, &buf[200]);
+            fwrite(buf, 1, blen, fp);
+
+            blen = snprintf_chkd_V2(1, buf, sizeof(buf), "Error: logger ident [clogger:%s] not found in the following config file:\n  {", ident);
+            fwrite(buf, 1, blen, fp);
+
+            /* Operations performed after initialization. */
+            logger_manager mgr = get_logger_manager();
+            fwrite(CBSTR(mgr->cfgfile), 1, CBSTRLEN(mgr->cfgfile), fp);
+
+            blen = snprintf_chkd_V2(1, buf, sizeof(buf), "}\nApplication exit code(1).\n");
+            fwrite(buf, 1, blen, fp);
+
+            fclose(fp);
+        }
+        exit(1);
+    }
+}
+
+
 /**
  * clogger public api
  */
-void logger_manager_init(const char *logger_cfg, ...)
+const char * logger_manager_init(const char *logger_cfg, ...)
 {
     pthread_once(&once_initialized, init_once_routine);
 
@@ -330,7 +366,12 @@ void logger_manager_init(const char *logger_cfg, ...)
         int count = 0;
         cstrbuf idents[CLOG_LOGGERID_MAX] = {0};
 
-        printf("[%s:%d %s] initialize logger_manager\n", __FILE__, __LINE__, __FUNCTION__);
+        if (!mgr->workdir) {
+            mgr->workdir = get_curr_work_dir();
+            cstr_replace_chr(CBSTR(mgr->workdir), '\\', '/');
+        }
+        printf("[%s:%d %s] initialize logger_manager(CWD=%.*s)\n", __FILE__, __LINE__, __FUNCTION__,
+            CBSTRLEN(mgr->workdir), CBSTR(mgr->workdir));
 
         mgr->rtclock = rtclock_init(RTCLOCK_FREQ_SEC);
 
@@ -390,10 +431,8 @@ void logger_manager_init(const char *logger_cfg, ...)
 
                 printf("[%s:%d %s] logger_manager_load_shared: {%.*s}\n", __FILE__, __LINE__, __FUNCTION__, cstrbufGetLen(ident), cstrbufGetStr(ident));
 
-                clog_logger logger = logger_manager_load_shared(mgr, ident->str);
-                if (! logger) {
-                    emerglog_exit("libclogger", "logger ident not found: {%.*s}", cstrbufGetLen(ident), cstrbufGetStr(ident));
-                }
+                clog_logger logger = logger_manager_load_shared(mgr, CBSTR(ident));
+                loggerCheckErrorExit_1(logger, CBSTR(mgr->workdir), CBSTR(ident));
 
                 if (i == 0) {
                     mgr->app_logger = logger;
@@ -404,6 +443,8 @@ void logger_manager_init(const char *logger_cfg, ...)
             }
         }
     }
+
+    return CBSTR(mgr->workdir);
 }
 
 
@@ -414,17 +455,11 @@ void logger_manager_uninit(void)
     if (uatomic_int_comp_exch(&mgr->initialized, 1, 0)) {
         struct clogger_ident_t *curr, *tmp;
 
-        printf("[%s:%d %s] uninitialize logger_manager\n", __FILE__, __LINE__, __FUNCTION__);
-
     #ifdef DISABLE_THREAD_RWLOCK
         pthread_mutex_lock(&mgr->thrlock);
-        pthread_mutex_destroy(&mgr->thrlock);
     #else
         RWLockAcquire(&mgr->rwlock, RWLOCK_STATE_WRITE, 0);
-        RWLockUninit(&mgr->rwlock);
     #endif
-
-        cstrbufFree(&mgr->cfgfile);
 
         // delete all loggers
         HASH_ITER(hh, mgr->loggers, curr, tmp) {
@@ -436,9 +471,20 @@ void logger_manager_uninit(void)
 
         rtclock_uninit(mgr->rtclock);
 
+        cstrbufFree(&mgr->workdir);
+        cstrbufFree(&mgr->cfgfile);
+
+    #ifdef DISABLE_THREAD_RWLOCK
+        pthread_mutex_destroy(&mgr->thrlock);
+    #else
+        RWLockUninit(&mgr->rwlock);
+    #endif
+
         bzero(&clogger_singleton, sizeof(clogger_singleton));
         mem_free(mgr);
         shmipc_destroy(&shmgr_handle);
+
+        printf("[%s:%d %s] logger_manager_uninit.\n", __FILE__, __LINE__, __FUNCTION__);
     }
 }
 

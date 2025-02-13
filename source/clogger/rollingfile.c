@@ -126,8 +126,6 @@ static void rollingfile_update (rollingfile_t *rof)
 /* check and rolling file name */
 void rollingfile_apply (rollingfile_t *rof, const char *dateminfmt, int datelen)
 {
-    printf("======datelen===%d\n", datelen);
-
     if (datelen) {
         /* timepolicy valid */
         if (! rof->loggingfile || ! cstr_startwith(rof->loggingfile->str + rof->pathname->len, rof->loggingfile->len - rof->pathname->len, dateminfmt, datelen)) {
