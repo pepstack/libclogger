@@ -325,20 +325,7 @@ static int find_first_setbit_count_32(uint32_t flag, int count)
         current_start = end_pos;
     }
 }
-// 自旋锁最大重试次数（指数退避）
-#define SPINLOCKRETRY    10
 
-// 桶字节尺寸对齐大小 = 128
-#define MBKTALIGNSIZE   128
-
-// 每个标志位管理的桶数（固定为32，对应uint32_t的位数）
-#define MBKTFLAGBITS   ((uint32_t)(sizeof(uint32_t) * 8))
-
-// 单个桶大小限制 8 MB
-#define MBKTSIZEMAX      (MBKTALIGNSIZE * 8192 * 8)
-
-// 内存池总大小限制 1024 MB (可能受实际可分配内存限制)
-#define MBKPOOLSIZEMAX   (MBKTSIZEMAX * MBKTALIGNSIZE)
 
 membucket_pool membucket_pool_create(uint32_t bktsize, uint32_t numbkts)
 {
