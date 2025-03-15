@@ -35,7 +35,7 @@
 ** @author Liang Zhang <350137278@qq.com>
 ** @version 0.0.4
 ** @since 2019-12-15 12:46:50
-** @date      2024-11-04 02:14:49
+** @date 2025-03-13 19:01:49
 */
 #ifndef _U_ATOMIC_H__
 #define _U_ATOMIC_H__
@@ -88,6 +88,7 @@ extern "C"
 
 
 #if defined(_LINUX_GNUC)
+// Linux (实现GCC/Clang)
 typedef volatile int         uatomic_int;
 
 #   define uatomic_int_add(a)           __sync_add_and_fetch(a, 1)
@@ -97,20 +98,20 @@ typedef volatile int         uatomic_int;
 #   define uatomic_int_zero(a)          __sync_lock_release(a)
 #   define uatomic_int_comp_exch(a, comp, exch)  __sync_val_compare_and_swap(a, (comp), (exch))
 
-#   define uatomic_int_add_n(a)         __sync_add_and_fetch(a, (n))
-#   define uatomic_int_sub_n(a)         __sync_sub_and_fetch(a, (n))
+#   define uatomic_int_add_n(a)         __sync_add_and_fetch(a, (int)(n))
+#   define uatomic_int_sub_n(a)         __sync_sub_and_fetch(a, (int)(n))
 
 typedef volatile int64_t     uatomic_int64;
 
-#   define uatomic_int64_add(a)         uatomic_int_add(a)
-#   define uatomic_int64_sub(a)         uatomic_int_sub(a)
-#   define uatomic_int64_set(a, newval) uatomic_int_set(a, (newval))
-#   define uatomic_int64_get(a)         uatomic_int_get(a)
-#   define uatomic_int64_zero(a)        uatomic_int_zero(a)
+#   define uatomic_int64_add(a)         __sync_add_and_fetch(a, 1)
+#   define uatomic_int64_sub(a)         __sync_sub_and_fetch(a, 1)
+#   define uatomic_int64_set(a, newval) __sync_lock_test_and_set(a, (newval))
+#   define uatomic_int64_get(a)         __sync_fetch_and_add(a, 0)
+#   define uatomic_int64_zero(a)        __sync_lock_release(a)
 #   define uatomic_int64_comp_exch(a, comp, exch)  uatomic_int_comp_exch(a, (comp), (exch))
 
-#   define uatomic_int64_add_n(a, n)    uatomic_int_add_n(a, (n))
-#   define uatomic_int64_sub_n(a, n)    uatomic_int_sub_n(a, (n))
+#   define uatomic_int64_add_n(a, n)    __sync_add_and_fetch(a, (int64_t)(n))
+#   define uatomic_int64_sub_n(a, n)    __sync_sub_and_fetch(a, (int64_t)(n))
 
 typedef volatile void *      uatomic_ptr;
 
@@ -119,9 +120,14 @@ typedef volatile void *      uatomic_ptr;
 #   define uatomic_ptr_zero(a)          uatomic_int_zero(((void**)(a)))
 #   define uatomic_ptr_comp_exch(a, comp, exch)  uatomic_int_comp_exch(((void**)(a)), (comp), (exch))
 
+//#   define uatomic_ptr_set(a, newval)   __atomic_store_n(a, (newval), __ATOMIC_SEQ_CST)
+//#   define uatomic_ptr_get(a)           __atomic_load_n(a, __ATOMIC_SEQ_CST)
+//#   define uatomic_ptr_zero(a)          __atomic_store_n(a, 0, __ATOMIC_SEQ_CST)
+//#   define uatomic_ptr_comp_exch(a, comp, exch)  __atomic_compare_exchange_n(a, &(comp), (exch), 0, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST)
+
 #elif defined(_WIN32)
 typedef volatile LONG        uatomic_int;
-
+// Windows
 #   define uatomic_int_add(a)           InterlockedIncrement(a)
 #   define uatomic_int_sub(a)           InterlockedDecrement(a)
 #   define uatomic_int_set(a, newval)   InterlockedExchange(a, (newval))
@@ -129,8 +135,8 @@ typedef volatile LONG        uatomic_int;
 #   define uatomic_int_zero(a)          InterlockedExchange(a, 0)
 #   define uatomic_int_comp_exch(a, comp, exch)    InterlockedCompareExchange(a, (exch), (comp))
 
-#   define uatomic_int_add_n(a, n)      InterlockedAnd(a, (n))
-#   define uatomic_int_sub_n(a, n)      InterlockedAnd(a, -(n))
+#   define uatomic_int_add_n(a, n)      InterlockedAdd(a, ((LONG)(n)))
+#   define uatomic_int_sub_n(a, n)      InterlockedAdd(a, -((LONG)(n)))
 
 typedef volatile LONG64      uatomic_int64;
 
@@ -141,8 +147,8 @@ typedef volatile LONG64      uatomic_int64;
 #   define uatomic_int64_zero(a)        InterlockedExchange64(a, 0)
 #   define uatomic_int64_comp_exch(a, comp, exch)    InterlockedCompareExchange64(a, (exch), (comp))
 
-#   define uatomic_int64_add_n(a, n)    InterlockedAnd64(a, (n))
-#   define uatomic_int64_sub_n(a, n)    InterlockedAnd64(a, -(n))
+#   define uatomic_int64_add_n(a, n)    InterlockedAdd64(a, ((LONG64)(n)))
+#   define uatomic_int64_sub_n(a, n)    InterlockedAdd64(a, -((LONG64)(n)))
 
 typedef volatile PVOID       uatomic_ptr;
 
@@ -160,3 +166,4 @@ typedef volatile PVOID       uatomic_ptr;
 #endif
 
 #endif /* _U_ATOMIC_H__ */
+
