@@ -32,7 +32,7 @@
 ** @version 1.0.4
 **
 ** @since 2015-01-19 12:37:44
-** @date      2024-11-03 23:53:45
+** @date      2025-03-17 02:47:00
 **
 */
 #ifndef RANDCTX_H__
@@ -425,6 +425,76 @@ __ub8_t graycode2binary64(__ub8_t g)
 
     return (__ub8_t) ((h << 32) | l);
 }
+
+
+/**
+ * RAND32_LCG LCG
+ */
+#define RAND32_LCG_A 1103515245UL
+#define RAND32_LCG_C 12345UL
+#define RAND32_LCG_M 0x7FFFFFFFUL  // 2^31 - 1 (31-bit)
+
+
+/**
+ * @brief 生成经过多次迭代的 LCG 随机数（安全版）
+ * @param seed  初始种子（需在 [0, LCG_M-1] 范围内）
+ * @param loops 迭代次数（必须 >= 0）
+ * @return 迭代后的随机数（范围 [0, LCG_M-1]）
+ */
+static uint32_t random_uint32_safe(uint32_t seed, unsigned loops)
+{
+    // 显式检查 loops 为 0 的情况
+    if (loops == 0) {
+        return seed % RAND32_LCG_M;
+    }
+
+    // 使用 64 位运算防止溢出
+    for (unsigned i = 0; i < loops; i++) {
+        seed = (uint32_t)(((uint64_t)RAND32_LCG_A * seed + RAND32_LCG_C) % RAND32_LCG_M);
+    }
+
+    return seed;
+}
+
+
+/**
+ * @brief 生成经过多次迭代的 LCG 随机数（快速跳跃版）
+ * @param seed  初始种子（需在 [0, LCG_M-1] 范围内）
+ * @param loops 迭代次数（必须 >= 0）
+ * @return 迭代后的随机数（范围 [0, LCG_M-1]）
+ */
+static uint32_t random_uint32_fast(uint32_t seed, unsigned loops)
+{
+    // 显式检查 loops 为 0 的情况
+    if (loops == 0) {
+        return seed % RAND32_LCG_M;
+    }
+
+    // 快速幂算法计算 a^loops mod m
+    uint64_t a = RAND32_LCG_A;
+    uint64_t c = RAND32_LCG_C;
+    uint64_t m = RAND32_LCG_M;
+    uint64_t a_pow = 1;    // a^loops mod m
+    uint64_t c_sum = 0;    // c * (a^(loops-1) + ... + a^0) mod m
+    uint64_t curr_a = a;
+    uint64_t curr_c = 1;   // 跟踪等比数列系数
+
+    unsigned n = loops;
+    while (n > 0) {
+        if (n % 2 == 1) {
+            a_pow = (a_pow * curr_a) % m;
+            c_sum = (c_sum * curr_a + curr_c) % m;
+        }
+        curr_c = (curr_c * (curr_a + 1)) % m; // 等比数列和递推
+        curr_a = (curr_a * curr_a) % m;
+        n /= 2;
+    }
+
+    // 最终结果: (a^loops * seed + c * c_sum) mod m
+    uint64_t result = (a_pow * seed + c * c_sum) % m;
+    return (uint32_t)result;
+}
+
 
 #ifdef __cplusplus
 }

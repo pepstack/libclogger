@@ -32,18 +32,7 @@
 ** @author Liang Zhang <350137278@qq.com>
 ** @version 0.0.1
 ** @since 2025-03-14 02:54:00
-** @date
-**
-** @usage
-    membucket_pool pool = membucket_pool_create(256, 4096);
-    for (uint32_t i = 0; i < LOOPS; ++i) {
-        void* pMemory = membucket_pool_alloc(pool, (i + 1) % 4096);
-        if (!pMemory) {
-            printf("[%d] failed to fetch memory: %d B\n", i, (i + 1) % 4096);
-        }
-        membucket_pool_free(pool, pMemory);
-    }
-    membucket_pool_destroy(pool);
+** @date 2025-03-17 04:31:00
 */
 #ifndef MEM_BUCKET_H_
 #define MEM_BUCKET_H_
@@ -55,8 +44,12 @@
 extern "C" {
 #endif
 
-
 typedef struct membucket_pool_t* membucket_pool;
+
+typedef struct {
+    uint32_t bucket_size;
+    uint32_t capacity_buckets;
+} membucket_pool_stats_t;
 
 
 /**
@@ -85,8 +78,23 @@ extern void* membucket_pool_alloc(membucket_pool pool, uint32_t bsize);
  * @brief 释放内存到内存池
  * @param pool 内存池指针
  * @param pMemory 待释放的内存指针
+ * @return 成功返回 NULL，失败返回内存原指针 pMemory
  */
-extern void membucket_pool_free(membucket_pool pool, void* pMemory);
+extern void* membucket_pool_free(membucket_pool pool, void* pMemory);
+
+/**
+ * @brief 得到当前内存池统计
+ * @param pool 内存池指针
+ * @param stats 接收统计的结构指针（可以为NULL）
+ * @return 返回空闲的桶数
+ */
+extern uint32_t membucket_pool_stats(membucket_pool pool, membucket_pool_stats_t* stats);
+
+/**
+ * @brief 当前线程睡眠微妙
+ * @param microseconds 睡眠微妙。如果 = -1，则不睡眠，让出 CPU
+ */
+extern void membucket_usleep(uint32_t microseconds);
 
 #ifdef    __cplusplus
 }
