@@ -42,6 +42,7 @@
 
 #include <assert.h>  // assert()
 #include <sched.h>   // sched_yield()
+#include <stddef.h> //  offsetof
 
 
 // 断言
@@ -79,10 +80,10 @@ typedef struct
 typedef struct membuffer_pool_t
 {
     uint32_t BufferSizeB;     // size in bytes of per buffer
-    uint32_t BuffersCount;    // count of Flags/Buffers
+    uint32_t FlagsCount;      // count of Flags
 
     unsigned char* _Buffers;
-    membuffer_flag_t  _Flags[0];
+    membuffer_flag_t  _Flags[];
 } membuffer_pool_t;
 
 
@@ -93,7 +94,7 @@ typedef struct
     uint32_t flagOffset;         // 所属的flag结构在池中的索引
     uint16_t bitOffset;          // 在flag中的起始位索引（0-based）
     uint16_t bitCount;           // 占用的连续内存块数（1bit对应一个内存块）
-    char _Memory[0];             // 实际内存起始地址
+    char _Memory[];             // 实际内存起始地址
 } membuffer_t;
 
 
@@ -219,12 +220,12 @@ membuffer_pool membuffer_pool_create(uint32_t bsize, uint32_t numb)
     }
 
     pool->BufferSizeB = bufferSize;  // 修改只读字段（仅初始化时）
-    pool->BuffersCount = numFlags;      // 修改只读字段（仅初始化时）
+    pool->FlagsCount = numFlags;      // 修改只读字段（仅初始化时）
 
     pool->_Buffers = (unsigned char*)&pool->_Flags[numFlags];
 
     // 设置全部块为空闲: flag = 1
-    for (uint32_t i = 0; i < pool->BuffersCount; ++i) {
+    for (uint32_t i = 0; i < pool->FlagsCount; ++i) {
         pool->_Flags[i].spinlock = 0;
         pool->_Flags[i].bitflag = 0xFFFFFFFF;
     }
@@ -252,7 +253,7 @@ void* membuffer_alloc(membuffer_pool pool, uint32_t bufferSize)
     }
 
     membuffer_flag_t* pFlag;
-    for (uint32_t flagOff = 0; flagOff < pool->BuffersCount; ++flagOff) {
+    for (uint32_t flagOff = 0; flagOff < pool->FlagsCount; ++flagOff) {
         pFlag = pool->_Flags + flagOff;
 
         MBUF_SPINLOCK_GRAB(pFlag);
@@ -262,7 +263,7 @@ void* membuffer_alloc(membuffer_pool pool, uint32_t bufferSize)
             continue;  // 空闲块不满足, 直接尝试下一个
         }
 
-        // 自此取得自旋锁
+        // startBit: 1-based
         int startBit = FFS_first_setbit_n_32(pFlag->bitflag, bitCount);
         if (!startBit) {
             MBUF_SPINLOCK_FREE(pFlag);
@@ -311,17 +312,16 @@ void* membuffer_free(void* pMemory)
         return NULL;
     }
 
-    membuffer_t* pBuffer = (membuffer_t*)pMemory;
-    --pBuffer;
+    membuffer_t* pBuffer = (membuffer_t*)((char*)pMemory - offsetof(membuffer_t, _Memory));
 
     membuffer_pool pool = pBuffer->ownerPool;
     MBUF_ASSERT(pool);
 
     MBUF_ASSERT((char*)pBuffer >= (char*)pool->_Buffers &&
-        (char*)pBuffer < (char*)pool->_Buffers + pool->BufferSizeB * pool->BuffersCount * MBUF_FLAG_BITS);
+        (char*)pBuffer < (char*)pool->_Buffers + pool->BufferSizeB * pool->FlagsCount * MBUF_FLAG_BITS);
 
     if ((char*)pBuffer >= (char*)pool->_Buffers &&
-        (char*)pBuffer < (char*)pool->_Buffers + pool->BufferSizeB * pool->BuffersCount * MBUF_FLAG_BITS) {
+        (char*)pBuffer < (char*)pool->_Buffers + pool->BufferSizeB * pool->FlagsCount * MBUF_FLAG_BITS) {
         membuffer_flag_t* pFlag = pool->_Flags + pBuffer->flagOffset;
 
         MBUF_SPINLOCK_GRAB(pFlag);
@@ -344,7 +344,7 @@ uint32_t membuffer_pool_stats(membuffer_pool pool, membuffer_stats_t* stats)
     uint32_t unused_buckets = 0;
 
     membuffer_flag_t* pFlag;
-    for (uint32_t flagOff = 0; flagOff < pool->BuffersCount; ++flagOff) {
+    for (uint32_t flagOff = 0; flagOff < pool->FlagsCount; ++flagOff) {
         pFlag = pool->_Flags + flagOff;
 
         MBUF_SPINLOCK_GRAB(pFlag);
@@ -356,7 +356,7 @@ uint32_t membuffer_pool_stats(membuffer_pool pool, membuffer_stats_t* stats)
 
     if (stats) {
         stats->buffer_size = pool->BufferSizeB;
-        stats->capacity_buffers = pool->BuffersCount * MBUF_FLAG_BITS;
+        stats->capacity_buffers = pool->FlagsCount * MBUF_FLAG_BITS;
     }
 
     return unused_buckets;
