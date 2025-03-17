@@ -30,7 +30,7 @@
 ** @author mapaware@hotmail.com
 ** @version 0.0.2
 ** @since 2017-08-28 11:12:10
-** @date      2024-11-04 00:36:13
+** @date 2025-03-17 00:36:13
 */
 #ifndef _TIMEUT_H__
 #define _TIMEUT_H__
@@ -43,6 +43,17 @@ extern "C"
 
 #include "mscrtdbg.h"
 #include "basetype.h"
+
+#include <immintrin.h>
+
+#if defined(__x86_64__) || defined(__i386__) || defined(_M_X64) || defined(_M_IX86)
+#include <immintrin.h>
+#define CPU_PAUSE() _mm_pause()
+#elif defined(__aarch64__) || defined(__arm__)
+#define CPU_PAUSE() __asm__ __volatile__("yield" ::: "memory")
+#else
+#define CPU_PAUSE() // 无操作或其他架构实现
+#endif
 
 
 #if defined(__WINDOWS__)
@@ -83,8 +94,7 @@ extern "C"
             startTime = lval.QuadPart;
 
             do {
-                Sleep(0);
-
+                CPU_PAUSE();
                 if (!QueryPerformanceCounter(&lval)) {
                     return;
                 }
