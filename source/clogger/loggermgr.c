@@ -35,7 +35,9 @@
 
 static pthread_once_t once_initialized = PTHREAD_ONCE_INIT;
 
+#ifdef CLOGGER_SHMGR_HANDLE
 static shmhandle_t shmgr_handle = shmipc_invalid_handle;
+#endif // CLOGGER_SHMGR_HANDLE
 
 static struct clogger_version_mgr_t clogger_singleton = {
         {CLOGGER_MAJOR_VERSION, CLOGGER_MINOR_VERSION},
@@ -69,8 +71,11 @@ const char * clogger_lib_version(const char **_libname)
 
 static void init_once_routine(void)
 {
-    shmkey_t shmkey;
+    clogger_singleton.pid = getprocessid();
+    clogger_singleton.pvmgr = mem_alloc_zero(1, sizeof(struct logger_manager_t));
 
+#ifdef CLOGGER_SHMGR_HANDLE
+    shmkey_t shmkey;
 #if defined(__WINDOWS__) || defined(__CYGWIN__)
     char keybuf[128];
     shmkey = shmipc_keygen(".clogger-shared-manager.shm", getprocessid(), keybuf, sizeof(keybuf));
@@ -84,9 +89,6 @@ static void init_once_routine(void)
     }
     cstrbufFree(&keyfile);
 #endif
-
-    clogger_singleton.pid = getprocessid();
-    clogger_singleton.pvmgr = mem_alloc_zero(1, sizeof(struct logger_manager_t));
 
     shmgr_handle = shmipc_create(shmkey, &clogger_singleton, sizeof(clogger_singleton), 0, 0);
     if (shmgr_handle == shmipc_invalid_handle) {
@@ -99,13 +101,14 @@ static void init_once_routine(void)
             errno, format_posix_syserror(errno, errmsg, sizeof(errmsg)));
 #endif
     }
+#endif // CLOGGER_SHMGR_HANDLE
 }
 
 
 static logger_manager get_logger_manager_shared()
 {
-    struct clogger_version_mgr_t outmgr;
-
+#ifdef CLOGGER_SHMGR_HANDLE
+    struct clogger_version_mgr_t outmgr = { 0 };
     shmkey_t shmkey;
 
 #if defined(__WINDOWS__) || defined(__CYGWIN__)
@@ -122,18 +125,19 @@ static logger_manager get_logger_manager_shared()
     cstrbufFree(&keyfile);
 #endif
 
-    bzero(&outmgr, sizeof(outmgr));
-
     if (shmipc_read(shmkey, &outmgr, sizeof(outmgr), 0) == -1) {
         emerglog_exit("libclogger", "shmipc_read error(%d)", errno);
     }
 
     /* check libclogger version and build time and pid */
     clogger_singleton.pid = getprocessid();
-    if (! memcmp(&clogger_singleton, &outmgr, 32)) {
-        return (logger_manager) outmgr.pvmgr;
+    if (!memcmp(&clogger_singleton, &outmgr, 32)) {
+        return (logger_manager)outmgr.pvmgr;
     }
     return NULL;
+#endif // CLOGGER_SHMGR_HANDLE
+
+    return clogger_singleton.pvmgr;
 }
 
 
@@ -482,8 +486,9 @@ void logger_manager_uninit(void)
 
         bzero(&clogger_singleton, sizeof(clogger_singleton));
         mem_free(mgr);
+#ifdef CLOGGER_SHMGR_HANDLE
         shmipc_destroy(&shmgr_handle);
-
+#endif // CLOGGER_SHMGR_HANDLE
         printf("[%s:%d %s] logger_manager_uninit.\n", __FILE__, __LINE__, __FUNCTION__);
     }
 }

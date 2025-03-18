@@ -43,6 +43,7 @@ extern "C"
 
 #include "clogger_api.h"
 #include "rollingfile.h"
+
 #include "shmmaplog.h"
 
 

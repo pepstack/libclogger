@@ -3,7 +3,7 @@
 #
 # @copyright Copyright(c) 2024, mapaware.top
 # @since 2024-10-29 13:01:23
-# @date      2024-12-18 17:23:45
+# @date 2025-03-19 17:23:45
 ########################################################################
 # Linux, CYGWIN_NT, MSYS_NT, ...
 shuname = "$(shell uname)"
@@ -46,6 +46,7 @@ CC := gcc
 BUILD ?= RELEASE
 
 # compile directives
+#  -DCLOGGER_SHMGR_HANDLE
 CFLAGS += -std=gnu11 -D_GNU_SOURCE -fPIC -Wall
 
 NOWARNS ?= -Wno-unused-function -Wno-unused-variable -Wno-unused-but-set-variable

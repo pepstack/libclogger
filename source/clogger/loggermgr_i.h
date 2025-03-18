@@ -44,7 +44,11 @@ extern "C" {
 #include <common/ringbufst.h>
 #include <common/ringbuf.h>
 #include <common/emerglog.h>
+
+#ifdef CLOGGER_SHMGR_HANDLE
 #include <common/shmipc.h>
+#endif // CLOGGER_SHMGR_HANDLE
+
 #include <common/md5sum.h>
 #include <common/smallregex.h>   /* https://gitlab.com/relkom/small-regex */
 #include <common/uthash_incl.h>

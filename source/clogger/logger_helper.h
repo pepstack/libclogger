@@ -23,13 +23,13 @@
 * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***********************************************************************/
 /*
-** @file      logger_helper.h
+** @file logger_helper.h
 **  clogger api helper functions.
 **
-** @author     Liang Zhang <350137278@qq.com>
+** @author Liang Zhang <350137278@qq.com>
 ** @version 1.0.2
-** @since      2019-12-17 21:53:05
-** @date      2024-11-04 02:29:11
+** @since 2019-12-17 21:53:05
+** @date 2025-02-15 22:54:11
 **
 ** @note
 **   This file is NOT a part of libclogger.
@@ -71,102 +71,102 @@ extern "C" {
 
 #if defined(_MSC_VER) // MSVC (Windows) =>
 
-#define LOGGER_TRACE(logger, message, ...)  do { \
-                if (clog_logger_level_enabled(logger, CLOG_LEVEL_TRACE)) { \
-                    clog_logger_log_format(logger, CLOG_LEVEL_TRACE, CLOG_TRACE_MSGWAIT, __FILE__, __LINE__, __FUNCTION__, message, __VA_ARGS__); \
+#define CLOG_TRACE(logger, message, ...)  do { \
+                if (clog_logger_level_enabled((logger), CLOG_LEVEL_TRACE)) { \
+                    clog_logger_log_format((logger), CLOG_LEVEL_TRACE, CLOG_TRACE_MSGWAIT, __FILE__, __LINE__, __FUNCTION__, message, ##__VA_ARGS__); \
                 } \
             } while(0)
 
 
-#define LOGGER_DEBUG(logger, message, ...)  do { \
-                if (clog_logger_level_enabled(logger, CLOG_LEVEL_DEBUG)) { \
-                    clog_logger_log_format(logger, CLOG_LEVEL_DEBUG, CLOG_DEBUG_MSGWAIT, __FILE__, __LINE__, __FUNCTION__, message, __VA_ARGS__); \
+#define CLOG_DEBUG(logger, message, ...)  do { \
+                if (clog_logger_level_enabled((logger), CLOG_LEVEL_DEBUG)) { \
+                    clog_logger_log_format((logger), CLOG_LEVEL_DEBUG, CLOG_DEBUG_MSGWAIT, __FILE__, __LINE__, __FUNCTION__, message, ##__VA_ARGS__); \
                 } \
             } while(0)
 
 
-#define LOGGER_INFO(logger, message, ...)  do { \
-                if (clog_logger_level_enabled(logger, CLOG_LEVEL_INFO)) { \
-                    clog_logger_log_format(logger, CLOG_LEVEL_INFO, CLOG_INFO_MSGWAIT, __FILE__, __LINE__, __FUNCTION__, message, __VA_ARGS__); \
+#define CLOG_INFO(logger, message, ...)  do { \
+                if (clog_logger_level_enabled((logger), CLOG_LEVEL_INFO)) { \
+                    clog_logger_log_format((logger), CLOG_LEVEL_INFO, CLOG_INFO_MSGWAIT, __FILE__, __LINE__, __FUNCTION__, message, ##__VA_ARGS__); \
                 } \
             } while(0)
 
 
-#define LOGGER_WARN(logger, message, ...)  do { \
-                if (clog_logger_level_enabled(logger, CLOG_LEVEL_WARN)) { \
-                    clog_logger_log_format(logger, CLOG_LEVEL_WARN, CLOG_WARN_MSGWAIT, __FILE__, __LINE__, __FUNCTION__, message, __VA_ARGS__); \
+#define CLOG_WARN(logger, message, ...)  do { \
+                if (clog_logger_level_enabled((logger), CLOG_LEVEL_WARN)) { \
+                    clog_logger_log_format((logger), CLOG_LEVEL_WARN, CLOG_WARN_MSGWAIT, __FILE__, __LINE__, __FUNCTION__, message, ##__VA_ARGS__); \
                 } \
             } while(0)
 
 
-#define LOGGER_ERROR(logger, message, ...)  do { \
-                if (clog_logger_level_enabled(logger, CLOG_LEVEL_ERROR)) { \
-                    clog_logger_log_format(logger, CLOG_LEVEL_ERROR, CLOG_ERROR_MSGWAIT, __FILE__, __LINE__, __FUNCTION__, message, __VA_ARGS__); \
+#define CLOG_ERROR(logger, message, ...)  do { \
+                if (clog_logger_level_enabled((logger), CLOG_LEVEL_ERROR)) { \
+                    clog_logger_log_format((logger), CLOG_LEVEL_ERROR, CLOG_ERROR_MSGWAIT, __FILE__, __LINE__, __FUNCTION__, message, ##__VA_ARGS__); \
                 } \
             } while(0)
 
 
-#define LOGGER_FATAL(logger, message, ...)  do { \
-                if (clog_logger_level_enabled(logger, CLOG_LEVEL_FATAL)) { \
-                    clog_logger_log_format(logger, CLOG_LEVEL_FATAL, CLOG_FATAL_MSGWAIT, __FILE__, __LINE__, __FUNCTION__, message, __VA_ARGS__); \
+#define CLOG_FATAL(logger, message, ...)  do { \
+                if (clog_logger_level_enabled((logger), CLOG_LEVEL_FATAL)) { \
+                    clog_logger_log_format((logger), CLOG_LEVEL_FATAL, CLOG_FATAL_MSGWAIT, __FILE__, __LINE__, __FUNCTION__, message, ##__VA_ARGS__); \
                 } \
             } while(0)
 
 
-#define LOGGER_FATAL_EXIT(logger, message, ...)  do { \
-                if (clog_logger_level_enabled(logger, CLOG_LEVEL_FATAL)) { \
-                    clog_logger_log_format(logger, CLOG_LEVEL_FATAL, CLOG_FATAL_MSGWAIT, __FILE__, __LINE__, __FUNCTION__, message, __VA_ARGS__); \
+#define CLOG_FATAL_EXIT(logger, message, ...)  do { \
+                if (clog_logger_level_enabled((logger), CLOG_LEVEL_FATAL)) { \
+                    clog_logger_log_format((logger), CLOG_LEVEL_FATAL, CLOG_FATAL_MSGWAIT, __FILE__, __LINE__, __FUNCTION__, message, ##__VA_ARGS__); \
                 } \
                 exit(EXIT_FAILURE); \
             } while(0)
 
 #else  // GCC (Linux, MingW)
 
-#define LOGGER_TRACE(logger, message, args...)  do { \
-                if (clog_logger_level_enabled(logger, CLOG_LEVEL_TRACE)) { \
-                    clog_logger_log_format(logger, CLOG_LEVEL_TRACE, CLOG_TRACE_MSGWAIT, __FILE__, __LINE__, __FUNCTION__, message, ##args); \
+#define CLOG_TRACE(logger, message, args...)  do { \
+                if (clog_logger_level_enabled((logger), CLOG_LEVEL_TRACE)) { \
+                    clog_logger_log_format((logger), CLOG_LEVEL_TRACE, CLOG_TRACE_MSGWAIT, __FILE__, __LINE__, __FUNCTION__, message, ##args); \
                 } \
             } while(0)
 
 
-#define LOGGER_DEBUG(logger, message, args...)  do { \
-                if (clog_logger_level_enabled(logger, CLOG_LEVEL_DEBUG)) { \
-                    clog_logger_log_format(logger, CLOG_LEVEL_DEBUG, CLOG_DEBUG_MSGWAIT, __FILE__, __LINE__, __FUNCTION__, message, ##args); \
+#define CLOG_DEBUG(logger, message, args...)  do { \
+                if (clog_logger_level_enabled((logger), CLOG_LEVEL_DEBUG)) { \
+                    clog_logger_log_format((logger), CLOG_LEVEL_DEBUG, CLOG_DEBUG_MSGWAIT, __FILE__, __LINE__, __FUNCTION__, message, ##args); \
                 } \
             } while(0)
 
 
-#define LOGGER_INFO(logger, message, args...)  do { \
-                if (clog_logger_level_enabled(logger, CLOG_LEVEL_INFO)) { \
-                    clog_logger_log_format(logger, CLOG_LEVEL_INFO, CLOG_INFO_MSGWAIT, __FILE__, __LINE__, __FUNCTION__, message, ##args); \
+#define CLOG_INFO(logger, message, args...)  do { \
+                if (clog_logger_level_enabled((logger), CLOG_LEVEL_INFO)) { \
+                    clog_logger_log_format((logger), CLOG_LEVEL_INFO, CLOG_INFO_MSGWAIT, __FILE__, __LINE__, __FUNCTION__, message, ##args); \
                 } \
             } while(0)
 
 
-#define LOGGER_WARN(logger, message, args...)  do { \
-                if (clog_logger_level_enabled(logger, CLOG_LEVEL_WARN)) { \
-                    clog_logger_log_format(logger, CLOG_LEVEL_WARN, CLOG_WARN_MSGWAIT, __FILE__, __LINE__, __FUNCTION__, message, ##args); \
+#define CLOG_WARN(logger, message, args...)  do { \
+                if (clog_logger_level_enabled((logger), CLOG_LEVEL_WARN)) { \
+                    clog_logger_log_format((logger), CLOG_LEVEL_WARN, CLOG_WARN_MSGWAIT, __FILE__, __LINE__, __FUNCTION__, message, ##args); \
                 } \
             } while(0)
 
 
-#define LOGGER_ERROR(logger, message, args...)  do { \
-                if (clog_logger_level_enabled(logger, CLOG_LEVEL_ERROR)) { \
-                    clog_logger_log_format(logger, CLOG_LEVEL_ERROR, CLOG_ERROR_MSGWAIT, __FILE__, __LINE__, __FUNCTION__, message, ##args); \
+#define CLOG_ERROR(logger, message, args...)  do { \
+                if (clog_logger_level_enabled((logger), CLOG_LEVEL_ERROR)) { \
+                    clog_logger_log_format((logger), CLOG_LEVEL_ERROR, CLOG_ERROR_MSGWAIT, __FILE__, __LINE__, __FUNCTION__, message, ##args); \
                 } \
             } while(0)
 
 
-#define LOGGER_FATAL(logger, message, args...)  do { \
-                if (clog_logger_level_enabled(logger, CLOG_LEVEL_FATAL)) { \
-                    clog_logger_log_format(logger, CLOG_LEVEL_FATAL, CLOG_FATAL_MSGWAIT, __FILE__, __LINE__, __FUNCTION__, message, ##args); \
+#define CLOG_FATAL(logger, message, args...)  do { \
+                if (clog_logger_level_enabled((logger), CLOG_LEVEL_FATAL)) { \
+                    clog_logger_log_format((logger), CLOG_LEVEL_FATAL, CLOG_FATAL_MSGWAIT, __FILE__, __LINE__, __FUNCTION__, message, ##args); \
                 } \
             } while(0)
 
 
-#define LOGGER_FATAL_EXIT(logger, message, args...)  do { \
-                if (clog_logger_level_enabled(logger, CLOG_LEVEL_FATAL)) { \
-                    clog_logger_log_format(logger, CLOG_LEVEL_FATAL, CLOG_FATAL_MSGWAIT, __FILE__, __LINE__, __FUNCTION__, message, ##args); \
+#define CLOG_FATAL_EXIT(logger, message, args...)  do { \
+                if (clog_logger_level_enabled((logger), CLOG_LEVEL_FATAL)) { \
+                    clog_logger_log_format((logger), CLOG_LEVEL_FATAL, CLOG_FATAL_MSGWAIT, __FILE__, __LINE__, __FUNCTION__, message, ##args); \
                 } \
                 exit(EXIT_FAILURE); \
             } while(0)
