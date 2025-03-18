@@ -258,13 +258,13 @@ void* membuffer_alloc(membuffer_pool pool, uint32_t bufferSize)
 
         MBUF_SPINLOCK_GRAB(pFlag);
 
-        if (bitCount > FFS_setbit_count_32(pFlag->bitflag)) {
+        if (bitCount > FFS32_setbit_popcount(pFlag->bitflag)) {
             MBUF_SPINLOCK_FREE(pFlag);
             continue;  // 空闲块不满足, 直接尝试下一个
         }
 
         // startBit: 1-based
-        int startBit = FFS_first_setbit_n_32(pFlag->bitflag, bitCount);
+        int startBit = FFS32_first_setbit_n(pFlag->bitflag, bitCount);
         if (!startBit) {
             MBUF_SPINLOCK_FREE(pFlag);
             continue;  // 没有空闲块, 尝试下一个
@@ -349,7 +349,7 @@ uint32_t membuffer_pool_stats(membuffer_pool pool, membuffer_stats_t* stats)
 
         MBUF_SPINLOCK_GRAB(pFlag);
 
-        unused_buckets += FFS_setbit_count_32(pFlag->bitflag);
+        unused_buckets += FFS32_setbit_popcount(pFlag->bitflag);
 
         MBUF_SPINLOCK_FREE(pFlag);
     }
