@@ -69,7 +69,7 @@ static inline int FFS32_first_setbit(ffs32_flag_t flag)
     if (flag == 0) {
         return 0;
     }
-    if (flag == UINT32_MAX) {
+    if (flag == FFS32_FLAG_MAX) {
         return 1;
     }
 #if defined(FFS32_HAS_BitScanForward)
@@ -144,7 +144,7 @@ static inline int FFS32_first_setbit_n(ffs32_flag_t flag, int n)
         return FFS32_first_setbit(flag);
     }
     if (n == FFS32_FLAG_BITS) {
-        return (flag == UINT32_MAX) ? 1 : 0;
+        return (flag == FFS32_FLAG_MAX) ? 1 : 0;
     }
     // 优化位掩码滑动窗口
     ffs32_flag_t mask = (1UL << n) - 1;
@@ -168,8 +168,8 @@ static inline int FFS32_next_setbit(ffs32_flag_t flag, int startbit)
     if (flag == 0) {
         return 0;
     }
-    if (flag == UINT32_MAX) {
-        return startbit;
+    if (flag == FFS32_FLAG_MAX) {
+        return startbit; // 1-based
     }
     int start0 = startbit - 1;
     ffs32_flag_t masked = flag >> start0;
@@ -189,7 +189,7 @@ static inline int FFS32_next_unsetbit(ffs32_flag_t flag, int startbit)
     if (flag == 0) {
         return startbit;
     }
-    if (flag == UINT32_MAX) {
+    if (flag == FFS32_FLAG_MAX) {
         return 0;
     }
     int start0 = startbit - 1;
@@ -210,7 +210,7 @@ static inline int FFS32_setbit_popcount(ffs32_flag_t flag)
     if (flag == 0) {
         return 0;
     }
-    if (flag == UINT32_MAX) {
+    if (flag == FFS32_FLAG_MAX) {
         return FFS32_FLAG_BITS;
     }
 #if defined(__POPCNT__) || (defined(__GNUC__) && defined(__SSE4_2__))

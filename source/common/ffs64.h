@@ -67,7 +67,7 @@ static inline int FFS64_first_setbit(ffs64_flag_t flag)
     if (flag == 0) {
         return 0;
     }
-    if (flag == UINT64_MAX) {
+    if (flag == FFS64_FLAG_MAX) {
         return 1;
     }
 #if defined(FFS64_HAS_BitScanForward)
@@ -105,7 +105,6 @@ static int FFS64_last_setbit(ffs64_flag_t flag)
     if (flag == FFS64_FLAG_MAX) {
         return FFS64_FLAG_BITS; // 全1时最高位是64
     }
-
 #if defined(_MSC_VER)
     // MSVC 平台优化（需支持64位指令集）
     unsigned long index;
@@ -154,7 +153,7 @@ static inline int FFS64_first_setbit_n(ffs64_flag_t flag, int n)
         return FFS64_first_setbit(flag);
     }
     if (n == FFS64_FLAG_BITS) {
-        return (flag == UINT64_MAX) ? 1 : 0;
+        return (flag == FFS64_FLAG_MAX) ? 1 : 0;
     }
     const ffs64_flag_t mask = (1ULL << n) - 1;
     for (int shift = 0; shift <= FFS64_FLAG_BITS - n; ++shift) {
@@ -177,6 +176,9 @@ static inline int FFS64_next_setbit(ffs64_flag_t flag, int startbit)
     if (flag == 0) {
         return 0;
     }
+    if (flag == FFS64_FLAG_MAX) {
+        return startbit; // 1-based
+    }
     const int start0 = startbit - 1;
     const ffs64_flag_t masked = flag >> start0;
     const int pos = FFS64_first_setbit(masked);
@@ -192,7 +194,7 @@ static inline int FFS64_next_setbit(ffs64_flag_t flag, int startbit)
 static inline int FFS64_next_unsetbit(ffs64_flag_t flag, int startbit)
 {
     FFS64_Assert(startbit > 0 && startbit <= FFS64_FLAG_BITS);
-    if (flag == UINT64_MAX) {
+    if (flag == FFS64_FLAG_MAX) {
         return 0;
     }
     const int start0 = startbit - 1;
@@ -212,7 +214,7 @@ static inline int FFS64_setbit_popcount(ffs64_flag_t flag)
     if (flag == 0) {
         return 0;
     }
-    if (flag == UINT64_MAX) {
+    if (flag == FFS64_FLAG_MAX) {
         return FFS64_FLAG_BITS;
     }
 #if defined(__GNUC__) || defined(__clang__)

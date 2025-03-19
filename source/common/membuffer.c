@@ -50,7 +50,7 @@
   # define MBUF_StaticAssert FFS64_StaticAssert
   # define MBUF_Assert FFS64_Assert
 
-  # define MBUF_first_setbit     FFS64_first_setbit
+  # define MBUF_next_setbit      FFS64_next_setbit
   # define MBUF_next_unsetbit    FFS64_next_unsetbit
 
   # define MBUF_FLAG_BITS        FFS64_FLAG_BITS
@@ -61,7 +61,7 @@
   # define MBUF_StaticAssert FFS32_StaticAssert
   # define MBUF_Assert FFS32_Assert
 
-  # define MBUF_first_setbit     FFS32_first_setbit
+  # define MBUF_next_setbit      FFS32_next_setbit
   # define MBUF_next_unsetbit    FFS32_next_unsetbit
 
   # define MBUF_FLAG_BITS        FFS32_FLAG_BITS
@@ -196,72 +196,72 @@ static void inline __spinlock_free(uatomic_int* spinlockAddr)
 }
 
 
-static int __find_cluster_setbits(membuffer_flag_t** ppFlagStart, membuffer_flag_t** ppFlagEnd, const int nBitCount)
+// flags=[flag1|flag2|flag3] => [0b1111000 | 0b11111111 | 0b00000111]，连续块数=4+8+3=15
+// 1 flag = 64 Bits = 64 个内存块
+static int __find_cluster_setbits(membuffer_flag_t** ppFlagStart, membuffer_flag_t** ppFlagEnd, const int bitCount)
 {
-    membuffer_flag_t* pFlagFirst = NULL;
-    int startBit1 = 0;
+    membuffer_flag_t* pFirstFlag = NULL;
+    int firstBitOffset = 0;
 
-    int bitCount = nBitCount;
+    int startBit = 0;
+    int remaining = bitCount;
 
-    const membuffer_flag_t* pFlagNEnd = *ppFlagEnd;
+    const membuffer_flag_t* pFlagNEnd = *ppFlagEnd;  // pFlagNEnd 特意指向无效指针
     membuffer_flag_t* pFlag = *ppFlagStart;
 
-    while (pFlag < pFlagNEnd && bitCount > 0) {
-        int startBit = MBUF_first_setbit(*pFlag);
-        if (!startBit) { // 未发现置位，跳过当前flag
-            bitCount = nBitCount;
-            pFlagFirst = NULL;
+    while (pFlag < pFlagNEnd && remaining > 0) {
+        // startBit=1 表示第0位是1。startBit=0 表示无置位
+        startBit = MBUF_next_setbit(*pFlag, (startBit > 0? startBit : 1));
+
+        if (!startBit) { // 无置位
+            remaining = bitCount;  // 重置
+            pFirstFlag = NULL;
             ++pFlag;
             continue;
         }
 
-        if (pFlagFirst) { // 如果已经设置起始，startBit 必须从 1 开始
+        if (pFirstFlag) {
+            // 已经设置起始，startBit 必须从 1 开始
             if (startBit != 1) {
-                bitCount = nBitCount;
-                pFlagFirst = NULL;
-                continue;
+                // 出现清零位，重置（pFlag 不能移动）
+                remaining = bitCount;
+                pFirstFlag = pFlag;
+                firstBitOffset = startBit;
             }
         }
-        else {
-            // 设置起始
-            pFlagFirst = pFlag;
-            startBit1 = startBit;
+        else { // 仅在此处设置起始
+            remaining = bitCount;
+            pFirstFlag = pFlag;
+            firstBitOffset = startBit;
         }
 
-        MBUF_Assert(pFlagFirst);
-        
+        MBUF_Assert(pFirstFlag && startBit);
+
+        // endBit=0 表示从第 startBit 位（0-based）开始到结束没有清0位。
         int endBit = MBUF_next_unsetbit(*pFlag, startBit + 1);
-        int setBits = endBit ? endBit - startBit : MBUF_FLAG_BITS - startBit + 1;
+        int available = endBit ? endBit - startBit : MBUF_FLAG_BITS - startBit + 1;
 
-        if (bitCount > setBits) {
-            // 不满足连续置位数
-            if (endBit) {
-                // startBit->End 存在清零位
-                bitCount = nBitCount;
-                pFlagFirst = NULL;
-                ++pFlag;
-                continue;
-            }
-
-            // startBit->End不存在清零位
-            bitCount -= setBits;
-            ++pFlag;
-            continue;
+        if (remaining <= available) {
+            // 发现可用的连续位
+            *ppFlagEnd = pFlag;
+            *ppFlagStart = pFirstFlag;
+            return firstBitOffset;
         }
 
-        // 满足连续置位数
-        bitCount = 0;
-        break;
+        // 不满足连续置位数: remaining > available
+        if (endBit) { // 出现清零位，重置（pFlag 不能移动）
+            remaining = bitCount;
+            pFirstFlag = NULL;
+            startBit = endBit;  // 防止无限循环
+        }
+        else { // 不存在清零位: endBit == 0
+            remaining -= available;
+            ++pFlag; // 下一个 Flag
+            startBit = 0;
+        }
     }
 
-    if (pFlagFirst && pFlag < pFlagNEnd) {
-        // success find
-        *ppFlagEnd = pFlag;
-        *ppFlagStart = pFlagFirst;
-        return startBit1;
-    }
-
-    // not find
+    // 未发现可用的连续位(bitCount)
     return 0;
 }
 
