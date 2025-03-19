@@ -40,7 +40,13 @@
 #ifndef MEM_BUFFER_H_
 #define MEM_BUFFER_H_
 
-#include <stdint.h>
+
+#if defined(__x86_64__) || defined(__aarch64__) || defined(_M_X64) || defined(_M_AMD64) || defined(__LP64__)
+  # include "ffs64.h"
+#else
+  # include "ffs32.h"
+#endif
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -90,7 +96,7 @@ extern void* membuffer_free(void* pMemory);
  * @param stats 接收统计的结构指针（可以为NULL）
  * @return 返回空闲的内存块数
  */
-extern uint32_t membuffer_pool_stats(membuffer_pool pool, membuffer_stats_t* stats);
+extern int membuffer_pool_stats(membuffer_pool pool, membuffer_stats_t* stats);
 
 
 #ifdef    __cplusplus
