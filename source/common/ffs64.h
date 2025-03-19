@@ -38,7 +38,10 @@
 #endif
 
 #define FFS64_FLAG_BITS   64
+#define FFS64_FLAG_MAX    UINT64_MAX
+
 typedef uint64_t ffs64_flag_t;
+
 
 // 静态断言
 #define FFS64_StaticAssert(cond, msg) \
@@ -89,6 +92,54 @@ static inline int FFS64_first_setbit(ffs64_flag_t flag)
 #endif
 }
 
+/**
+ * @brief 查找最后一个置位（1-based）
+ * @param flag 待查找的64位标志
+ * @return 最后一个置位的位置（1-based），全0返回0
+ */
+static int FFS64_last_setbit(ffs64_flag_t flag)
+{
+    if (flag == 0) {
+        return 0;
+    }
+    if (flag == FFS64_FLAG_MAX) {
+        return FFS64_FLAG_BITS; // 全1时最高位是64
+    }
+
+#if defined(_MSC_VER)
+    // MSVC 平台优化（需支持64位指令集）
+    unsigned long index;
+    return _BitScanReverse64(&index, flag) ? (int)(index + 1) : 0;
+
+#elif defined(__GNUC__) || defined(__clang__)
+    // GCC/Clang 平台优化
+    return flag ? (FFS64_FLAG_BITS - __builtin_clzll(flag)) : 0;
+#else
+    // 通用位操作实现（无编译器内置函数时）
+    // 原理：通过位填充找到最高有效位
+    flag |= flag >> 1;
+    flag |= flag >> 2;
+    flag |= flag >> 4;
+    flag |= flag >> 8;
+    flag |= flag >> 16;
+    flag |= flag >> 32; // 新增的64位处理步骤
+    flag = (flag >> 1) + 1; // 保留最高位
+
+    // 使用64位 De Bruijn 序列查找
+    static const int debruijn64_table[FFS64_FLAG_BITS] = {
+        0,  1, 48,  2, 57, 49, 28,  3,
+        61, 58, 50, 42, 38, 29, 17,  4,
+        62, 55, 59, 36, 53, 51, 43, 22,
+        45, 39, 33, 30, 24, 18, 12,  5,
+        63, 47, 56, 27, 60, 41, 37, 16,
+        54, 35, 52, 21, 44, 32, 23, 11,
+        46, 26, 40, 15, 34, 20, 31, 10,
+        25, 14, 19,  9, 13,  8,  7,  6
+    };
+    static const ffs64_flag_t debruijn64 = 0x03F79D71B4CB0A89ULL;
+    return debruijn64_table[(flag * debruijn64) >> 58] + 1;
+#endif
+}
 
 /**
  * @brief 查找连续 n 个置位的起始位置（1-based）

@@ -39,6 +39,8 @@
 #endif
 
 #define FFS32_FLAG_BITS   32
+#define FFS32_FLAG_MAX    UINT32_MAX
+
 typedef uint32_t ffs32_flag_t;
 
 
@@ -83,6 +85,49 @@ static inline int FFS32_first_setbit(ffs32_flag_t flag)
     };
     static const ffs32_flag_t debruijn32 = 0x077CB531U;
     return (int) debruijn32_table[(ffs32_flag_t)((flag & (~flag + 1)) * debruijn32) >> 27] + 1;
+#endif
+}
+
+/**
+ * @brief 查找最后一个置位（1-based）
+ * @param flag 待查找的32位标志
+ * @return 反向查找第一个置位的位置（1-based），全0返回0
+ */
+static int FFS32_last_setbit(ffs32_flag_t flag)
+{
+    if (flag == 0) {
+        return 0;
+    }
+    if (flag == FFS32_FLAG_MAX) {
+        return FFS32_FLAG_BITS; // 全1时最高位是32
+    }
+
+#if defined(_MSC_VER)
+    // MSVC 平台优化
+    unsigned long index;
+    return _BitScanReverse(&index, flag) ? (int)(index + 1) : 0;
+
+#elif defined(__GNUC__) || defined(__clang__)
+    // GCC/Clang 平台优化
+    return flag ? (FFS32_FLAG_BITS - __builtin_clz(flag)) : 0;
+
+#else
+    // 通用位操作实现（无编译器内置函数时）
+    // 原理：通过位填充找到最高有效位
+    flag |= flag >> 1;
+    flag |= flag >> 2;
+    flag |= flag >> 4;
+    flag |= flag >> 8;
+    flag |= flag >> 16;
+    flag = (flag >> 1) + 1; // 保留最高位
+
+    // 使用相同的 De Bruijn 序列查找
+    static const int debruijn32_table[FFS32_FLAG_BITS] = {
+        0, 1, 28, 2, 29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4, 8,
+        31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6, 11, 5, 10, 9
+    };
+    static const ffs32_flag_t debruijn32 = 0x077CB531U;
+    return debruijn32_table[(flag * debruijn32) >> 27] + 1;
 #endif
 }
 

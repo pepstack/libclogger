@@ -50,21 +50,22 @@
   # define MBUF_StaticAssert FFS64_StaticAssert
   # define MBUF_Assert FFS64_Assert
 
-  # define MBUF_setbit_popcount  FFS64_setbit_popcount
-  # define MBUF_first_setbit_n   FFS64_first_setbit_n
-  # define MBUF_setbit_popcount  FFS64_setbit_popcount
+  # define MBUF_first_setbit     FFS64_first_setbit
+  # define MBUF_next_unsetbit    FFS64_next_unsetbit
 
   # define MBUF_FLAG_BITS        FFS64_FLAG_BITS
+  # define MBUF_FLAG_MAX         FFS64_FLAG_MAX
 #elif defined(FFS32_FLAG_BITS)
   typedef ffs32_flag_t membuffer_flag_t;
 
   # define MBUF_StaticAssert FFS32_StaticAssert
   # define MBUF_Assert FFS32_Assert
 
-  # define MBUF_setbit_popcount  FFS32_setbit_popcount
-  # define MBUF_first_setbit_n   FFS32_first_setbit_n
-  # define MBUF_setbit_popcount  FFS32_setbit_popcount
+  # define MBUF_first_setbit     FFS32_first_setbit
+  # define MBUF_next_unsetbit    FFS32_next_unsetbit
+
   # define MBUF_FLAG_BITS        FFS32_FLAG_BITS
+  # define MBUF_FLAG_MAX         FFS32_FLAG_MAX
 #else
   error: FFS32_FLAG_BITS or FFS64_FLAG_BITS not included
 #endif
@@ -73,14 +74,14 @@
 // 自旋锁最大重试次数（指数退避）: 10 是比较好的
 #define MBUF_SPINS_MAX       10
 
-// 内存块字节尺寸对齐大小 = 128
+// 内存块字节尺寸对齐大小 = 64/128
 #define MBUF_ALIGN_SIZE      (MBUF_FLAG_BITS * 2)
 
-// 单个内存块大小限制 8 MB
-#define MBUF_SIZE_MAX        (MBUF_ALIGN_SIZE * 8192 * 8)
+// 单个内存块大小限制
+#define MBUF_BSIZE_MAX       (MBUF_ALIGN_SIZE * 4096)
 
 // 内存池总大小限制 1024 MB (可能受实际可分配内存限制)
-#define MBUF_POOL_SIZE_MAX   (MBUF_SIZE_MAX * MBUF_ALIGN_SIZE)
+#define MBUF_POOL_SIZE_MAX   (MBUF_BSIZE_MAX * MBUF_FLAG_BITS * 16)
 
 
 #if (MBUF_FLAG_BITS == 64)
@@ -135,7 +136,7 @@ typedef struct membuffer_pool_t
 } membuffer_pool_t;
 
 
-// 内存头信息（位于每个分配块的首部）
+// 内存头信息16字节（位于每个分配块的首部）
 typedef struct
 {
     membuffer_pool_t* ownerPool; // 所属的内存池
@@ -163,7 +164,7 @@ MBUF_StaticAssert(MBUF_ALIGN_SIZE % sizeof(membuffer_t) == 0, MBUF_ALIGN_SIZE_mu
  */
 static inline size_t __align_size(size_t size, size_t alignSize)
 {
-    return ((size + alignSize - 1) / alignSize) * alignSize;
+    return (size ? ((size + alignSize - 1) / alignSize) : 1) * alignSize;
 }
 
 
@@ -195,21 +196,91 @@ static void inline __spinlock_free(uatomic_int* spinlockAddr)
 }
 
 
+static int __find_cluster_setbits(membuffer_flag_t** ppFlagStart, membuffer_flag_t** ppFlagEnd, const int nBitCount)
+{
+    membuffer_flag_t* pFlagFirst = NULL;
+    int startBit1 = 0;
+
+    int bitCount = nBitCount;
+
+    const membuffer_flag_t* pFlagNEnd = *ppFlagEnd;
+    membuffer_flag_t* pFlag = *ppFlagStart;
+
+    while (pFlag < pFlagNEnd && bitCount > 0) {
+        int startBit = MBUF_first_setbit(*pFlag);
+        if (!startBit) { // 未发现置位，跳过当前flag
+            bitCount = nBitCount;
+            pFlagFirst = NULL;
+            ++pFlag;
+            continue;
+        }
+
+        if (pFlagFirst) { // 如果已经设置起始，startBit 必须从 1 开始
+            if (startBit != 1) {
+                bitCount = nBitCount;
+                pFlagFirst = NULL;
+                continue;
+            }
+        }
+        else {
+            // 设置起始
+            pFlagFirst = pFlag;
+            startBit1 = startBit;
+        }
+
+        MBUF_Assert(pFlagFirst);
+        
+        int endBit = MBUF_next_unsetbit(*pFlag, startBit + 1);
+        int setBits = endBit ? endBit - startBit : MBUF_FLAG_BITS - startBit + 1;
+
+        if (bitCount > setBits) {
+            // 不满足连续置位数
+            if (endBit) {
+                // startBit->End 存在清零位
+                bitCount = nBitCount;
+                pFlagFirst = NULL;
+                ++pFlag;
+                continue;
+            }
+
+            // startBit->End不存在清零位
+            bitCount -= setBits;
+            ++pFlag;
+            continue;
+        }
+
+        // 满足连续置位数
+        bitCount = 0;
+        break;
+    }
+
+    if (pFlagFirst && pFlag < pFlagNEnd) {
+        // success find
+        *ppFlagEnd = pFlag;
+        *ppFlagStart = pFlagFirst;
+        return startBit1;
+    }
+
+    // not find
+    return 0;
+}
+
+
 membuffer_pool membuffer_pool_create(uint32_t bsize, uint32_t numb)
 {
-    MBUF_Assert(bsize > 0 && bsize <= MBUF_SIZE_MAX);
-    MBUF_Assert(numb > 0 && (bsize * numb) <= MBUF_POOL_SIZE_MAX);
+    MBUF_Assert(bsize >= 0 && bsize <= MBUF_BSIZE_MAX);
+    MBUF_Assert(numb >= 0 && (bsize * numb) <= MBUF_POOL_SIZE_MAX);
 
     // 内存块大小是 MBUF_ALIGN_SIZE 字节的倍数
     const uint32_t bufferSize = (uint32_t)__align_size(bsize, MBUF_ALIGN_SIZE);
 
-    // 内存块数量是 MBUF_FLAG_BITS(32) 的整数倍
-    const uint32_t numBuffers = (uint32_t)__align_size(numb, MBUF_FLAG_BITS);
-
-    if (bufferSize > MBUF_SIZE_MAX) {
-        fprintf(stderr, "buffer size(=%zu) is more than MBUF_SIZE_MAX(=%zu).\n", (size_t) bufferSize, (size_t)MBUF_SIZE_MAX);
+    if (bufferSize > MBUF_BSIZE_MAX) {
+        fprintf(stderr, "bsize(=%zu) is more than MBUF_BSIZE_MAX(=%zu).\n", (size_t)bufferSize, (size_t)MBUF_BSIZE_MAX);
         return NULL;
     }
+
+    // 内存块数量是 MBUF_FLAG_BITS 的整数倍
+    const uint32_t numBuffers = (uint32_t)__align_size(numb, MBUF_FLAG_BITS);
 
     const size_t poolSizeMax = bufferSize * numBuffers;
     if (poolSizeMax > MBUF_POOL_SIZE_MAX) {
@@ -235,7 +306,7 @@ membuffer_pool membuffer_pool_create(uint32_t bsize, uint32_t numb)
 
     // 设置全部块为空闲: flag = 1
     for (uint32_t i = 0; i < pool->FlagsCount; ++i) {
-        pool->_Flags[i] = UINT32_MAX;
+        pool->_Flags[i] = MBUF_FLAG_MAX;
     }
 
     return pool;
@@ -253,10 +324,10 @@ void membuffer_pool_destroy(membuffer_pool pool)
 void* membuffer_alloc(membuffer_pool pool, uint32_t bufferSize)
 {
     // 需要的内存块数
-    const int bitCount = (int)(__align_size(bufferSize + sizeof(membuffer_t), pool->BufferSizeB) / pool->BufferSizeB);
+    int bitCount = (int)(__align_size(bufferSize + sizeof(membuffer_t), pool->BufferSizeB) / pool->BufferSizeB);
 
     // 计算最大可分配的容量
-    if (bitCount == 0 || bitCount > MBUF_FLAG_BITS) {
+    if (bitCount == 0 || bitCount > (int)(MBUF_FLAG_BITS * pool->FlagsCount)) {
         return NULL;  // 超过最大块
     }
 
@@ -266,55 +337,51 @@ void* membuffer_alloc(membuffer_pool pool, uint32_t bufferSize)
 
     __spinlock_grab(&pool->spinlock, MBUF_SPINS_MAX);
 
-    membuffer_flag_t* pFlag;
-    for (uint32_t flagOff = 0; flagOff < pool->FlagsCount; ++flagOff) {
-        pFlag = pool->_Flags + flagOff;
+    membuffer_flag_t* pFlagOffset = pool->_Flags;
+    membuffer_flag_t* pFlagEnd = pool->_Flags + pool->FlagsCount;
 
-        if (bitCount > MBUF_setbit_popcount(*pFlag)) {
-            continue;  // 空闲块不满足, 直接尝试下一个
-        }
-
-        // startBit: 1-based
-        int startBit = MBUF_first_setbit_n(*pFlag, bitCount);
-        if (!startBit) {
-            continue;  // 没有空闲块, 尝试下一个
-        }
-
-        // startBit 位偏移从 0 开始：0-based
-        --startBit;
-
-        // 计算块偏移以得到块的位置
-        membuffer_t* pBuffer = (membuffer_t*)&pool->_Buffers[(flagOff * MBUF_FLAG_BITS + startBit) * pool->BufferSizeB];
-
-        // 设置块头
-        pBuffer->flagOffset = flagOff;
-        pBuffer->bitOffset = (uint16_t)startBit;  // 块位偏移从 0 开始
-        pBuffer->bitCount = (uint16_t)bitCount;   // 实际跨越的块数
-        pBuffer->ownerPool = pool;
-
-        // 清除块空闲位: 标记已经使用
-        // pFlag 的从 startBit 开始的 bktCount 个位都要设置为 0
-        if (bitCount == MBUF_FLAG_BITS) {
-            *pFlag = 0;
-        }
-        else {
-            // 生成掩码 (需要清除的位为0: BktCount 不能超过 31)
-            membuffer_flag_t mask = ~(MASK_flag_table[bitCount] << startBit);
-            *pFlag &= mask; // 清除对应的位
-        }
-
-        pool->unused_bits -= bitCount;
-
+    int startBit = __find_cluster_setbits(&pFlagOffset, &pFlagEnd, bitCount);
+    if (!startBit) {
         __spinlock_free(&pool->spinlock);
-
-        // 返回实际内存块的起始地址
-        return (void*)pBuffer->_Memory;
+        return NULL;
     }
 
-    // 不可达: 没有可用的块
+    // startBit 位偏移从 0 开始：0-based
+    --startBit;
+
+    int flagOffset = (int)(pFlagOffset - pool->_Flags);
+    int bitOffset = flagOffset * MBUF_FLAG_BITS + startBit;
+
+    // 计算块偏移以得到块的位置
+    membuffer_t* pBuffer = (membuffer_t*)&pool->_Buffers[bitOffset * pool->BufferSizeB];
+
+    // 设置块头
+    pBuffer->flagOffset = flagOffset;
+    pBuffer->bitOffset = (uint16_t)startBit;  // 块位偏移从 0 开始
+    pBuffer->bitCount = (uint16_t)bitCount;   // 实际跨越的块数
+    pBuffer->ownerPool = pool;
+
+    pool->unused_bits -= bitCount;
+
+    // 清除块空闲位: 标记已经使用
+    while (bitCount > 0) {
+        // 需要清零的位数
+        bitOffset = bitCount > MBUF_FLAG_BITS - startBit ? MBUF_FLAG_BITS - startBit : bitCount;
+        
+        // 生成掩码 (需要清除的位为0)
+        membuffer_flag_t mask = ~(MASK_flag_table[bitOffset] << startBit);
+        *pFlagOffset &= mask; // 清除对应的位
+
+        startBit = 0;
+        bitCount -= bitOffset;
+
+        ++pFlagOffset;
+    }
+
     __spinlock_free(&pool->spinlock);
 
-    return NULL;
+    // 返回实际内存块的起始地址
+    return (void*)pBuffer->_Memory;
 }
 
 
@@ -334,18 +401,29 @@ void* membuffer_free(void* pMemory)
 
         if ((char*)pBuffer >= (char*)pool->_Buffers &&
             (char*)pBuffer < (char*)pool->_Buffers + pool->BufferSizeB * pool->FlagsCount * MBUF_FLAG_BITS) {
-            membuffer_flag_t* pFlag = pool->_Flags + pBuffer->flagOffset;
 
             __spinlock_grab(&pool->spinlock, MBUF_SPINS_MAX);
 
-            // 生成掩码：将 bitOffset 开始的 bitCount 个位设为 1，其余位不变
-            membuffer_flag_t mask = (membuffer_flag_t)(MASK_flag_table[pBuffer->bitCount] << pBuffer->bitOffset);
-            *pFlag |= mask; // 置位对应的位
+            membuffer_flag_t* pFlagOffset = pool->_Flags + pBuffer->flagOffset;
+            int startBit = pBuffer->bitOffset;
+            int bitCount = pBuffer->bitCount;
+            while (bitCount > 0) {
+                // 需要置位位数
+                int bitOffset = bitCount > MBUF_FLAG_BITS - startBit ? MBUF_FLAG_BITS - startBit : bitCount;
 
-            pool->unused_bits += (int) pBuffer->bitCount;
+                // 生成掩码：将 bitOffset 开始的 bitCount 个位设为 1，其余位不变
+                membuffer_flag_t mask = (membuffer_flag_t)(MASK_flag_table[bitOffset] << startBit);
+                *pFlagOffset |= mask; // 置位对应的位
 
+                startBit = 0;
+                bitCount -= bitOffset;
+
+                ++pFlagOffset;
+            }
+            pool->unused_bits += (int)pBuffer->bitCount;
+
+            // success
             __spinlock_free(&pool->spinlock);
-
             return NULL;
         }
     }
