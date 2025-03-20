@@ -37,10 +37,10 @@
   #undef FFS64_HAS__builtin_ffs
 #endif
 
-#define FFS64_FLAG_BITS   64
-#define FFS64_FLAG_MAX    UINT64_MAX
+#define FFS64_BITS   64
+#define FFS64_MAX    UINT64_MAX
 
-typedef uint64_t ffs64_flag_t;
+typedef uint64_t FFS64_t;
 
 
 // 静态断言
@@ -54,20 +54,20 @@ typedef uint64_t ffs64_flag_t;
 extern "C" {
 #endif
 
-// 确保 ffs64_flag_t 为 8 字节
-FFS64_StaticAssert(sizeof(ffs64_flag_t)*8 == FFS64_FLAG_BITS, ffs64_flag_must_be_64_bits);
+// 确保 FFS64_t 为 8 字节
+FFS64_StaticAssert(sizeof(FFS64_t)*8 == FFS64_BITS, FFS64_must_be_64_bits);
 
 /**
  * @brief 查找第一个置位（1-based）
  * @param flag 待查找的64位标志
  * @return 第一个置位的位置（1-based），全0返回0
  */
-static inline int FFS64_first_setbit(ffs64_flag_t flag)
+static inline int FFS64_first_setbit(FFS64_t flag)
 {
     if (flag == 0) {
         return 0;
     }
-    if (flag == FFS64_FLAG_MAX) {
+    if (flag == FFS64_MAX) {
         return 1;
     }
 #if defined(FFS64_HAS_BitScanForward)
@@ -77,7 +77,7 @@ static inline int FFS64_first_setbit(ffs64_flag_t flag)
     return __builtin_ffsll(flag);
 #else
     // De Bruijn 序列实现
-    static const int debruijn64_table[FFS64_FLAG_BITS] = {
+    static const int debruijn64_table[FFS64_BITS] = {
         0,  1, 48,  2, 57, 49, 28,  3,
         61, 58, 50, 42, 38, 29, 17,  4,
         62, 55, 59, 36, 53, 51, 43, 22,
@@ -87,7 +87,7 @@ static inline int FFS64_first_setbit(ffs64_flag_t flag)
         46, 26, 40, 15, 34, 20, 31, 10,
         25, 14, 19,  9, 13,  8,  7,  6
     };
-    static const ffs64_flag_t debruijn64 = 0x03F79D71B4CB0A89ULL;
+    static const FFS64_t debruijn64 = 0x03F79D71B4CB0A89ULL;
     return debruijn64_table[((flag & (~flag + 1)) * debruijn64) >> 58] + 1;
 #endif
 }
@@ -97,13 +97,13 @@ static inline int FFS64_first_setbit(ffs64_flag_t flag)
  * @param flag 待查找的64位标志
  * @return 最后一个置位的位置（1-based），全0返回0
  */
-static int FFS64_last_setbit(ffs64_flag_t flag)
+static int FFS64_last_setbit(FFS64_t flag)
 {
     if (flag == 0) {
         return 0;
     }
-    if (flag == FFS64_FLAG_MAX) {
-        return FFS64_FLAG_BITS; // 全1时最高位是64
+    if (flag == FFS64_MAX) {
+        return FFS64_BITS; // 全1时最高位是64
     }
 #if defined(_MSC_VER)
     // MSVC 平台优化（需支持64位指令集）
@@ -112,7 +112,7 @@ static int FFS64_last_setbit(ffs64_flag_t flag)
 
 #elif defined(__GNUC__) || defined(__clang__)
     // GCC/Clang 平台优化
-    return flag ? (FFS64_FLAG_BITS - __builtin_clzll(flag)) : 0;
+    return flag ? (FFS64_BITS - __builtin_clzll(flag)) : 0;
 #else
     // 通用位操作实现（无编译器内置函数时）
     // 原理：通过位填充找到最高有效位
@@ -125,7 +125,7 @@ static int FFS64_last_setbit(ffs64_flag_t flag)
     flag = (flag >> 1) + 1; // 保留最高位
 
     // 使用64位 De Bruijn 序列查找
-    static const int debruijn64_table[FFS64_FLAG_BITS] = {
+    static const int debruijn64_table[FFS64_BITS] = {
         0,  1, 48,  2, 57, 49, 28,  3,
         61, 58, 50, 42, 38, 29, 17,  4,
         62, 55, 59, 36, 53, 51, 43, 22,
@@ -135,7 +135,7 @@ static int FFS64_last_setbit(ffs64_flag_t flag)
         46, 26, 40, 15, 34, 20, 31, 10,
         25, 14, 19,  9, 13,  8,  7,  6
     };
-    static const ffs64_flag_t debruijn64 = 0x03F79D71B4CB0A89ULL;
+    static const FFS64_t debruijn64 = 0x03F79D71B4CB0A89ULL;
     return debruijn64_table[(flag * debruijn64) >> 58] + 1;
 #endif
 }
@@ -146,17 +146,17 @@ static int FFS64_last_setbit(ffs64_flag_t flag)
  * @param n 连续置位的数量
  * @return 起始位置（1-based），未找到返回0
  */
-static inline int FFS64_first_setbit_n(ffs64_flag_t flag, int n)
+static inline int FFS64_first_setbit_n(FFS64_t flag, int n)
 {
-    FFS64_Assert(n > 0 && n <= FFS64_FLAG_BITS);
+    FFS64_Assert(n > 0 && n <= FFS64_BITS);
     if (n == 1) {
         return FFS64_first_setbit(flag);
     }
-    if (n == FFS64_FLAG_BITS) {
-        return (flag == FFS64_FLAG_MAX) ? 1 : 0;
+    if (n == FFS64_BITS) {
+        return (flag == FFS64_MAX) ? 1 : 0;
     }
-    const ffs64_flag_t mask = (1ULL << n) - 1;
-    for (int shift = 0; shift <= FFS64_FLAG_BITS - n; ++shift) {
+    const FFS64_t mask = (1ULL << n) - 1;
+    for (int shift = 0; shift <= FFS64_BITS - n; ++shift) {
         if ((flag & (mask << shift)) == (mask << shift)) {
             return shift + 1;
         }
@@ -170,17 +170,17 @@ static inline int FFS64_first_setbit_n(ffs64_flag_t flag, int n)
  * @param startbit 起始位置（1-based）
  * @return 下一个置位的位置（1-based），未找到返回0
  */
-static inline int FFS64_next_setbit(ffs64_flag_t flag, int startbit)
+static inline int FFS64_next_setbit(FFS64_t flag, int startbit)
 {
-    FFS64_Assert(startbit > 0 && startbit <= FFS64_FLAG_BITS);
+    FFS64_Assert(startbit > 0 && startbit <= FFS64_BITS);
     if (flag == 0) {
         return 0;
     }
-    if (flag == FFS64_FLAG_MAX) {
+    if (flag == FFS64_MAX) {
         return startbit; // 1-based
     }
     const int start0 = startbit - 1;
-    const ffs64_flag_t masked = flag >> start0;
+    const FFS64_t masked = flag >> start0;
     const int pos = FFS64_first_setbit(masked);
     return pos ? (pos + start0) : 0;
 }
@@ -191,15 +191,15 @@ static inline int FFS64_next_setbit(ffs64_flag_t flag, int startbit)
  * @param startbit 起始位置（1-based）
  * @return 下一个置0位的位置（1-based），未找到返回0
  */
-static inline int FFS64_next_unsetbit(ffs64_flag_t flag, int startbit)
+static inline int FFS64_next_unsetbit(FFS64_t flag, int startbit)
 {
-    FFS64_Assert(startbit > 0 && startbit <= FFS64_FLAG_BITS);
-    if (flag == FFS64_FLAG_MAX) {
+    FFS64_Assert(startbit > 0 && startbit <= FFS64_BITS);
+    if (flag == FFS64_MAX) {
         return 0;
     }
     const int start0 = startbit - 1;
-    const ffs64_flag_t inverted = ~flag;
-    const ffs64_flag_t masked = inverted >> start0;
+    const FFS64_t inverted = ~flag;
+    const FFS64_t masked = inverted >> start0;
     const int pos = FFS64_first_setbit(masked);
     return pos ? (pos + start0) : 0;
 }
@@ -209,13 +209,13 @@ static inline int FFS64_next_unsetbit(ffs64_flag_t flag, int startbit)
  * @param flag 待检查的64位标志
  * @return 置位的个数: [0,64]
  */
-static inline int FFS64_setbit_popcount(ffs64_flag_t flag)
+static inline int FFS64_setbit_popcount(FFS64_t flag)
 {
     if (flag == 0) {
         return 0;
     }
-    if (flag == FFS64_FLAG_MAX) {
-        return FFS64_FLAG_BITS;
+    if (flag == FFS64_MAX) {
+        return FFS64_BITS;
     }
 #if defined(__GNUC__) || defined(__clang__)
     return (int)__builtin_popcountll(flag);

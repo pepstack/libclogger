@@ -16,7 +16,7 @@
 ** @author Liang Zhang <350137278@qq.com>
 ** @version 0.0.1
 ** @since 2025-03-14 02:54:00
-** @date 2025-03-19 00:04:00
+** @date 2025-03-20 16:04:00
 **
 */
 #ifndef FFS32_H_
@@ -38,10 +38,10 @@
   #undef FFS32_HAS__builtin_ffs
 #endif
 
-#define FFS32_FLAG_BITS   32
-#define FFS32_FLAG_MAX    UINT32_MAX
+#define FFS32_BITS   32
+#define FFS32_MAX    UINT32_MAX
 
-typedef uint32_t ffs32_flag_t;
+typedef uint32_t FFS32_t;
 
 
 // 静态断言
@@ -55,8 +55,8 @@ typedef uint32_t ffs32_flag_t;
 extern "C" {
 #endif
 
-// 确保 ffs32_flag_t 为4字节
-FFS32_StaticAssert(sizeof(ffs32_flag_t)*8 == FFS32_FLAG_BITS, ffs32_flag_must_be_32_bits);
+// 确保 FFS32_t 为4字节
+FFS32_StaticAssert(sizeof(FFS32_t)*8 == FFS32_BITS, FFS32_must_be_32_bits);
 
 
 /**
@@ -64,12 +64,12 @@ FFS32_StaticAssert(sizeof(ffs32_flag_t)*8 == FFS32_FLAG_BITS, ffs32_flag_must_be
  * @param flag 待查找的32位标志
  * @return 第一个置位的位置（1-based），全0返回0
  */
-static inline int FFS32_first_setbit(ffs32_flag_t flag)
+static inline int FFS32_first_setbit(FFS32_t flag)
 {
     if (flag == 0) {
         return 0;
     }
-    if (flag == FFS32_FLAG_MAX) {
+    if (flag == FFS32_MAX) {
         return 1;
     }
 #if defined(FFS32_HAS_BitScanForward)
@@ -79,12 +79,12 @@ static inline int FFS32_first_setbit(ffs32_flag_t flag)
     return __builtin_ctzl((unsigned long) flag) + 1;
 #else
     // De Bruijn 序列实现
-    static const int debruijn32_table[FFS32_FLAG_BITS] = {
+    static const int debruijn32_table[FFS32_BITS] = {
         0, 1, 28, 2, 29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4, 8,
         31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6, 11, 5, 10, 9
     };
-    static const ffs32_flag_t debruijn32 = 0x077CB531U;
-    return (int) debruijn32_table[(ffs32_flag_t)((flag & (~flag + 1)) * debruijn32) >> 27] + 1;
+    static const FFS32_t debruijn32 = 0x077CB531U;
+    return (int) debruijn32_table[(FFS32_t)((flag & (~flag + 1)) * debruijn32) >> 27] + 1;
 #endif
 }
 
@@ -93,13 +93,13 @@ static inline int FFS32_first_setbit(ffs32_flag_t flag)
  * @param flag 待查找的32位标志
  * @return 反向查找第一个置位的位置（1-based），全0返回0
  */
-static int FFS32_last_setbit(ffs32_flag_t flag)
+static int FFS32_last_setbit(FFS32_t flag)
 {
     if (flag == 0) {
         return 0;
     }
-    if (flag == FFS32_FLAG_MAX) {
-        return FFS32_FLAG_BITS; // 全1时最高位是32
+    if (flag == FFS32_MAX) {
+        return FFS32_BITS; // 全1时最高位是32
     }
 
 #if defined(_MSC_VER)
@@ -109,7 +109,7 @@ static int FFS32_last_setbit(ffs32_flag_t flag)
 
 #elif defined(__GNUC__) || defined(__clang__)
     // GCC/Clang 平台优化
-    return flag ? (FFS32_FLAG_BITS - __builtin_clz(flag)) : 0;
+    return flag ? (FFS32_BITS - __builtin_clz(flag)) : 0;
 
 #else
     // 通用位操作实现（无编译器内置函数时）
@@ -122,11 +122,11 @@ static int FFS32_last_setbit(ffs32_flag_t flag)
     flag = (flag >> 1) + 1; // 保留最高位
 
     // 使用相同的 De Bruijn 序列查找
-    static const int debruijn32_table[FFS32_FLAG_BITS] = {
+    static const int debruijn32_table[FFS32_BITS] = {
         0, 1, 28, 2, 29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4, 8,
         31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6, 11, 5, 10, 9
     };
-    static const ffs32_flag_t debruijn32 = 0x077CB531U;
+    static const FFS32_t debruijn32 = 0x077CB531U;
     return debruijn32_table[(flag * debruijn32) >> 27] + 1;
 #endif
 }
@@ -137,18 +137,18 @@ static int FFS32_last_setbit(ffs32_flag_t flag)
  * @param n 连续置位的数量
  * @return 起始位置（1-based），未找到返回0
  */
-static inline int FFS32_first_setbit_n(ffs32_flag_t flag, int n)
+static inline int FFS32_first_setbit_n(FFS32_t flag, int n)
 {
-    FFS32_Assert(n > 0 && n <= FFS32_FLAG_BITS);
+    FFS32_Assert(n > 0 && n <= FFS32_BITS);
     if (n == 1) {
         return FFS32_first_setbit(flag);
     }
-    if (n == FFS32_FLAG_BITS) {
-        return (flag == FFS32_FLAG_MAX) ? 1 : 0;
+    if (n == FFS32_BITS) {
+        return (flag == FFS32_MAX) ? 1 : 0;
     }
     // 优化位掩码滑动窗口
-    ffs32_flag_t mask = (1UL << n) - 1;
-    for (int shift = 0; shift <= FFS32_FLAG_BITS - n; ++shift) {
+    FFS32_t mask = (1UL << n) - 1;
+    for (int shift = 0; shift <= FFS32_BITS - n; ++shift) {
         if ((flag & (mask << shift)) == (mask << shift)) {
             return shift + 1;
         }
@@ -162,17 +162,17 @@ static inline int FFS32_first_setbit_n(ffs32_flag_t flag, int n)
  * @param startbit 起始位置（1-based）
  * @return 下一个置位的位置（1-based），未找到返回0
  */
-static inline int FFS32_next_setbit(ffs32_flag_t flag, int startbit)
+static inline int FFS32_next_setbit(FFS32_t flag, int startbit)
 {
-    FFS32_Assert(startbit > 0 && startbit <= FFS32_FLAG_BITS);
+    FFS32_Assert(startbit > 0 && startbit <= FFS32_BITS);
     if (flag == 0) {
         return 0;
     }
-    if (flag == FFS32_FLAG_MAX) {
+    if (flag == FFS32_MAX) {
         return startbit; // 1-based
     }
     int start0 = startbit - 1;
-    ffs32_flag_t masked = flag >> start0;
+    FFS32_t masked = flag >> start0;
     int pos = FFS32_first_setbit(masked);
     return pos ? (pos + start0) : 0;
 }
@@ -183,18 +183,18 @@ static inline int FFS32_next_setbit(ffs32_flag_t flag, int startbit)
  * @param startbit 起始位置（1-based）
  * @return 下一个置0位的位置（1-based），未找到返回0
  */
-static inline int FFS32_next_unsetbit(ffs32_flag_t flag, int startbit)
+static inline int FFS32_next_unsetbit(FFS32_t flag, int startbit)
 {
-    FFS32_Assert(startbit > 0 && startbit <= FFS32_FLAG_BITS);
+    FFS32_Assert(startbit > 0 && startbit <= FFS32_BITS);
     if (flag == 0) {
         return startbit;
     }
-    if (flag == FFS32_FLAG_MAX) {
+    if (flag == FFS32_MAX) {
         return 0;
     }
     int start0 = startbit - 1;
-    ffs32_flag_t inverted = ~flag;
-    ffs32_flag_t masked = inverted >> start0;
+    FFS32_t inverted = ~flag;
+    FFS32_t masked = inverted >> start0;
     int pos = FFS32_first_setbit(masked);
     return pos ? (pos + start0) : 0;
 }
@@ -205,13 +205,13 @@ static inline int FFS32_next_unsetbit(ffs32_flag_t flag, int startbit)
  * @param flag 待检查的32位标志
  * @return 置位的个数: [0,32]
  */
-static inline int FFS32_setbit_popcount(ffs32_flag_t flag)
+static inline int FFS32_setbit_popcount(FFS32_t flag)
 {
     if (flag == 0) {
         return 0;
     }
-    if (flag == FFS32_FLAG_MAX) {
-        return FFS32_FLAG_BITS;
+    if (flag == FFS32_MAX) {
+        return FFS32_BITS;
     }
 #if defined(__POPCNT__) || (defined(__GNUC__) && defined(__SSE4_2__))
     return (int)__builtin_popcount(flag);
