@@ -76,7 +76,7 @@
 // 内存池总大小限制 1280 MB (可能受实际可分配内存限制)
 #define MBK_POOL_SIZE_MAX   (1280U * MBK_BSIZE_MAX)
 
-// 掩码表数值未考虑字节序问题???
+// 掩码表数值无需考虑字节序
 #if (MBK_FLAG_BITS == 64)
   // 预定义掩码表：bitCount=0~64 对应的掩码: 连续 bitCount 个1（低 bitCount 位为1）
   static const membulk_flag_t MASK_flag_table[MBK_FLAG_BITS + 1] = { 0x0000000000000000,
@@ -315,16 +315,21 @@ membulk_pool membulk_pool_create(uint32_t bulkSizeBytes, uint32_t bulksCapacity)
 }
 
 
-void membulk_pool_destroy(membulk_pool pool)
+void membulk_pool_destroy(void* pPool)
 {
-    if (pool) {
-        free(pool);
+    if (pPool) {
+        free(pPool);
     }
 }
 
 
-void* membulk_alloc(membulk_pool pool, uint32_t sizeBytes)
+void* membulk_alloc(membulk_pool pool, size_t sizeBytes)
 {
+    if (!pool) {
+        // 无池分配
+        return malloc(sizeBytes);
+    }
+
     // 需要的内存字节
     size_t allocSize = _mbk_align_size(sizeBytes + sizeof(membulk_t), pool->BulkSize);
 
@@ -394,17 +399,35 @@ void* membulk_alloc(membulk_pool pool, uint32_t sizeBytes)
 }
 
 
-void* membulk_free(void* pMemory)
+void* membulk_calloc(membulk_pool pool, size_t elementsCount, size_t elementSizeBytes)
 {
-    MBK_Assert(pMemory);
+    if (!pool) {
+        // 无池分配
+        return calloc(elementsCount, elementSizeBytes);
+    }
+
+    void* pMemory = membulk_alloc(pool, elementSizeBytes * elementsCount);
+    if (pMemory) {
+        memset(pMemory, 0, elementSizeBytes * elementsCount);
+    }
+    return pMemory;
+}
+
+void* membulk_free(membulk_pool ownerPool, void* pMemory)
+{
     if (!pMemory) {
+        return NULL;
+    }
+
+    if (!ownerPool) {
+        // 无池释放
+        free(pMemory);
         return NULL;
     }
 
     membulk_t* pBulk = (membulk_t*)((char*)pMemory - offsetof(membulk_t, _Memory));
     membulk_pool pool = pBulk->ownerPool;
-    MBK_Assert(pool);
-    if (pool) {
+    if (pool == ownerPool) {
         const size_t poolSizeMax = (size_t) pool->BulkSize * pool->FlagsCount * MBK_FLAG_BITS;
 
         MBK_Assert((char*)pBulk >= (char*)pool->_Bulks && (char*)pBulk < (char*)pool->_Bulks + poolSizeMax);
@@ -430,11 +453,13 @@ void* membulk_free(void* pMemory)
             }
             pool->unused_bits += (int)pBulk->bitCount;
 
-            // success
             _mbk_spinlock_free(&pool->spinlock);
+
+            // 成功释放，返回 0
             return NULL;
         }
     }
+    // 释放失败，返回原内存指针
     return pMemory;
 }
 
@@ -442,9 +467,8 @@ void* membulk_free(void* pMemory)
 int membulk_pool_stats(membulk_pool pool, membulk_stats_t* stats)
 {
     if (stats) {
-        stats->sizeBytes = pool->BulkSize;
-        stats->capacity = pool->FlagsCount * MBK_FLAG_BITS;
+        stats->bulkSizeBytes = pool->BulkSize;
+        stats->bulksMaxCount = pool->FlagsCount * MBK_FLAG_BITS;
     }
-
     return pool->unused_bits;
 }
