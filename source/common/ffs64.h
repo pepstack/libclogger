@@ -42,6 +42,9 @@
 
 typedef uint64_t FFS64_t;
 
+// numb 对齐到 M，M 必须是 2, 4, 8, 16, ...
+#define FFS64_ALIGN_UP(numb, M)    (((FFS64_t)(numb) + (FFS64_t)(M) - 1) & ~((FFS64_t)(M)-1))
+
 
 // 静态断言
 #define FFS64_StaticAssert(cond, msg) \
@@ -56,6 +59,31 @@ extern "C" {
 
 // 确保 FFS64_t 为 8 字节
 FFS64_StaticAssert(sizeof(FFS64_t)*8 == FFS64_BITS, FFS64_must_be_64_bits);
+
+
+// 预定义掩码表：bitCount=0~64 对应的掩码: 连续 bitCount 个1（低 bitCount 位为1）
+// 掩码表数值无需考虑字节序
+static const FFS64_t FFS64_masks_table[FFS64_BITS + 1] = { 0x0000000000000000,
+    0x0000000000000001, 0x0000000000000003, 0x0000000000000007, 0x000000000000000F,
+    0x000000000000001F, 0x000000000000003F, 0x000000000000007F, 0x00000000000000FF,
+    0x00000000000001FF, 0x00000000000003FF, 0x00000000000007FF, 0x0000000000000FFF,
+    0x0000000000001FFF, 0x0000000000003FFF, 0x0000000000007FFF, 0x000000000000FFFF,
+    0x000000000001FFFF, 0x000000000003FFFF, 0x000000000007FFFF, 0x00000000000FFFFF,
+    0x00000000001FFFFF, 0x00000000003FFFFF, 0x00000000007FFFFF, 0x0000000000FFFFFF,
+    0x0000000001FFFFFF, 0x0000000003FFFFFF, 0x0000000007FFFFFF, 0x000000000FFFFFFF,
+    0x000000001FFFFFFF, 0x000000003FFFFFFF, 0x000000007FFFFFFF, 0x00000000FFFFFFFF,
+    0x00000001FFFFFFFF, 0x00000003FFFFFFFF, 0x00000007FFFFFFFF, 0x0000000FFFFFFFFF,
+    0x0000001FFFFFFFFF, 0x0000003FFFFFFFFF, 0x0000007FFFFFFFFF, 0x000000FFFFFFFFFF,
+    0x000001FFFFFFFFFF, 0x000003FFFFFFFFFF, 0x000007FFFFFFFFFF, 0x00000FFFFFFFFFFF,
+    0x00001FFFFFFFFFFF, 0x00003FFFFFFFFFFF, 0x00007FFFFFFFFFFF, 0x0000FFFFFFFFFFFF,
+    0x0001FFFFFFFFFFFF, 0x0003FFFFFFFFFFFF, 0x0007FFFFFFFFFFFF, 0x000FFFFFFFFFFFFF,
+    0x001FFFFFFFFFFFFF, 0x003FFFFFFFFFFFFF, 0x007FFFFFFFFFFFFF, 0x00FFFFFFFFFFFFFF,
+    0x01FFFFFFFFFFFFFF, 0x03FFFFFFFFFFFFFF, 0x07FFFFFFFFFFFFFF, 0x0FFFFFFFFFFFFFFF,
+    0x1FFFFFFFFFFFFFFF, 0x3FFFFFFFFFFFFFFF, 0x7FFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF
+};
+
+#define FFS64_LeftMask(offset, start)  ((FFS64_t)(FFS64_masks_table[(offset)] << (start)))
+
 
 /**
  * @brief 查找第一个置位（1-based）
@@ -227,6 +255,94 @@ static inline int FFS64_setbit_popcount(FFS64_t flag)
     flag = (flag + (flag >> 4)) & 0x0F0F0F0F0F0F0F0FULL;
     return (int)((flag * 0x0101010101010101ULL) >> 56);
 #endif
+}
+
+/**
+ * @brief 在FFS64标志数组中查找连续置位数为 bitsCount 的位置
+ *
+ * 此函数从指定的起始 flag 开始，在FFS64标志数组中查找足够数量的连续置位（值=1的位），
+ * 若找到则返回其在 flag 中的偏移（1-based），并更新起始指针到新 flag 位置。
+ *
+ * @param ppFlagStart   [in/out] 指向标志数组的起始指针。函数成功时更新为指向找到位置的 flag 的指针。
+ * @param pFlagEndStop  [in]     标志数组的结束边界指针（不包含在搜索范围内）。
+ * @param bitsCount     [in]     需要设置的连续置位数。
+ *
+ * @return int
+ *   - 成功 > 0: 找到的偏移值，是在更新为找到位置的 flag 中的偏移（1-based）。
+ *   - 失败: 返回 0（可用空间不足或参数无效）。
+ * 
+ * flags=[flag1|flag2|flag3] => [0b1111000 | 0b11111111 | 0b00000111]，连续块数=4+8+3=15
+ */
+static int FFS64_flags_setbits(FFS64_t** ppFlagStart, const FFS64_t* pFlagEndStop, const int bitsCount)
+{
+    FFS64_t* pFirstFlag = NULL;
+    int firstBitOffset = 0;
+
+    int startBit = 1;
+    int remaining = bitsCount;
+
+    FFS64_t* pFlag = *ppFlagStart;
+    while (pFlag < pFlagEndStop && remaining > 0) {
+        FFS64_Assert(startBit > 0);  // startBit: 1-based
+
+        startBit = FFS64_next_setbit(*pFlag, startBit);
+        if (!startBit) { // 无置位
+            remaining = bitsCount;  // 重置
+            pFirstFlag = NULL;
+            ++pFlag;
+            startBit = 1;
+            continue;
+        }
+
+        if (pFirstFlag) {
+            // 已经设置起始，startBit 必须从 1 开始
+            if (startBit != 1) {
+                // 出现清零位，重置（pFlag 不能移动）
+                remaining = bitsCount;
+                pFirstFlag = pFlag;
+                firstBitOffset = startBit;
+            }
+        }
+        else { // 仅在此处设置起始
+            if (bitsCount == 1) {
+                // 只取1位，成功返回。此处是优化关键
+                *ppFlagStart = pFlag;
+                return startBit;
+            }
+            // 多于1位，要继续判断
+            remaining = bitsCount;
+            pFirstFlag = pFlag;
+            firstBitOffset = startBit;
+        }
+
+        FFS64_Assert(pFirstFlag && startBit);
+
+        // endBit=0 表示从第 startBit 位（0-based）开始到结束没有清0位。
+        int endBit = FFS64_next_unsetbit(*pFlag, startBit + 1);
+        int available = endBit ? endBit - startBit : FFS64_BITS - startBit + 1;
+
+        if (remaining <= available) {
+            // 发现可用的连续位，成功仅在此处返回
+            *ppFlagStart = pFirstFlag;
+            return firstBitOffset;
+        }
+
+        // 不满足连续置位数: remaining > available
+        if (endBit) { // 出现清零位，重置（pFlag 不能移动）
+            remaining = bitsCount;
+            pFirstFlag = NULL;
+            startBit = endBit;  // 防止无限循环
+        }
+        else {
+            FFS64_Assert(endBit == 0);  // 不存在清零位
+            remaining -= available;
+            startBit = 1;
+            ++pFlag; // 下一个 Flag
+        }
+    }
+
+    // 未发现可用的连续位(bitsCount)
+    return 0;
 }
 
 #ifdef __cplusplus

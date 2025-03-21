@@ -86,6 +86,7 @@ extern "C"
   # error Currently only Windows and Linux os are supported.
 #endif
 
+#include "timeut.h"
 
 #if defined(_LINUX_GNUC)
 // Linux (实现GCC/Clang)
@@ -160,6 +161,36 @@ typedef volatile PVOID       uatomic_ptr;
 #else
 #   error Currently only Windows and Linux os are supported.
 #endif
+
+
+
+/**
+ * @brief 获取自旋锁（强等待，指数退避后让出CPU）
+ * @param spinlockAddr 自旋锁地址
+ */
+static void uatomic_spinlock_grab(uatomic_int* spinlockAddr, int spinsMax)
+{
+    // 一直等待
+    int spins = 0;
+    while (uatomic_int_comp_exch(spinlockAddr, 0, 1)) {
+        ++spins;
+        if (spins >= spinsMax) {
+            sleep_usec((1 << spins));
+            spins = 0;
+        }
+    }
+}
+
+/**
+ * @brief 释放自旋锁
+ * @param spinlockAddr 自旋锁地址
+ * @note
+ *   必须成对调用: uatomic_spinlock_grab, uatomic_spinlock_free
+ */
+static void inline uatomic_spinlock_free(uatomic_int* spinlockAddr)
+{
+    uatomic_int_set(spinlockAddr, 0);
+}
 
 #ifdef __cplusplus
 }
