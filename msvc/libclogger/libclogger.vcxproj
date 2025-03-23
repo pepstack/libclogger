@@ -233,6 +233,8 @@
     <ClCompile Include="..\..\source\clogger\loggermgr.c" />
     <ClCompile Include="..\..\source\clogger\rollingfile.c" />
     <ClCompile Include="..\..\source\clogger\shmmaplog.c" />
+    <ClCompile Include="..\..\source\common\memalign.c" />
+    <ClCompile Include="..\..\source\common\membuff.c" />
     <ClCompile Include="..\..\source\common\readconf.c" />
     <ClCompile Include="..\..\source\common\rtclock.c" />
     <ClCompile Include="..\..\source\common\smallregex.c" />
@@ -248,6 +250,11 @@
     <ClInclude Include="..\..\source\clogger\rollingfile.h" />
     <ClInclude Include="..\..\source\clogger\shmmaplog.h" />
     <ClInclude Include="..\..\source\common\basetype.h" />
+    <ClInclude Include="..\..\source\common\ffs32.h" />
+    <ClInclude Include="..\..\source\common\ffs64.h" />
+    <ClInclude Include="..\..\source\common\memalign.h" />
+    <ClInclude Include="..\..\source\common\membuff.h" />
+    <ClInclude Include="..\..\source\common\uatomic.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

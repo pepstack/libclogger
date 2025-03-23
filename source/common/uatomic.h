@@ -24,7 +24,7 @@
 * DEALINGS IN THE SOFTWARE.                                                    *
 *******************************************************************************/
 /*
-** @file      uatomic.h
+** @file uatomic.h
 **  user CAS atomic api both for Windows and Linux
 **
 ** Usage:
@@ -35,62 +35,56 @@
 ** @author Liang Zhang <350137278@qq.com>
 ** @version 0.0.4
 ** @since 2019-12-15 12:46:50
-** @date 2025-03-13 19:01:49
+** @date 2025-03-24 03:39:00
 */
 #ifndef _U_ATOMIC_H__
 #define _U_ATOMIC_H__
 
-#if defined(__cplusplus)
-extern "C"
-{
+
+#include "timeut.h"  // sleep_usec()
+
+#if defined(__WINDOWS__) // Windows
+# include <Winsock2.h>
+# include <Windows.h>
+
+# include <process.h>
+# include <stdint.h>
+# include <time.h>
+# include <limits.h>
+
+# ifdef _LINUX_GNUC
+# undef _LINUX_GNUC
+# endif
+#elif defined(__GNUC__) // Linux
+# if __GNUC__ < 4 || (__GNUC__ == 4 && __GNUC_MINOR__ < 1)
+# error GCC version must be greater or equal than 4.1.2
+# endif
+
+# include <sched.h>
+# include <pthread.h>
+
+# include <unistd.h>
+# include <stdint.h>
+# include <time.h>
+# include <signal.h>
+# include <errno.h>
+# include <limits.h>
+
+# include <sys/time.h>
+# include <sys/sysinfo.h>
+
+# ifndef _LINUX_GNUC
+# define _LINUX_GNUC
+# endif
+#else // TODO: MACOSX
+# error "Currently only Windows and Linux os are supported."
 #endif
 
-#if defined(_WIN32)
-  // Windows
-  # include <Winsock2.h>
-  # include <Windows.h>
 
-  # include <process.h>
-  # include <stdint.h>
-  # include <time.h>
-  # include <limits.h>
-
-  # ifdef _LINUX_GNUC
-    # undef _LINUX_GNUC
-  # endif
-
-#elif defined(__GNUC__)
-  // Linux
-  # if __GNUC__ < 4 || (__GNUC__ == 4 && __GNUC_MINOR__ < 1)
-    # error GCC version must be greater or equal than 4.1.2
-  # endif
-
-  # include <sched.h>
-  # include <pthread.h>
-
-  # include <unistd.h>
-  # include <stdint.h>
-  # include <time.h>
-  # include <signal.h>
-  # include <errno.h>
-  # include <limits.h>
-
-  # include <sys/time.h>
-  # include <sys/sysinfo.h>
-
-  # ifndef _LINUX_GNUC
-    # define _LINUX_GNUC
-  # endif
-#else
-  // TODO: MACOSX
-  # error Currently only Windows and Linux os are supported.
-#endif
-
-#include "timeut.h"
-
-#if defined(_LINUX_GNUC)
+#if defined(_LINUX_GNUC) || defined(__CYGWIN__)
 // Linux (实现GCC/Clang)
 typedef volatile int         uatomic_int;
+typedef uatomic_int          uatomic_bool;
 
 #   define uatomic_int_add(a)           __sync_add_and_fetch(a, 1)
 #   define uatomic_int_sub(a)           __sync_sub_and_fetch(a, 1)
@@ -99,8 +93,8 @@ typedef volatile int         uatomic_int;
 #   define uatomic_int_zero(a)          __sync_lock_release(a)
 #   define uatomic_int_comp_exch(a, comp, exch)  __sync_val_compare_and_swap(a, (comp), (exch))
 
-#   define uatomic_int_add_n(a)         __sync_add_and_fetch(a, (int)(n))
-#   define uatomic_int_sub_n(a)         __sync_sub_and_fetch(a, (int)(n))
+#   define uatomic_int_add_n(a, n)      __sync_add_and_fetch(a, (int)(n))
+#   define uatomic_int_sub_n(a, n)      __sync_sub_and_fetch(a, (int)(n))
 
 typedef volatile int64_t     uatomic_int64;
 
@@ -121,13 +115,10 @@ typedef volatile void *      uatomic_ptr;
 #   define uatomic_ptr_zero(a)          uatomic_int_zero(((void**)(a)))
 #   define uatomic_ptr_comp_exch(a, comp, exch)  uatomic_int_comp_exch(((void**)(a)), (comp), (exch))
 
-//#   define uatomic_ptr_set(a, newval)   __atomic_store_n(a, (newval), __ATOMIC_SEQ_CST)
-//#   define uatomic_ptr_get(a)           __atomic_load_n(a, __ATOMIC_SEQ_CST)
-//#   define uatomic_ptr_zero(a)          __atomic_store_n(a, 0, __ATOMIC_SEQ_CST)
-//#   define uatomic_ptr_comp_exch(a, comp, exch)  __atomic_compare_exchange_n(a, &(comp), (exch), 0, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST)
-
-#elif defined(_WIN32)
+#elif defined(__WINDOWS__)
 typedef volatile LONG        uatomic_int;
+typedef uatomic_int          uatomic_bool;
+
 // Windows
 #   define uatomic_int_add(a)           InterlockedIncrement(a)
 #   define uatomic_int_sub(a)           InterlockedDecrement(a)
@@ -163,12 +154,16 @@ typedef volatile PVOID       uatomic_ptr;
 #endif
 
 
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
 
 /**
  * @brief 获取自旋锁（强等待，指数退避后让出CPU）
  * @param spinlockAddr 自旋锁地址
  */
-static void uatomic_spinlock_grab(uatomic_int* spinlockAddr, int spinsMax)
+static void bool_spinlock_grab(uatomic_bool* spinlockAddr, int spinsMax)
 {
     // 一直等待
     int spins = 0;
@@ -185,9 +180,9 @@ static void uatomic_spinlock_grab(uatomic_int* spinlockAddr, int spinsMax)
  * @brief 释放自旋锁
  * @param spinlockAddr 自旋锁地址
  * @note
- *   必须成对调用: uatomic_spinlock_grab, uatomic_spinlock_free
+ *   必须成对调用: bool_spinlock_grab, bool_spinlock_free
  */
-static void inline uatomic_spinlock_free(uatomic_int* spinlockAddr)
+static void inline bool_spinlock_free(uatomic_bool* spinlockAddr)
 {
     uatomic_int_set(spinlockAddr, 0);
 }
@@ -197,4 +192,3 @@ static void inline uatomic_spinlock_free(uatomic_int* spinlockAddr)
 #endif
 
 #endif /* _U_ATOMIC_H__ */
-

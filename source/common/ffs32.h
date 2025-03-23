@@ -24,6 +24,7 @@
 
 #include <stdint.h>
 #include <assert.h>
+#include <stdbool.h>
 
 #if defined(_MSC_VER)
   // MSVC 平台
@@ -330,6 +331,37 @@ static int FFS32_flags_setbits(FFS32_t** ppFlagStart, const FFS32_t* pFlagEndSto
     return 0;
 }
 
+
+static void FFS32_flags_mask_bits(FFS32_t* pFlag, int bitOffset, int bitCount, bool is_set_1)
+{
+    FFS32_t mask;
+    int startBit = bitOffset;
+
+    while (bitCount > 0) {
+        // 当前 flag 需要 mask 位数
+        bitOffset = FFS32_BITS - startBit;
+        if (bitOffset > bitCount) {
+            bitOffset = bitCount;
+        }
+
+        if (is_set_1) { // 生成 set 掩码：将 bitOffset 开始的 bitCount 个位设为 1
+            mask = FFS32_LeftMask(bitOffset, startBit);
+            *pFlag |= mask; // 置位=1
+        }
+        else {
+            mask = ~FFS32_LeftMask(bitOffset, startBit);
+            *pFlag &= mask; // 清除=0
+        }
+
+        bitCount -= bitOffset;
+        if (bitCount == 0) {
+            break;  // 成功设置
+        }
+
+        startBit = 0;
+        ++pFlag;
+    }
+}
 
 #ifdef __cplusplus
 }

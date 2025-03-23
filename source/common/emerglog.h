@@ -132,15 +132,15 @@ void emerg_syslog_message(int exitcode, const char *ident, const char *filename,
 
     # define emerglog_err_exit(err, ident, message, ...) do { \
         if ((err)) { \
-            emerg_syslog_message(EXIT_FAILURE, ident, __FILE__, __LINE__, message, __VA_ARGS__); \
+            emerg_syslog_message(EXIT_FAILURE, ident, __FILE__, __LINE__, message, ##__VA_ARGS__); \
         } \
     } while(0)
 
     # define emerglog_exit(ident, message, ...) \
-        emerg_syslog_message(EXIT_FAILURE, ident, __FILE__, __LINE__, message, __VA_ARGS__)
+        emerg_syslog_message(EXIT_FAILURE, ident, __FILE__, __LINE__, message, ##__VA_ARGS__)
 
     # define emerglog_msg(ident, message, ...) \
-        emerg_syslog_message(0, ident, __FILE__, __LINE__, message, __VA_ARGS__)
+        emerg_syslog_message(0, ident, __FILE__, __LINE__, message, ##__VA_ARGS__)
 
 #else
 

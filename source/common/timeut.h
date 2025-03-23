@@ -322,13 +322,22 @@ void getlocaltime_safe(struct tm *loc, int64_t t, int tz, int dst)
 #undef YEAR_IS_LEAPYEAR
 }
 
-
+/**
+ * 计算两个timespec结构体之间的时间差（毫秒），或单个时间/当前时间的毫秒表示。
+ * 参数：
+ *   oldtms - 旧时间点。若与newtms同时提供，则计算两者差值；若单独提供，则返回其时间值的毫秒数。
+ *   newtms - 新时间点。若与oldtms同时提供，则计算两者差值；若单独提供，则返回其时间值的毫秒数。
+ *           若两者均为NULL，则返回当前时间的毫秒数。
+ * 返回值：
+ *   时间差或时间值的毫秒数，以sb8类型（有符号64位整数）返回，可能为负数。
+ */
 NOWARNING_UNUSED(static)
 sb8 difftime_msec(const struct timespec *oldtms, const struct timespec *newtms)
 {
-    sb8 sec = 0;
-    sb8 nsec = 0;
+    sb8 sec = 0;   // 存储秒数部分
+    sb8 nsec = 0;  // 存储纳秒部分
 
+    // 根据参数情况计算sec和nsec的值
     if (!oldtms && !newtms) {
         /* get current timestamp in ms */
         struct timespec now;

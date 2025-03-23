@@ -34,6 +34,7 @@
 
 #include <stdint.h> // uint32_t
 #include <stddef.h> // offsetof
+#include <time.h>   // struct timespec
 
 #ifdef __cplusplus
 extern "C" {
@@ -43,10 +44,12 @@ extern "C" {
 typedef struct membuff_pool_t* membuff_pool;
 
 /** @brief 内存池统计信息 */
-typedef struct {
-    uint32_t buffSizeBytes;   /**< 内存块字节数（含 16 字节的元数据） */
-    uint32_t buffsMaxCount;   /**< 内存块总数量 */
-} membuff_stats_t;
+typedef struct
+{
+    size_t buffSizeBytes;         // 内存块字节数（含 16 字节的元数据）
+    size_t buffsMaxCount;         // 内存块总数量
+    struct timespec timestamp;    // 当前时间
+} membuff_stat_t;
 
 /**
  * @brief 创建内存池实例
@@ -58,7 +61,7 @@ typedef struct {
  * - 最大可分配: buffSizeBytes * buffsCount 字节
  * - 实际可用空间需减去16字节块头
  */
-extern membuff_pool membuff_pool_create(uint32_t buffSizeBytes, uint32_t buffsCount);
+extern membuff_pool membuff_pool_create(size_t buffSizeBytes, size_t buffsCount);
 
 /**
  * @brief 销毁内存池实例
@@ -110,9 +113,9 @@ extern void* membuff_free(membuff_pool pool, void* pBuffer);
  * @param pool 内存池句柄
  * @param[out] stats 统计信息结构体（可选）
  * @return 当前空闲块数
- * @note stats 为 NULL 时仅返回空闲块数
+ * @note stat 为 NULL 时仅返回空闲块数
  */
-extern int membuff_pool_stats(membuff_pool pool, membuff_stats_t* stats);
+extern size_t membuff_pool_stat(membuff_pool pool, membuff_stat_t* stat);
 
 #ifdef __cplusplus
 }

@@ -512,7 +512,7 @@ cstrbuf get_curr_work_dir()
 {
     cstrbuf newcsb = 0;
     char* cwd = 0;
-    char cwdbuf[4096];
+    char cwdbuf[1024];
 
 #if defined(_INC_DIRECT)
     // direct.h on windows

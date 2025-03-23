@@ -11,15 +11,16 @@
 * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  *
 ******************************************************************************/
 /*
-** @file membuff.h
+** @file membuff.c
 ** @brief 连续内存池实现 - 高效管理固定大小内存块的分配与释放
 ** @author LiangZhang <350137278@qq.com>
 ** @version 0.1.0
 ** @since 2025-03-14 02:54:00
-** @date 2025-03-21 14:23:00
+** @date 2025-03-24 04:23:00
 */
 #include "membuff.h"
 #include "uatomic.h"  // 原子操作库
+#include "memalign.h" // 内存对齐分配和释放
 
 /* 平台相关头文件包含 */
 #if defined(__x86_64__) || defined(__aarch64__) || defined(_M_X64) || defined(_M_AMD64) || defined(__LP64__)
@@ -34,6 +35,7 @@
 // Flag 最大数量限制：(相当于最多 4096 x 64 = 262144 内存块)
 #define MEMBUFF_FLAGS_MAX       4096U
 
+
 // 每个标志管理的内存块数
 #if defined(FFS64_BITS)
   typedef FFS64_t membuff_flag_t;
@@ -45,7 +47,9 @@
   # define MBUF_Assert           FFS64_Assert
 
   # define MBUF_LeftMaskFlag     FFS64_LeftMask
-  # define MBUF_FindSetbits      FFS64_flags_setbits
+  # define MBUF_FindSetbits      FFS64_flags_find_setbits
+  # define MBUF_MaskBits         FFS64_flags_mask_bits
+
 #elif defined(FFS32_BITS)
   typedef FFS32_t membuff_flag_t;
 
@@ -59,7 +63,9 @@
   # define MBUF_next_unsetbit    FFS32_next_unsetbit
 
   # define MBUF_LeftMaskFlag     FFS32_LeftMask
-  # define MBUF_FindSetbits      FFS32_flags_setbits
+  # define MBUF_FindSetbits      FFS32_flags_find_setbits
+  # define MBUF_MaskBits         FFS32_flags_mask_bits
+
 #else
   # error "FFS32_BITS or FFS64_BITS not included"
 #endif
@@ -70,7 +76,7 @@
 
 // 确保每个线程的内存块按缓存行（通常64字节）对齐，避免伪共享（False Sharing）
 // 单个内存块最小限制（对齐大小）
-#define MBUF_ALIGN_SIZE       128U
+#define MBUF_ALIGN_SIZE      128U
 
 // 单个内存块大小限制 4096 B
 #define MBUF_BSIZE_MAX       MEMBUFF_BSIZE_MAX
@@ -94,10 +100,12 @@ typedef struct membuff_pool_t
     uint32_t BuffSize;         // 每个可分配的内存块的最小尺寸
     uint32_t FlagsCount;       // Flag 的数量
 
-    uatomic_int spinlock;      // 自旋锁：多线程安全访问
-    volatile int unused_bits;  // 未使用的（位）内存块
+    uatomic_bool spinlock;      // 自旋锁：多线程安全访问
 
-    unsigned char* _Buffers;
+    uatomic_int unused_bits;    // 未使用的（位=1）内存块
+
+    size_t _PoolSize;
+    char* _Buffers;
     membuff_flag_t  _Flags[];
 } membuff_pool_t;
 
@@ -118,7 +126,7 @@ MBUF_StaticAssert(MBUF_FLAG_BITS == sizeof(membuff_flag_t) * 8, MBUF_FLAG_BITS_m
 MBUF_StaticAssert(MBUF_ALIGN_SIZE % sizeof(membuff_t) == 0, MBUF_ALIGN_SIZE_must_be_align_membuff);
 
 
-membuff_pool membuff_pool_create(uint32_t buffSizeBytes, uint32_t buffsCount)
+membuff_pool membuff_pool_create(size_t buffSizeBytes, size_t buffsCount)
 {
     MBUF_Assert(buffSizeBytes <= MBUF_BSIZE_MAX);
     MBUF_Assert(buffsCount <= MBUF_FLAGS_MAX);
@@ -157,8 +165,10 @@ membuff_pool membuff_pool_create(uint32_t buffSizeBytes, uint32_t buffsCount)
     pool->BuffSize = buffSize;        // 修改只读字段（仅初始化时）
     pool->FlagsCount = numFlags;      // 修改只读字段（仅初始化时）
 
-    pool->_Buffers = (unsigned char*)&pool->_Flags[numFlags];
-    pool->unused_bits = MBUF_FLAG_BITS * pool->FlagsCount;
+    pool->_Buffers = (char*)&pool->_Flags[numFlags];
+    pool->_PoolSize = poolSizeMax;
+
+    pool->unused_bits = (int)(MBUF_FLAG_BITS * pool->FlagsCount);
 
     // 设置全部块为空闲: flag = 1
     for (uint32_t i = 0; i < pool->FlagsCount; ++i) {
@@ -195,16 +205,16 @@ void* membuff_alloc(membuff_pool pool, size_t sizeBytes)
         return NULL;  // 超过最大块
     }
 
-    if (bitCount > pool->unused_bits) {
+    if (bitCount > uatomic_int_get(&pool->unused_bits)) {
         return NULL;  // 空闲块不满足, 直接尝试下一个
     }
 
-    uatomic_spinlock_grab(&pool->spinlock, MBUF_SPINS_MAX);
+    bool_spinlock_grab(&pool->spinlock, MBUF_SPINS_MAX);
 
     membuff_flag_t* pFlag = pool->_Flags;
     int startBit = MBUF_FindSetbits(&pFlag, pool->_Flags + pool->FlagsCount, bitCount);
     if (!startBit) {
-        uatomic_spinlock_free(&pool->spinlock);
+        bool_spinlock_free(&pool->spinlock);
         return NULL;
     }
 
@@ -223,30 +233,12 @@ void* membuff_alloc(membuff_pool pool, size_t sizeBytes)
     pBuff->bitCount = (uint16_t)bitCount;   // 实际跨越的块数
     pBuff->ownerPool = pool;                // Ownership
 
-    pool->unused_bits -= bitCount;
+    // 清除块空闲位=0: 标记已经使用
+    MBUF_MaskBits(pFlag, startBit, bitCount, 0);
 
-    // 清除块空闲位: 标记已经使用
-    while (bitCount > 0) {
-        // 需要清零的位数
-        bitOffset = MBUF_FLAG_BITS - startBit;
-        if (bitOffset > bitCount) {
-            bitOffset = bitCount;
-        }
-        
-        // 生成掩码 (需要清除的位为0)
-        membuff_flag_t mask = ~MBUF_LeftMaskFlag(bitOffset, startBit);
-        *pFlag &= mask; // 清除对应的位
+    uatomic_int_sub_n(&pool->unused_bits, bitCount);
 
-        bitCount -= bitOffset;
-        if (bitCount == 0) {
-            break;  // 成功设置
-        }
-
-        startBit = 0;
-        ++pFlag;
-    }
-
-    uatomic_spinlock_free(&pool->spinlock);
+    bool_spinlock_free(&pool->spinlock);
 
     // 返回实际内存块的起始地址
     return (void*)pBuff->_Buffer;
@@ -281,32 +273,20 @@ void* membuff_free(membuff_pool ownerPool, void* pBuffer)
     membuff_t* pBuff = (membuff_t*)((char*)pBuffer - offsetof(membuff_t, _Buffer));
     membuff_pool pool = pBuff->ownerPool;
     if (pool == ownerPool) {
-        const size_t poolSizeMax = (size_t) pool->BuffSize * pool->FlagsCount * MBUF_FLAG_BITS;
+        size_t bBuffSize = pool->BuffSize * pBuff->bitCount;
 
-        MBUF_Assert((char*)pBuff >= (char*)pool->_Buffers && (char*)pBuff < (char*)pool->_Buffers + poolSizeMax);
+        MBUF_Assert((char*)pBuff >= pool->_Buffers && (char*)pBuff + bBuffSize <= (char*)pool->_Buffers + pool->_PoolSize);
 
-        if ((char*)pBuff >= (char*)pool->_Buffers && (char*)pBuff < (char*)pool->_Buffers + poolSizeMax) {
-            uatomic_spinlock_grab(&pool->spinlock, MBUF_SPINS_MAX);
+        if ((char*)pBuff >= pool->_Buffers && (char*)pBuff + bBuffSize <= (char*)pool->_Buffers + pool->_PoolSize) {
 
-            membuff_flag_t* pFlagOffset = pool->_Flags + pBuff->flagOffset;
-            int startBit = pBuff->bitOffset;
-            int bitCount = pBuff->bitCount;
-            while (bitCount > 0) {
-                // 需要置位位数
-                int bitOffset = bitCount > MBUF_FLAG_BITS - startBit ? MBUF_FLAG_BITS - startBit : bitCount;
+            bool_spinlock_grab(&pool->spinlock, MBUF_SPINS_MAX);
 
-                // 生成掩码：将 bitOffset 开始的 bitCount 个位设为 1，其余位不变
-                membuff_flag_t mask = MBUF_LeftMaskFlag(bitOffset, startBit);
-                *pFlagOffset |= mask; // 置位对应的位
+            // 生成掩码：将 bitOffset 开始的 bitCount 个位设为 1，其余位不变
+            MBUF_MaskBits(pool->_Flags + pBuff->flagOffset, pBuff->bitOffset, pBuff->bitCount, 1);
 
-                startBit = 0;
-                bitCount -= bitOffset;
+            uatomic_int_add_n(&pool->unused_bits, pBuff->bitCount);
 
-                ++pFlagOffset;
-            }
-            pool->unused_bits += (int)pBuff->bitCount;
-
-            uatomic_spinlock_free(&pool->spinlock);
+            bool_spinlock_free(&pool->spinlock);
 
             // 成功释放，返回 0
             return NULL;
@@ -317,11 +297,12 @@ void* membuff_free(membuff_pool ownerPool, void* pBuffer)
 }
 
 
-int membuff_pool_stats(membuff_pool pool, membuff_stats_t* stats)
+size_t membuff_pool_stat(membuff_pool pool, membuff_stat_t* pStat)
 {
-    if (stats) {
-        stats->buffSizeBytes = pool->BuffSize;
-        stats->buffsMaxCount = pool->FlagsCount * MBUF_FLAG_BITS;
+    if (pStat) {
+        pStat->buffSizeBytes = pool->BuffSize;
+        pStat->buffsMaxCount = pool->FlagsCount * MBUF_FLAG_BITS;
+        getnowtimeofday(&pStat->timestamp);
     }
-    return pool->unused_bits;
+    return (size_t) uatomic_int_get(&pool->unused_bits);
 }

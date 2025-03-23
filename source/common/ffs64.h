@@ -23,6 +23,7 @@
 
 #include <stdint.h>
 #include <assert.h>
+#include <stdbool.h>
 
 #if defined(_MSC_VER)
   // MSVC 平台
@@ -273,7 +274,7 @@ static inline int FFS64_setbit_popcount(FFS64_t flag)
  * 
  * flags=[flag1|flag2|flag3] => [0b1111000 | 0b11111111 | 0b00000111]，连续块数=4+8+3=15
  */
-static int FFS64_flags_setbits(FFS64_t** ppFlagStart, const FFS64_t* pFlagEndStop, const int bitsCount)
+static int FFS64_flags_find_setbits(FFS64_t** ppFlagStart, const FFS64_t* pFlagEndStop, const int bitsCount)
 {
     FFS64_t* pFirstFlag = NULL;
     int firstBitOffset = 0;
@@ -343,6 +344,38 @@ static int FFS64_flags_setbits(FFS64_t** ppFlagStart, const FFS64_t* pFlagEndSto
 
     // 未发现可用的连续位(bitsCount)
     return 0;
+}
+
+
+static void FFS64_flags_mask_bits(FFS64_t* pFlag, int bitOffset, int bitCount, bool is_set_1)
+{
+    FFS64_t mask;
+    int startBit = bitOffset;
+
+    while (bitCount > 0) {
+        // 当前 flag 需要 mask 位数
+        bitOffset = FFS64_BITS - startBit;
+        if (bitOffset > bitCount) {
+            bitOffset = bitCount;
+        }
+
+        if (is_set_1) { // 生成 set 掩码：将 bitOffset 开始的 bitCount 个位设为 1
+            mask = FFS64_LeftMask(bitOffset, startBit);
+            *pFlag |= mask; // 置位=1
+        }
+        else {          // 生成 unset 掩码：将 bitOffset 开始的 bitCount 个位设为 0
+            mask = ~FFS64_LeftMask(bitOffset, startBit);
+            *pFlag &= mask; // 清除=0
+        }
+
+        bitCount -= bitOffset;
+        if (bitCount == 0) {
+            break;  // 成功设置
+        }
+
+        startBit = 0;
+        ++pFlag;
+    }
 }
 
 #ifdef __cplusplus

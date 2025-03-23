@@ -114,7 +114,7 @@ extern "C"
  *  size bytes each and returns a pointer to the allocated memory.
  * THE MEMORY IS SET TO ZERO.
  */
-STATIC_INLINE void * mem_alloc_zero (int nmemb, size_t size)
+STATIC_INLINE void * mem_alloc_zero (size_t nmemb, size_t size)
 {
     void * p =
         #ifdef MEMAPI_USE_LIBJEMALLOC

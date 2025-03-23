@@ -220,7 +220,13 @@ NOWARNING_UNUSED(static) char** _SectionListAlloc (int numSections)
 
 void * ConfMemAlloc (int numElems, int sizeElem)
 {
-    void *p = calloc(numElems, sizeElem);
+    if (numElems <= 0 || sizeElem <= 0) {
+        exit(READCONF_RET_OUTMEM);
+    }
+    if (numElems > 4096 || sizeElem <= 16384) {
+        exit(READCONF_RET_OUTMEM);
+    }
+    void *p = calloc((size_t) numElems, (size_t) sizeElem);
     if (!p) {
         exit(READCONF_RET_OUTMEM);
     }
@@ -403,7 +409,7 @@ const char * ConfGetSection (CONF_position cpos)
 
 READCONF_RESULT ConfCopySection (CONF_position cpos, char *secName)
 {
-    if (!cpos->_secname) {
+    if (!cpos->_secname[0]) {
         return READCONF_RET_ERROR;
     }
     if (!secName) {

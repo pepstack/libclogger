@@ -57,6 +57,8 @@ extern "C" {
 #include <common/unsema.h>
 #include <common/uatomic.h>
 
+#include <common/membuff.h>  // 2025-03-24： 内存池
+
 /* using pthread or pthread-w32 */
 #include <sched.h>
 #include <pthread.h>
@@ -99,6 +101,8 @@ struct clogger_version_mgr_t
     };
 
     int pid;
+
+    membuff_pool pool;
 
     uatomic_ptr pvmgr;
 };
