@@ -53,7 +53,7 @@ extern "C" {
 		((alignment) & ((alignment) - 1)) == 0)) && "memalign_assert failed: " #alignment)
 
 // 向上对齐
-#define MEM_ALIGN_UP(size, M)    (((size_t)(size) + (size_t)(M) - 1) & ~((size_t)(M)-1))
+#define MEM_ALIGN_UP(sizeInBytes, AlignedSizeB)    (((size_t)(sizeInBytes) + (size_t)(AlignedSizeB) - 1) & ~((size_t)(AlignedSizeB)-1))
 
 /**
  * @brief 分配对齐的内存块
@@ -80,13 +80,14 @@ extern void memalign_free_safe(void** pPointer);
 
 /**
  * @brief 获取当前处理器的缓存行大小
- * @return 缓存行字节数（失败时返回默认值64）
+ * @param defaultIfFail 如果失败返回默认值
+ * @return 缓存行字节数（失败时：返回默认值 defaultIfFail。如果默认值为 defaultIfFail= 0，返回 64）
  * @remark
  * - macOS: 通过sysctl获取HW_CACHELINE
  * - Linux: 读取CPU缓存信息文件
  * - Windows: 查询逻辑处理器信息
  */
-extern size_t memalign_alignment();
+extern size_t memalign_alignment(size_t defaultIfFail);
 
 /**
  * @brief 验证指针是否满足对齐要求

@@ -17,7 +17,7 @@ bool memalign_is_aligned(const void* pointer, size_t alignment)
 	}
 
 	if (!alignment) {
-		alignment = memalign_alignment();
+		alignment = memalign_alignment(0);
 	}
 
 	if (alignment % sizeof(void*) == 0 && (alignment & (alignment - 1)) == 0) {
@@ -61,10 +61,10 @@ void memalign_free_safe(void** pPointer)
 #if defined(__APPLE__)
 #include <sys/sysctl.h>
 
-size_t memalign_alignment()
+size_t memalign_alignment(size_t defaultOnFail)
 {
 	int mib[2];
-	size_t cacheLineSize;
+	size_t cacheLineSize = 0;
 	size_t size = sizeof(cacheLineSize);
 
 	mib[0] = CTL_HW;
@@ -76,13 +76,13 @@ size_t memalign_alignment()
 		return cacheLineSize;
 	}
 	else {
-		return MEM_ALIGN_SIZE_64;
+		return defaultOnFail ? defaultOnFail : MEM_ALIGN_SIZE_64;
 	}
 }
 
 #else // __linux__
 
-size_t memalign_alignment()
+size_t memalign_alignment(size_t defaultOnFail)
 {
 	unsigned lineSize = 0;
 	FILE* fp = fopen("/sys/devices/system/cpu/cpu0/cache/index0/coherency_line_size", "r");
@@ -92,7 +92,7 @@ size_t memalign_alignment()
 		}
 		fclose(fp);
 	}
-	return (size_t)(lineSize ? lineSize : MEM_ALIGN_SIZE_64);
+	return (size_t)(lineSize ? lineSize : (defaultOnFail ? defaultOnFail : MEM_ALIGN_SIZE_64));
 }
 
 #endif
@@ -134,20 +134,20 @@ void memalign_free_safe(void** pPointer)
 	}
 }
 
-size_t memalign_alignment()
+size_t memalign_alignment(size_t defaultOnFail)
 {
 	DWORD bufferSize = 0;
 	if (!GetLogicalProcessorInformation(0, &bufferSize) && GetLastError() != ERROR_INSUFFICIENT_BUFFER) {
-		return MEM_ALIGN_SIZE_64;
+		return defaultOnFail? defaultOnFail : MEM_ALIGN_SIZE_64;
 	}
 
 	SYSTEM_LOGICAL_PROCESSOR_INFORMATION* buffer = (SYSTEM_LOGICAL_PROCESSOR_INFORMATION*) memalign_alloc(bufferSize, MEM_ALIGN_SIZE_64);
 	if (!GetLogicalProcessorInformation(buffer, &bufferSize)) {
 		memalign_free_safe((void**) &buffer);
-		return MEM_ALIGN_SIZE_64;
+		return defaultOnFail ? defaultOnFail : MEM_ALIGN_SIZE_64;
 	}
 
-	DWORD cacheLineSize = MEM_ALIGN_SIZE_64;
+	DWORD cacheLineSize = 0;
 	for (DWORD i = 0; i < bufferSize / sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION); i++) {
 		if (buffer[i].Relationship == RelationCache && buffer[i].Cache.Level == 1) {
 			cacheLineSize = buffer[i].Cache.LineSize;
@@ -156,7 +156,7 @@ size_t memalign_alignment()
 	}
 
 	memalign_free_safe((void**)&buffer);
-	return (size_t)cacheLineSize;
+	return (size_t) cacheLineSize ? cacheLineSize : (defaultOnFail ? defaultOnFail : MEM_ALIGN_SIZE_64);
 }
 
 #else
@@ -164,9 +164,9 @@ size_t memalign_alignment()
 // https://sites.google.com/site/ruslancray/lab/bookshelf/interview/ci/low-level/write-an-aligned-malloc-free-function
 #include <stdlib.h>
 
-size_t memalign_alignment()
+size_t memalign_alignment(size_t defaultOnFail)
 {
-	return MEM_ALIGN_SIZE_64;
+	return defaultOnFail? defaultOnFail : MEM_ALIGN_SIZE_64;
 }
 
 void* memalign_alloc(size_t size, size_t alignment)

@@ -29,8 +29,6 @@
 #  include "ffs32.h"
 #endif
 
-// 单个内存块大小限制 4096 B
-#define MEMBUFF_BSIZE_MAX       4096U
 
 // Flag 最大数量限制：(相当于最多 4096 x 64 = 262144 内存块)
 #define MEMBUFF_FLAGS_MAX       4096U
@@ -75,7 +73,7 @@
 #define MBUF_SPINS_MAX       10
 
 // 确保每个线程的内存块按缓存行（通常64字节）对齐，避免伪共享（False Sharing）
-// 单个内存块最小限制（对齐大小）
+// 必须是单个内存块对齐大小 MEM_ALIGN_SIZE_64 的倍数
 #define MBUF_ALIGN_SIZE      128U
 
 // 单个内存块大小限制 4096 B
@@ -100,9 +98,10 @@ typedef struct membuff_pool_t
     uint32_t BuffSize;         // 每个可分配的内存块的最小尺寸
     uint32_t FlagsCount;       // Flag 的数量
 
-    uatomic_bool spinlock;      // 自旋锁：多线程安全访问
+    size_t alignment_size;     // 内存对齐字节（缓存行字节大小 64）
 
-    uatomic_int unused_bits;    // 未使用的（位=1）内存块
+    uatomic_bool spinlock;     // 自旋锁：多线程安全访问
+    uatomic_int unused_bits;   // 未使用的（位=1）内存块
 
     size_t _PoolSize;
     char* _Buffers;
@@ -130,6 +129,8 @@ membuff_pool membuff_pool_create(size_t buffSizeBytes, size_t buffsCount)
 {
     MBUF_Assert(buffSizeBytes <= MBUF_BSIZE_MAX);
     MBUF_Assert(buffsCount <= MBUF_FLAGS_MAX);
+
+    size_t alignment_size = memalign_alignment(0);
 
     // 内存块大小是 MBUF_ALIGN_SIZE 字节的倍数
     const uint32_t buffSize = (uint32_t)MBUF_AlignUpSize(buffSizeBytes, MBUF_ALIGN_SIZE);
@@ -162,6 +163,8 @@ membuff_pool membuff_pool_create(size_t buffSizeBytes, size_t buffsCount)
     }
     memset(pool, 0, size);
 
+    pool->alignment_size = alignment_size;
+
     pool->BuffSize = buffSize;        // 修改只读字段（仅初始化时）
     pool->FlagsCount = numFlags;      // 修改只读字段（仅初始化时）
 
@@ -189,11 +192,6 @@ void membuff_pool_destroy(void* pPool)
 
 void* membuff_alloc(membuff_pool pool, size_t sizeBytes)
 {
-    if (!pool) {
-        // 无池分配
-        return malloc(sizeBytes);
-    }
-
     // 需要的内存字节
     size_t allocSize = MBUF_AlignUpSize(sizeBytes + sizeof(membuff_t), pool->BuffSize);
 
@@ -247,13 +245,10 @@ void* membuff_alloc(membuff_pool pool, size_t sizeBytes)
 
 void* membuff_calloc(membuff_pool pool, size_t elementsCount, size_t elementSizeBytes)
 {
-    if (!pool) {
-        // 无池分配
-        return calloc(elementsCount, elementSizeBytes);
-    }
-    void* pBuffer = membuff_alloc(pool, elementSizeBytes * elementsCount);
+    size_t alignSize = MBUF_AlignUpSize(elementsCount * elementSizeBytes, MEM_ALIGN_SIZE_64);
+    void* pBuffer = membuff_alloc(pool, alignSize);
     if (pBuffer) {
-        memset(pBuffer, 0, elementSizeBytes * elementsCount);
+        memset(pBuffer, 0, alignSize);
     }
     return pBuffer;
 }
@@ -261,12 +256,6 @@ void* membuff_calloc(membuff_pool pool, size_t elementsCount, size_t elementSize
 void* membuff_free(membuff_pool ownerPool, void* pBuffer)
 {
     if (!pBuffer) {
-        return NULL;
-    }
-
-    if (!ownerPool) {
-        // 无池释放
-        free(pBuffer);
         return NULL;
     }
 

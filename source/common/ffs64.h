@@ -304,19 +304,27 @@ static int FFS64_flags_find_setbits(FFS64_t** ppFlagStart, const FFS64_t* pFlagE
                 firstBitOffset = startBit;
             }
         }
-        else { // 仅在此处设置起始
-            if (bitsCount == 1) {
-                // 只取1位，成功返回。此处是优化关键
-                *ppFlagStart = pFlag;
-                return startBit;
-            }
-            // 多于1位，要继续判断
+        else {
+            // 仅在此处设置起始
             remaining = bitsCount;
             pFirstFlag = pFlag;
             firstBitOffset = startBit;
         }
 
+        if (remaining == 1) {
+            // 只取1位，成功返回。此处是优化关键
+            *ppFlagStart = pFirstFlag;
+            return firstBitOffset;
+        }
+
         FFS64_Assert(pFirstFlag && startBit);
+
+        if (startBit == FFS64_BITS) {
+            remaining--;
+            startBit = 1;
+            ++pFlag; // 下一个 Flag
+            continue;
+        }
 
         // endBit=0 表示从第 startBit 位（0-based）开始到结束没有清0位。
         int endBit = FFS64_next_unsetbit(*pFlag, startBit + 1);

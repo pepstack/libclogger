@@ -259,7 +259,7 @@ static inline int FFS32_setbit_popcount(FFS32_t flag)
  *
  * flags=[flag1|flag2|flag3] => [0b1111000 | 0b11111111 | 0b00000111]，连续块数=4+8+3=15
  */
-static int FFS32_flags_setbits(FFS32_t** ppFlagStart, const FFS32_t* pFlagEndStop, const int bitsCount)
+static int FFS32_flags_find_setbits(FFS32_t** ppFlagStart, const FFS32_t* pFlagEndStop, const int bitsCount)
 {
     FFS32_t* pFirstFlag = NULL;
     int firstBitOffset = 0;
@@ -289,19 +289,27 @@ static int FFS32_flags_setbits(FFS32_t** ppFlagStart, const FFS32_t* pFlagEndSto
                 firstBitOffset = startBit;
             }
         }
-        else { // 仅在此处设置起始
-            if (bitsCount == 1) {
-                // 只取1位，成功返回。此处是优化关键
-                *ppFlagStart = pFlag;
-                return startBit;
-            }
-            // 多于1位，要继续判断
+        else {
+            // 仅在此处设置起始
             remaining = bitsCount;
             pFirstFlag = pFlag;
             firstBitOffset = startBit;
         }
 
+        if (remaining == 1) {
+            // 只取1位，成功返回。此处是优化关键
+            *ppFlagStart = pFirstFlag;
+            return firstBitOffset;
+        }
+
         FFS32_Assert(pFirstFlag && startBit);
+
+        if (startBit == FFS32_BITS) {
+            remaining--;
+            startBit = 1;
+            ++pFlag; // 下一个 Flag
+            continue;
+        }
 
         // endBit=0 表示从第 startBit 位（0-based）开始到结束没有清0位。
         int endBit = FFS32_next_unsetbit(*pFlag, startBit + 1);
@@ -320,7 +328,7 @@ static int FFS32_flags_setbits(FFS32_t** ppFlagStart, const FFS32_t* pFlagEndSto
             startBit = endBit;  // 防止无限循环
         }
         else {
-            FFS32_Assert(endBit == 0);  // 不存在清零位
+            FFS32_Assert(!endBit);  // 不存在清零位
             remaining -= available;
             startBit = 1;
             ++pFlag; // 下一个 Flag

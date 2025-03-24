@@ -223,9 +223,6 @@ void * ConfMemAlloc (int numElems, int sizeElem)
     if (numElems <= 0 || sizeElem <= 0) {
         exit(READCONF_RET_OUTMEM);
     }
-    if (numElems > 4096 || sizeElem <= 16384) {
-        exit(READCONF_RET_OUTMEM);
-    }
     void *p = calloc((size_t) numElems, (size_t) sizeElem);
     if (!p) {
         exit(READCONF_RET_OUTMEM);

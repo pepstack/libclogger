@@ -40,10 +40,15 @@
 extern "C" {
 #endif
 
+// 单个内存块大小限制 4096 B
+#define MEMBUFF_BSIZE_MAX       4096U
+
 /** @brief 内存池句柄 */
 typedef struct membuff_pool_t* membuff_pool;
 
-/** @brief 内存池统计信息 */
+/** @brief 内存池统计信息
+ *   内存池总大小 = buffSizeBytes * buffsMaxCount
+ */
 typedef struct
 {
     size_t buffSizeBytes;         // 内存块字节数（含 16 字节的元数据）
@@ -53,7 +58,7 @@ typedef struct
 
 /**
  * @brief 创建内存池实例
- * @param buffSizeBytes 单块字节数 (128 B ≤ size ≤ MEMBUFF_BSIZE_MAX)
+ * @param buffSizeBytes 单块字节数 (必须对齐 128 B，且 ≤ MEMBUFF_BSIZE_MAX)
  * @param buffsCount 总块数 (64 ≤ count ≤ MEMBUFF_FLAGS_MAX)
  * @return 成功返回内存池句柄，失败返回NULL
  * @note 
@@ -65,7 +70,7 @@ extern membuff_pool membuff_pool_create(size_t buffSizeBytes, size_t buffsCount)
 
 /**
  * @brief 销毁内存池实例
- * @param pool 内存池句柄（允许传入NULL）
+ * @param pool 内存池句柄
  * @post 调用后句柄自动置NULL
  */
 extern void membuff_pool_destroy(void* pool);
@@ -94,6 +99,7 @@ extern void* membuff_calloc(membuff_pool pool, size_t elementsCount, size_t elem
 
 /**
  * @brief 释放已分配内存
+ * @param pool 内存池句柄
  * @param pMemory 待释放指针（必须为本池分配）
  * @return 成功返回NULL，失败返回原指针：表示用户尝试释放的指针不是本池分配的。
  * @note 例如：
@@ -110,7 +116,7 @@ extern void* membuff_free(membuff_pool pool, void* pBuffer);
 
 /**
  * @brief 获取内存池统计信息
- * @param pool 内存池句柄
+ * @param pool 内存池句柄。
  * @param[out] stats 统计信息结构体（可选）
  * @return 当前空闲块数
  * @note stat 为 NULL 时仅返回空闲块数
